@@ -25,23 +25,11 @@ public class Connection {
     @ManyToOne
     @JoinColumn(name = "following_user",  referencedColumnName = "phone")
     @JsonIgnoreProperties(value = "messages", allowSetters = true)
-    private User followingUser;
+    private Account followingUser;
 
     @ManyToOne
     @JoinColumn(name = "followed_user", referencedColumnName = "phone")
     @JsonIgnoreProperties(value = "messages", allowSetters = true)
-    private User followedUser;
-
-    @Column(name = "created_by", length = 200)
-    private String createdBy;
-
-    @Column(name = "created_date")
-    private Long createdDate;
-
-    @Column(name = "modified_by", length = 200)
-    private String modifiedBy;
-
-    @Column(name = "modified_date")
-    private Long modifiedDate;
+    private Account followedUser;
 
 }

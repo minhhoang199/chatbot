@@ -98,3 +98,172 @@ alter table account add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
 	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
 	at com.example.chatwebproject.ChatWebProjectApplication.main(ChatWebProjectApplication.java:10)
+2023-06-06 22:13:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Constraint "PUBLIC.UK_DGDNJ692F2G5EBICY1XYC2L3W" is used by constraint "PUBLIC.FKLA0L2FND4S8024N6QGHQ4XSDY"; SQL statement:
+alter table account drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [90152-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.command.ddl.AlterTableDropConstraint.update(AlterTableDropConstraint.java:62)
+	at org.h2.command.ddl.AlterTable.update(AlterTable.java:46)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:169)
+	at org.h2.command.Command.executeUpdate(Command.java:252)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:252)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:223)
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94)
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java)
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applyUniqueKeys(AbstractSchemaMigrator.java:392)
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:90)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85)
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335)
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:734)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
+	at com.example.chatwebproject.ChatWebProjectApplication.main(ChatWebProjectApplication.java:10)
+2023-06-06 22:13:52 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Constraint "UK_DGDNJ692F2G5EBICY1XYC2L3W" already exists; SQL statement:
+alter table account add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [90045-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.command.ddl.AlterTableAddConstraint.tryUpdate(AlterTableAddConstraint.java:109)
+	at org.h2.command.ddl.AlterTableAddConstraint.update(AlterTableAddConstraint.java:72)
+	at org.h2.command.ddl.AlterTable.update(AlterTable.java:46)
+	at org.h2.command.CommandContainer.update(CommandContainer.java:169)
+	at org.h2.command.Command.executeUpdate(Command.java:252)
+	at org.h2.jdbc.JdbcStatement.executeInternal(JdbcStatement.java:252)
+	at org.h2.jdbc.JdbcStatement.execute(JdbcStatement.java:223)
+	at com.zaxxer.hikari.pool.ProxyStatement.execute(ProxyStatement.java:94)
+	at com.zaxxer.hikari.pool.HikariProxyStatement.execute(HikariProxyStatement.java)
+	at org.hibernate.tool.schema.internal.exec.GenerationTargetToDatabase.accept(GenerationTargetToDatabase.java:54)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlString(AbstractSchemaMigrator.java:581)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applySqlStrings(AbstractSchemaMigrator.java:526)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.applyUniqueKeys(AbstractSchemaMigrator.java:401)
+	at org.hibernate.tool.schema.internal.GroupedSchemaMigratorImpl.performTablesMigration(GroupedSchemaMigratorImpl.java:90)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.performMigration(AbstractSchemaMigrator.java:220)
+	at org.hibernate.tool.schema.internal.AbstractSchemaMigrator.doMigration(AbstractSchemaMigrator.java:123)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.performDatabaseAction(SchemaManagementToolCoordinator.java:196)
+	at org.hibernate.tool.schema.spi.SchemaManagementToolCoordinator.process(SchemaManagementToolCoordinator.java:85)
+	at org.hibernate.internal.SessionFactoryImpl.<init>(SessionFactoryImpl.java:335)
+	at org.hibernate.boot.internal.SessionFactoryBuilderImpl.build(SessionFactoryBuilderImpl.java:471)
+	at org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl.build(EntityManagerFactoryBuilderImpl.java:1498)
+	at org.springframework.orm.jpa.vendor.SpringHibernateJpaPersistenceProvider.createContainerEntityManagerFactory(SpringHibernateJpaPersistenceProvider.java:58)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.createNativeEntityManagerFactory(LocalContainerEntityManagerFactoryBean.java:365)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.buildNativeEntityManagerFactory(AbstractEntityManagerFactoryBean.java:409)
+	at org.springframework.orm.jpa.AbstractEntityManagerFactoryBean.afterPropertiesSet(AbstractEntityManagerFactoryBean.java:396)
+	at org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean.afterPropertiesSet(LocalContainerEntityManagerFactoryBean.java:341)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.invokeInitMethods(AbstractAutowireCapableBeanFactory.java:1863)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1800)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:620)
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:542)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335)
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:333)
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208)
+	at org.springframework.context.support.AbstractApplicationContext.getBean(AbstractApplicationContext.java:1154)
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:908)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583)
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:147)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:734)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:408)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:308)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1306)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1295)
+	at com.example.chatwebproject.ChatWebProjectApplication.main(ChatWebProjectApplication.java:10)
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id bigint generated by default as identity, created_at varchar(255) not null, created_by varchar(200), created_date bigint, modified_by varchar(200), modified_date bigint, password varchar(20) not null, phone varchar(20) not null, updated_at varchar(255), username varchar(50) not null, primary key (id))"; expected "identifier"; SQL statement:
+create table user (id bigint generated by default as identity, created_at varchar(255) not null, created_by varchar(200), created_date bigint, modified_by varchar(200), modified_date bigint, password varchar(20) not null, phone varchar(20) not null, updated_at varchar(255), username varchar(50) not null, primary key (id)) [42001-214]
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table [*]user drop constraint if exists UK_589idila9li6a4arw1t8ht1gx"; expected "identifier"; SQL statement:
+alter table user drop constraint if exists UK_589idila9li6a4arw1t8ht1gx [42001-214]
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table [*]user add constraint UK_589idila9li6a4arw1t8ht1gx unique (phone)"; expected "identifier"; SQL statement:
+alter table user add constraint UK_589idila9li6a4arw1t8ht1gx unique (phone) [42001-214]
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table connection add constraint FKp92f7rolf9gdesydyc8uycut2 foreign key (followed_user) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table connection add constraint FKp92f7rolf9gdesydyc8uycut2 foreign key (followed_user) references user (phone) [42001-214]
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table connection add constraint FKjoaxt6ykrd5n3f41k5yn9yp9t foreign key (following_user) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table connection add constraint FKjoaxt6ykrd5n3f41k5yn9yp9t foreign key (following_user) references user (phone) [42001-214]
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table conversation_user add constraint FKhjie8c93f6ctc27ujqg84lx0f foreign key (user_id) references [*]user"; expected "identifier"; SQL statement:
+alter table conversation_user add constraint FKhjie8c93f6ctc27ujqg84lx0f foreign key (user_id) references user [42001-214]
+2023-06-06 22:37:42 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table message add constraint FK3ngd6sdewk0al324vuanxru92 foreign key (sender_phone) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table message add constraint FK3ngd6sdewk0al324vuanxru92 foreign key (sender_phone) references user (phone) [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id bigint generated by default as identity, created_at varchar(255) not null, created_by varchar(200), created_date bigint, modified_by varchar(200), modified_date bigint, password varchar(20) not null, phone varchar(20) not null, updated_at varchar(255), username varchar(50) not null, primary key (id))"; expected "identifier"; SQL statement:
+create table user (id bigint generated by default as identity, created_at varchar(255) not null, created_by varchar(200), created_date bigint, modified_by varchar(200), modified_date bigint, password varchar(20) not null, phone varchar(20) not null, updated_at varchar(255), username varchar(50) not null, primary key (id)) [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table [*]user add constraint UK_589idila9li6a4arw1t8ht1gx unique (phone)"; expected "identifier"; SQL statement:
+alter table user add constraint UK_589idila9li6a4arw1t8ht1gx unique (phone) [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table connection add constraint FKp92f7rolf9gdesydyc8uycut2 foreign key (followed_user) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table connection add constraint FKp92f7rolf9gdesydyc8uycut2 foreign key (followed_user) references user (phone) [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table connection add constraint FKjoaxt6ykrd5n3f41k5yn9yp9t foreign key (following_user) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table connection add constraint FKjoaxt6ykrd5n3f41k5yn9yp9t foreign key (following_user) references user (phone) [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table conversation_user add constraint FKhjie8c93f6ctc27ujqg84lx0f foreign key (user_id) references [*]user"; expected "identifier"; SQL statement:
+alter table conversation_user add constraint FKhjie8c93f6ctc27ujqg84lx0f foreign key (user_id) references user [42001-214]
+2023-06-06 22:40:18 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table message add constraint FK3ngd6sdewk0al324vuanxru92 foreign key (sender_phone) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table message add constraint FK3ngd6sdewk0al324vuanxru92 foreign key (sender_phone) references user (phone) [42001-214]
+2023-06-06 22:41:53 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table [*]user (id bigint generated by default as identity, created_at varchar(255) not null, created_by varchar(200), created_date bigint, modified_by varchar(200), modified_date bigint, password varchar(20) not null, phone varchar(20) not null, updated_at varchar(255), username varchar(50) not null, primary key (id))"; expected "identifier"; SQL statement:
+create table user (id bigint generated by default as identity, created_at varchar(255) not null, created_by varchar(200), created_date bigint, modified_by varchar(200), modified_date bigint, password varchar(20) not null, phone varchar(20) not null, updated_at varchar(255), username varchar(50) not null, primary key (id)) [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table [*]user add constraint UK_589idila9li6a4arw1t8ht1gx unique (phone)"; expected "identifier"; SQL statement:
+alter table user add constraint UK_589idila9li6a4arw1t8ht1gx unique (phone) [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table connection add constraint FKp92f7rolf9gdesydyc8uycut2 foreign key (followed_user) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table connection add constraint FKp92f7rolf9gdesydyc8uycut2 foreign key (followed_user) references user (phone) [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table connection add constraint FKjoaxt6ykrd5n3f41k5yn9yp9t foreign key (following_user) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table connection add constraint FKjoaxt6ykrd5n3f41k5yn9yp9t foreign key (following_user) references user (phone) [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table conversation_user add constraint FKhjie8c93f6ctc27ujqg84lx0f foreign key (user_id) references [*]user"; expected "identifier"; SQL statement:
+alter table conversation_user add constraint FKhjie8c93f6ctc27ujqg84lx0f foreign key (user_id) references user [42001-214]
+2023-06-06 22:42:14 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "alter table message add constraint FK3ngd6sdewk0al324vuanxru92 foreign key (sender_phone) references [*]user (phone)"; expected "identifier"; SQL statement:
+alter table message add constraint FK3ngd6sdewk0al324vuanxru92 foreign key (sender_phone) references user (phone) [42001-214]
+2023-06-06 22:45:28 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "drop table if exists [*]user CASCADE "; expected "identifier"; SQL statement:
+drop table if exists user CASCADE  [42001-214]

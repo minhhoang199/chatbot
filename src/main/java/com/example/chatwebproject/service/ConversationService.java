@@ -2,7 +2,7 @@ package com.example.chatwebproject.service;
 
 import com.example.chatwebproject.model.Connection;
 import com.example.chatwebproject.model.Conversation;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.Account;
 import com.example.chatwebproject.model.enums.ConnectionStatus;
 import com.example.chatwebproject.model.enums.ConversationStatus;
 import com.example.chatwebproject.model.enums.ConversationType;
@@ -11,7 +11,7 @@ import com.example.chatwebproject.model.vm.InviteeVM;
 import com.example.chatwebproject.model.vm.PrivateConversationVM;
 import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.ConversationRepository;
-import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -24,11 +24,11 @@ import java.util.regex.Pattern;
 @Service
 public class ConversationService {
     private ConversationRepository conversationRepository;
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
     private ConnectionRepository connectionRepository;
 
     public ConversationService(ConversationRepository conversationRepository,
-                               UserRepository accountRepository,
+                               AccountRepository accountRepository,
                                ConnectionRepository connectionRepository) {
         this.conversationRepository = conversationRepository;
         this.userRepository = accountRepository;
@@ -55,23 +55,23 @@ public class ConversationService {
 
             String invitorPhone = privateConversationVM.getInvitorPhone();
 //            validatePhone(invitorPhone);
-            Optional<User> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
+            Optional<Account> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
             if (optionalInvitor.isEmpty()) {
                 throw new RuntimeException("Not found invitor");
             }
-            User invitor = optionalInvitor.get();
+            Account invitor = optionalInvitor.get();
 
             String inviteePhone = privateConversationVM.getInviteePhone();
 //            validatePhone(inviteePhone);
-            Optional<User> optionalInvitee = this.userRepository.findByPhone(inviteePhone);
+            Optional<Account> optionalInvitee = this.userRepository.findByPhone(inviteePhone);
             if (optionalInvitee.isEmpty()) {
                 throw new RuntimeException("Not found invitee");
             }
-            User invitee = optionalInvitee.get();
+            Account invitee = optionalInvitee.get();
 
             List<Conversation> conversationList = this.conversationRepository.findByPhoneAndType(invitorPhone, ConversationType.PRIVATE_CHAT);
             for (Conversation conversation: conversationList){
-                if (conversation.getUsers().contains(invitee)){
+                if (conversation.getAccounts().contains(invitee)){
                     throw new RuntimeException("Private chat already existed");
                 }
             }
@@ -81,7 +81,7 @@ public class ConversationService {
             newConversation.setConversationType(ConversationType.PRIVATE_CHAT);
 
             //add invitor to the list
-            Set<User> users = new HashSet<>();
+            Set<Account> users = new HashSet<>();
 
             //add users to the list
             Optional<Connection> optionalConnectionWithInvitee = this.connectionRepository.findByUsersAndStatus(
@@ -104,7 +104,7 @@ public class ConversationService {
             //this.userRepository.save(invitee);
             users.add(invitee);
 
-            newConversation.setUsers(users);
+            newConversation.setAccounts(users);
             newConversation.setConversationStatus(ConversationStatus.ENABLE);
             this.userRepository.saveAll(users);
             this.conversationRepository.save(newConversation);
@@ -123,12 +123,12 @@ public class ConversationService {
 
             String invitorPhone = conversationVM.getInvitorPhone();
 //            validatePhone(invitorPhone);
-            Optional<User> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
+            Optional<Account> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
             if (optionalInvitor.isEmpty()) {
                 throw new RuntimeException("Not found invitor");
             }
 
-            User invitor = optionalInvitor.get();
+            Account invitor = optionalInvitor.get();
 
             List<String> phones = conversationVM.getPhones();
 //            if (phones == null || phones.size() < 2) {
@@ -140,7 +140,7 @@ public class ConversationService {
             newConversation.setConversationType(ConversationType.GROUP_CHAT);
 
             //add invitor to the list
-            Set<User> users = new HashSet<>();
+            Set<Account> users = new HashSet<>();
             invitor.getConversations().add(newConversation);
 //            this.userRepository.save(invitor);
             users.add(invitor);
@@ -150,7 +150,7 @@ public class ConversationService {
             ) {
                 validatePhone(phone);
 
-                Optional<User> optionalUser = this.userRepository.findByPhone(phone);
+                Optional<Account> optionalUser = this.userRepository.findByPhone(phone);
                 if (optionalUser.isEmpty()) {
                     throw new RuntimeException("Not found account by phone");
                 }
@@ -166,13 +166,13 @@ public class ConversationService {
                     throw new RuntimeException("Invalid connection between invitor and User");
                 }
 
-                User currentUser = optionalUser.get();
+                Account currentUser = optionalUser.get();
                 currentUser.getConversations().add(newConversation);
 //                this.userRepository.save(currentUser);
                 users.add(currentUser);
             }
 
-            newConversation.setUsers(users);
+            newConversation.setAccounts(users);
             newConversation.setConversationStatus(ConversationStatus.ENABLE);
             this.userRepository.saveAll(users);
             this.conversationRepository.save(newConversation);
@@ -187,11 +187,11 @@ public class ConversationService {
         String invitorPhone = inviteeVm.getInvitorPhone();
         validatePhone(invitorPhone);
 
-        Optional<User> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
+        Optional<Account> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
         if (optionalInvitor.isEmpty()) {
             throw new RuntimeException("Not found invitor");
         }
-        User invitor = optionalInvitor.get();
+        Account invitor = optionalInvitor.get();
 
         var optConversation = conversationRepository.findById(conversationId);
         if (optConversation.isEmpty()) {
@@ -200,7 +200,7 @@ public class ConversationService {
             throw new RuntimeException("Invalid conversation Type: private chat can not add more users");
         }
         Conversation currentConversation = optConversation.get();
-        Set<User> users = currentConversation.getUsers();
+        Set<Account> users = currentConversation.getAccounts();
         if (!users.contains(invitor)) {
             throw new RuntimeException("Invitor does not belong to conversation");
         }
@@ -210,7 +210,7 @@ public class ConversationService {
         ) {
             validatePhone(phone);
 
-            Optional<User> optionalUser = this.userRepository.findByPhone(phone);
+            Optional<Account> optionalUser = this.userRepository.findByPhone(phone);
             if (optionalUser.isEmpty()) {
                 throw new RuntimeException("Not found account by phone " + phone);
             }
@@ -226,13 +226,13 @@ public class ConversationService {
                 throw new RuntimeException("Invalid connection between invitor and User");
             }
 
-            User currentUser = optionalUser.get();
+            Account currentUser = optionalUser.get();
 
             currentUser.getConversations().add(currentConversation);
             this.userRepository.save(currentUser);
             users.add(currentUser);
         }
-        currentConversation.setUsers(users);
+        currentConversation.setAccounts(users);
         this.conversationRepository.save(currentConversation);
     }
 

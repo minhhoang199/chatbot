@@ -1,14 +1,12 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.Account;
 import com.example.chatwebproject.model.vm.UserVM;
 import com.example.chatwebproject.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -20,7 +18,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addNewUser(@RequestBody @Valid User newUser){
+    public ResponseEntity<String> addNewUser(@RequestBody @Valid Account newUser){
         this.userService.save(newUser);
         return ResponseEntity.ok("Add new user succeed");
     }

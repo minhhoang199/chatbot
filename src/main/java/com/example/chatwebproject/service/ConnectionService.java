@@ -1,24 +1,22 @@
 package com.example.chatwebproject.service;
 
 import com.example.chatwebproject.model.Connection;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.Account;
 import com.example.chatwebproject.model.enums.ConnectionStatus;
 import com.example.chatwebproject.model.vm.ConnectionStatusVM;
 import com.example.chatwebproject.model.vm.RequestConnectionVM;
 import com.example.chatwebproject.repository.ConnectionRepository;
-import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class ConnectionService {
     private ConnectionRepository connectionRepository;
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
 
-    public ConnectionService(ConnectionRepository connectionRepository, UserRepository userRepository) {
+    public ConnectionService(ConnectionRepository connectionRepository, AccountRepository userRepository) {
         this.connectionRepository = connectionRepository;
         this.userRepository = userRepository;
     }
@@ -45,12 +43,12 @@ public class ConnectionService {
             throw new RuntimeException("Connection already existed");
         }
 
-        Optional<User> otpFollowingUser = this.userRepository.findByPhone(followingPhone);
+        Optional<Account> otpFollowingUser = this.userRepository.findByPhone(followingPhone);
         if (otpFollowingUser.isEmpty()) {
             throw new RuntimeException("Not found following user");
         }
 
-        Optional<User> otpFollowedUser = this.userRepository.findByPhone(followedPhone);
+        Optional<Account> otpFollowedUser = this.userRepository.findByPhone(followedPhone);
         if (otpFollowedUser.isEmpty()) {
             throw new RuntimeException("Not found followed user");
         }

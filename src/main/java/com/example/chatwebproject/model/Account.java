@@ -15,12 +15,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "account")
+@Table
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements Serializable {
+public class Account extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,16 +38,9 @@ public class User implements Serializable {
     @Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid phone")
     private String phone;
 
-    @Column(name = "created_at", nullable = false)
-    private String createdAt;
-
-    @Column(name = "updated_at")
-    private String updatedAt;
-
     @JsonIgnore
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "accounts")
     private Set<Conversation> conversations = new HashSet<>();
-
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "followingUser", "followedUser" }, allowSetters = true)
@@ -60,23 +53,11 @@ public class User implements Serializable {
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private Set<Message> messages = new HashSet<>();
 
-    @Column(name = "created_by", length = 200)
-    private String createdBy;
-
-    @Column(name = "created_date")
-    private Long createdDate;
-
-    @Column(name = "modified_by", length = 200)
-    private String modifiedBy;
-
-    @Column(name = "modified_date")
-    private Long modifiedDate;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
+        if (!(o instanceof Account)) return false;
+        Account user = (Account) o;
         return Objects.equals(getPhone(), user.getPhone());
     }
 }

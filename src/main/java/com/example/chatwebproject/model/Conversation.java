@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Conversation implements Serializable {
+public class Conversation extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,20 +37,14 @@ public class Conversation implements Serializable {
     private Set<Message> messages = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name = "conversation_user",
+    @JoinTable(name = "conversation_account",
             joinColumns = @JoinColumn(name = "conversation_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users = new HashSet<>();
+    private Set<Account> accounts = new HashSet<>();
 
     @Column(name = "created_by", length = 200)
     private String createdBy;
 
-    @Column(name = "created_date")
-    private Long createdDate;
-
-    @Column(name = "modified_by", length = 200)
-    private String modifiedBy;
-
-    @Column(name = "modified_date")
-    private Long modifiedDate;
+    @Column(name = "updated_by", length = 200)
+    private String updatedBy;
 }

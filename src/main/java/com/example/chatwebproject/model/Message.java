@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Message implements Serializable {
+public class Message extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -24,7 +24,7 @@ public class Message implements Serializable {
     @ManyToOne
     @JoinColumn(name = "sender_phone", referencedColumnName = "phone")
     @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
-    private User sender;
+    private Account sender;
 
     @Column(name = "content", nullable = false)
     private String content;
@@ -40,16 +40,4 @@ public class Message implements Serializable {
     @JoinColumn(name = "conversation_id")
     @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
     private Conversation conversation;
-
-    @Column(name = "created_by", length = 200)
-    private String createdBy;
-
-    @Column(name = "created_date")
-    private Long createdDate;
-
-    @Column(name = "modified_by", length = 200)
-    private String modifiedBy;
-
-    @Column(name = "modified_date")
-    private Long modifiedDate;
 }

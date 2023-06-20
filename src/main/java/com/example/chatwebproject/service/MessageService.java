@@ -2,12 +2,11 @@ package com.example.chatwebproject.service;
 
 import com.example.chatwebproject.model.Conversation;
 import com.example.chatwebproject.model.Message;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.Account;
 import com.example.chatwebproject.model.enums.MessageStatus;
-import com.example.chatwebproject.model.enums.MessageType;
 import com.example.chatwebproject.repository.ConversationRepository;
 import com.example.chatwebproject.repository.MessageRepository;
-import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,11 +15,11 @@ import java.util.List;
 @Service
 public class MessageService {
     private MessageRepository messageRepository;
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
     private ConversationRepository conversationRepository;
 
     public MessageService(MessageRepository messageRepository,
-                          UserRepository userRepository,
+                          AccountRepository userRepository,
                           ConversationRepository conversationRepository) {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
@@ -56,7 +55,7 @@ public class MessageService {
         if (senderOtp.isEmpty()){
             throw new RuntimeException("Not found sender");
         }
-        User sender = senderOtp.get();
+        Account sender = senderOtp.get();
 
         //validate conversation id
         if (conversationId == null ||

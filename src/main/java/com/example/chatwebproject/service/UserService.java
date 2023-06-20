@@ -1,23 +1,19 @@
 package com.example.chatwebproject.service;
 
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.Account;
 import com.example.chatwebproject.model.vm.UserVM;
-import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
 
 @Service
 public class UserService {
-    private UserRepository userRepository;
+    private AccountRepository userRepository;
 
-    public UserService(UserRepository accountRepository) {
+    public UserService(AccountRepository accountRepository) {
         this.userRepository = accountRepository;
     }
 
-    public void save(User newUser) {
+    public void save(Account newUser) {
         if (newUser != null) {
 //            if (newUser.getUsername() == null ||
 //                    newUser.getUsername().length() == 0) {
@@ -40,7 +36,7 @@ public class UserService {
         }
     }
 
-    public User getUserInfo(Long userId) {
+    public Account getUserInfo(Long userId) {
         if (userId == null ||
                 userId <= 0) {
             throw new RuntimeException("Invalid user Id");
@@ -63,7 +59,7 @@ public class UserService {
             throw new RuntimeException("Not found user");
         }
 
-        User currentUser = userOtp.get();
+        Account currentUser = userOtp.get();
 
         String newUserName = userVM.getUsername();
         {
@@ -98,7 +94,7 @@ public class UserService {
             throw new RuntimeException("Not found user");
         }
 
-        User currentUser = userOtp.get();
+        Account currentUser = userOtp.get();
 
         if (newPassword != null) {
             if (newPassword.length() < 8) {
