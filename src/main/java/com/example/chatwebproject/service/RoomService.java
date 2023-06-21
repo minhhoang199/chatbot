@@ -1,39 +1,32 @@
 package com.example.chatwebproject.service;
 
+//22/06: Update create room chat addNewRoom() method
 import com.example.chatwebproject.model.Connection;
-import com.example.chatwebproject.model.Conversation;
+import com.example.chatwebproject.model.Message;
+import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.Account;
-import com.example.chatwebproject.model.enums.ConnectionStatus;
-import com.example.chatwebproject.model.enums.ConversationStatus;
-import com.example.chatwebproject.model.enums.ConversationType;
-import com.example.chatwebproject.model.vm.GroupConversationVM;
-import com.example.chatwebproject.model.vm.InviteeVM;
-import com.example.chatwebproject.model.vm.PrivateConversationVM;
+import com.example.chatwebproject.model.enums.*;
+import com.example.chatwebproject.model.dto.RoomDto;
+import com.example.chatwebproject.model.dto.InviteeDto;
+import com.example.chatwebproject.model.dto.PrivateConversationDto;
 import com.example.chatwebproject.repository.ConnectionRepository;
-import com.example.chatwebproject.repository.ConversationRepository;
+import com.example.chatwebproject.repository.MessageRepository;
+import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.AccountRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
-public class ConversationService {
-    private ConversationRepository conversationRepository;
+@AllArgsConstructor
+public class RoomService {
+    private RoomRepository roomRepository;
     private AccountRepository userRepository;
     private ConnectionRepository connectionRepository;
-
-    public ConversationService(ConversationRepository conversationRepository,
-                               AccountRepository accountRepository,
-                               ConnectionRepository connectionRepository) {
-        this.conversationRepository = conversationRepository;
-        this.userRepository = accountRepository;
-        this.connectionRepository = connectionRepository;
-    }
+    private MessageRepository messageRepository;
 
     private void validatePhone(String phone) {
         Pattern pattern = Pattern.compile("^0\\d{9}$|^84\\d{9}$");
@@ -44,7 +37,7 @@ public class ConversationService {
     }
 
 
-    public void addNewPrivateConversation(PrivateConversationVM privateConversationVM) {
+    public void addNewPrivateConversation(PrivateConversationDto privateConversationVM) {
         if (privateConversationVM != null) {
             //validation
             String name = privateConversationVM.getName();
@@ -69,16 +62,16 @@ public class ConversationService {
             }
             Account invitee = optionalInvitee.get();
 
-            List<Conversation> conversationList = this.conversationRepository.findByPhoneAndType(invitorPhone, ConversationType.PRIVATE_CHAT);
-            for (Conversation conversation: conversationList){
-                if (conversation.getAccounts().contains(invitee)){
+            List<Room> roomList = this.roomRepository.findByPhoneAndType(invitorPhone, RoomType.PRIVATE_CHAT);
+            for (Room room : roomList){
+                if (room.getAccounts().contains(invitee)){
                     throw new RuntimeException("Private chat already existed");
                 }
             }
 
-            Conversation newConversation = new Conversation();
-            newConversation.setName(name);
-            newConversation.setConversationType(ConversationType.PRIVATE_CHAT);
+            Room newRoom = new Room();
+            newRoom.setName(name);
+            newRoom.setRoomType(RoomType.PRIVATE_CHAT);
 
             //add invitor to the list
             Set<Account> users = new HashSet<>();
@@ -96,57 +89,35 @@ public class ConversationService {
                 throw new RuntimeException("Invalid connection between invitor and invitee");
             }
 
-            invitor.getConversations().add(newConversation);
+            invitor.getRooms().add(newRoom);
             //this.userRepository.save(invitor);
             users.add(invitor);
 
-            invitee.getConversations().add(newConversation);
+            invitee.getRooms().add(newRoom);
             //this.userRepository.save(invitee);
             users.add(invitee);
 
-            newConversation.setAccounts(users);
-            newConversation.setConversationStatus(ConversationStatus.ENABLE);
+            newRoom.setAccounts(users);
+            newRoom.setRoomStatus(RoomStatus.ENABLE);
             this.userRepository.saveAll(users);
-            this.conversationRepository.save(newConversation);
+            this.roomRepository.save(newRoom);
         }
     }
 
 
-    public void addGroupConversation(GroupConversationVM conversationVM) {
-        if (conversationVM != null) {
-            //validation
-            String name = conversationVM.getName();
-//            if (name == null ||
-//                    name.length() <= 1) {
-//                throw new RuntimeException("Invalid name");
-//            }
 
-            String invitorPhone = conversationVM.getInvitorPhone();
-//            validatePhone(invitorPhone);
-            Optional<Account> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
-            if (optionalInvitor.isEmpty()) {
-                throw new RuntimeException("Not found invitor");
-            }
+    public void addNewRoom(RoomDto roomDto) {
+        if (roomDto != null) {
+            //validate
+            Room newRoom = new Room();
+            newRoom.setName(roomDto.getName());
+            newRoom.setRoomType(roomDto.getRoomType());
 
-            Account invitor = optionalInvitor.get();
-
-            List<String> phones = conversationVM.getPhones();
-//            if (phones == null || phones.size() < 2) {
-//                throw new RuntimeException("Invalid list of phones");
-//            }
-
-            Conversation newConversation = new Conversation();
-            newConversation.setName(name);
-            newConversation.setConversationType(ConversationType.GROUP_CHAT);
-
-            //add invitor to the list
             Set<Account> users = new HashSet<>();
-            invitor.getConversations().add(newConversation);
-//            this.userRepository.save(invitor);
-            users.add(invitor);
+            List<Message> messages = new ArrayList<>();
 
             //add users to the list
-            for (String phone : phones
+            for (String phone : roomDto.getPhones()
             ) {
                 validatePhone(phone);
 
@@ -154,37 +125,38 @@ public class ConversationService {
                 if (optionalUser.isEmpty()) {
                     throw new RuntimeException("Not found account by phone");
                 }
-                Optional<Connection> optionalConnectionWithUser = this.connectionRepository.findByUsersAndStatus(
-                        conversationVM.getInvitorPhone(),
-                        phone,
-                        ConnectionStatus.CONNECTED);
-                Optional<Connection> optionalConnectionWithInvitor = this.connectionRepository.findByUsersAndStatus(
-                        phone,
-                        conversationVM.getInvitorPhone(),
-                        ConnectionStatus.CONNECTED);
-                if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithUser.isEmpty()) {
-                    throw new RuntimeException("Invalid connection between invitor and User");
-                }
 
                 Account currentUser = optionalUser.get();
-                currentUser.getConversations().add(newConversation);
-//                this.userRepository.save(currentUser);
+                //Save join messages for group
+                if (roomDto.getRoomType().equals(RoomType.GROUP_CHAT)){
+                    Message newMessage = new Message();
+                    newMessage.setMessageStatus(MessageStatus.ACTIVE);
+                    newMessage.setType(MessageType.JOIN);
+                    newMessage.setRoom(newRoom);
+                    newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
+                    messages.add(newMessage);
+                }
+
+                currentUser.getRooms().add(newRoom);
                 users.add(currentUser);
             }
+            newRoom.setAccounts(users);
+            newRoom.setRoomStatus(RoomStatus.ENABLE);
+            newRoom.getMessages().addAll(messages);
 
-            newConversation.setAccounts(users);
-            newConversation.setConversationStatus(ConversationStatus.ENABLE);
+            //Save to database
             this.userRepository.saveAll(users);
-            this.conversationRepository.save(newConversation);
+            this.roomRepository.save(newRoom);
+            this.messageRepository.saveAll(messages);
         }
     }
 
-    public List<Conversation> getAll() {
-        return conversationRepository.findAll();
+    public List<Room> getAll() {
+        return roomRepository.findAll();
     }
 
-    public void addMoreUser(InviteeVM inviteeVm, Long conversationId) {
-        String invitorPhone = inviteeVm.getInvitorPhone();
+    public void addMoreUser(InviteeDto inviteeDto, Long conversationId) {
+        String invitorPhone = inviteeDto.getInvitorPhone();
         validatePhone(invitorPhone);
 
         Optional<Account> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
@@ -193,19 +165,19 @@ public class ConversationService {
         }
         Account invitor = optionalInvitor.get();
 
-        var optConversation = conversationRepository.findById(conversationId);
+        var optConversation = roomRepository.findById(conversationId);
         if (optConversation.isEmpty()) {
             throw new RuntimeException("Not found conversation");
-        } else if (optConversation.get().getConversationType() == ConversationType.PRIVATE_CHAT) {
+        } else if (optConversation.get().getRoomType() == RoomType.PRIVATE_CHAT) {
             throw new RuntimeException("Invalid conversation Type: private chat can not add more users");
         }
-        Conversation currentConversation = optConversation.get();
-        Set<Account> users = currentConversation.getAccounts();
+        Room currentRoom = optConversation.get();
+        Set<Account> users = currentRoom.getAccounts();
         if (!users.contains(invitor)) {
             throw new RuntimeException("Invitor does not belong to conversation");
         }
 
-        List<String> inviteePhones = inviteeVm.getInviteePhones();
+        List<String> inviteePhones = inviteeDto.getInviteePhones();
         for (String phone : inviteePhones
         ) {
             validatePhone(phone);
@@ -228,26 +200,26 @@ public class ConversationService {
 
             Account currentUser = optionalUser.get();
 
-            currentUser.getConversations().add(currentConversation);
+            currentUser.getRooms().add(currentRoom);
             this.userRepository.save(currentUser);
             users.add(currentUser);
         }
-        currentConversation.setAccounts(users);
-        this.conversationRepository.save(currentConversation);
+        currentRoom.setAccounts(users);
+        this.roomRepository.save(currentRoom);
     }
 
-    public void changeConversationStatus(Long id, ConversationStatus conversationStatus) {
+    public void changeConversationStatus(Long id, RoomStatus roomStatus) {
         if (id == null || id <= 0) {
             throw new RuntimeException("Invalid Id");
         }
 
-        Optional<Conversation> optionalConversation = this.conversationRepository.findById(id);
+        Optional<Room> optionalConversation = this.roomRepository.findById(id);
         if (optionalConversation.isEmpty()) {
             throw new RuntimeException("Not found conversation");
         }
 
-        Conversation currentConversation = optionalConversation.get();
-        currentConversation.setConversationStatus(conversationStatus);
-        this.conversationRepository.save(currentConversation);
+        Room currentRoom = optionalConversation.get();
+        currentRoom.setRoomStatus(roomStatus);
+        this.roomRepository.save(currentRoom);
     }
 }

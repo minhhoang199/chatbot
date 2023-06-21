@@ -3,8 +3,8 @@ package com.example.chatwebproject.service;
 import com.example.chatwebproject.model.Connection;
 import com.example.chatwebproject.model.Account;
 import com.example.chatwebproject.model.enums.ConnectionStatus;
-import com.example.chatwebproject.model.vm.ConnectionStatusVM;
-import com.example.chatwebproject.model.vm.RequestConnectionVM;
+import com.example.chatwebproject.model.dto.ConnectionStatusDto;
+import com.example.chatwebproject.model.dto.RequestConnectionDto;
 import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class ConnectionService {
 //        }
 //    }
 
-    public void createConnection(RequestConnectionVM requestConnectionVM) {
+    public void createConnection(RequestConnectionDto requestConnectionVM) {
         String followingPhone = requestConnectionVM.getFollowingPhone();
 //        validatePhone(followingPhone);
 
@@ -62,10 +62,10 @@ public class ConnectionService {
     }
 
 
-    public void changeConnectionStatus(ConnectionStatusVM connectionStatusVm) {
-        String followingPhone = connectionStatusVm.getFollowingPhone();
-        String followedPhone = connectionStatusVm.getFollowedPhone();
-        ConnectionStatus connectionStatus = connectionStatusVm.getConnectionStatus();
+    public void changeConnectionStatus(ConnectionStatusDto connectionStatusDto) {
+        String followingPhone = connectionStatusDto.getFollowingPhone();
+        String followedPhone = connectionStatusDto.getFollowedPhone();
+        ConnectionStatus connectionStatus = connectionStatusDto.getConnectionStatus();
         if (connectionStatus == null) {
             throw new RuntimeException("Connection status is null");
         }

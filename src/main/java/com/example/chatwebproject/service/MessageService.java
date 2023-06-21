@@ -1,10 +1,12 @@
 package com.example.chatwebproject.service;
 
-import com.example.chatwebproject.model.Conversation;
+//22/06: Update add new message saveMessage() method
+import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.Message;
 import com.example.chatwebproject.model.Account;
+import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.enums.MessageStatus;
-import com.example.chatwebproject.repository.ConversationRepository;
+import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
@@ -15,15 +17,15 @@ import java.util.List;
 @Service
 public class MessageService {
     private MessageRepository messageRepository;
-    private AccountRepository userRepository;
-    private ConversationRepository conversationRepository;
+    private AccountRepository accountRepository;
+    private RoomRepository roomRepository;
 
     public MessageService(MessageRepository messageRepository,
                           AccountRepository userRepository,
-                          ConversationRepository conversationRepository) {
+                          RoomRepository roomRepository) {
         this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
-        this.conversationRepository = conversationRepository;
+        this.accountRepository = userRepository;
+        this.roomRepository = roomRepository;
     }
 
     public List<Message> getAllMessage(String content){
@@ -36,50 +38,41 @@ public class MessageService {
 
     //Add new message
     @Transactional
-    public void saveMessage(Message newMessage, Long senderId, Long conversationId) {
-        //validate new message
-//        if (newMessage != null){
-//            if (newMessage.getContent() == null ||
-//                    newMessage.getContent().length() == 0) {
-//                throw new RuntimeException("Invalid message content");
-//            }
-//        }
+    public void saveMessage(MessageDto messageDto, Long roomId) {
+        Message newMsg = new Message();
+        newMsg.setContent(messageDto.getContent());
+        newMsg.setType(messageDto.getMessageType());
+        newMsg.setMessageStatus(messageDto.getMessageStatus());
 
-        //validate sender id
-        if (senderId == null ||
-                senderId <= 0) {
-            throw new RuntimeException("Invalid sender Id");
-        }
-
-        var senderOtp = this.userRepository.findById(senderId);
+        //validate sender phone
+        String senderPhone = messageDto.getSenderPhone();
+        var senderOtp = this.accountRepository.findByPhone(senderPhone);
         if (senderOtp.isEmpty()){
             throw new RuntimeException("Not found sender");
         }
         Account sender = senderOtp.get();
 
-        //validate conversation id
-        if (conversationId == null ||
-                conversationId <= 0) {
-            throw new RuntimeException("Invalid conversation Id");
+        //validate room id
+        if (roomId == null ||
+                roomId <= 0) {
+            throw new RuntimeException("Invalid room Id");
         }
 
-        var conversationOtp = this.conversationRepository.findById(conversationId);
-        if (conversationOtp.isEmpty()){
-            throw new RuntimeException("Not found conversation");
+        var roomOtp = this.roomRepository.findById(roomId);
+        if (roomOtp.isEmpty()){
+            throw new RuntimeException("Not found room");
         }
-        Conversation conversation = conversationOtp.get();
+        Room room = roomOtp.get();
 
-        newMessage.setSender(sender);
-        newMessage.setConversation(conversation);
-//        newMessage.setType(MessageType.CHAT);
-//        newMessage.setMessageStatus(MessageStatus.ACTIVE);
+        newMsg.setSender(sender);
+        newMsg.setRoom(room);
 
-        conversation.getMessages().add(newMessage);
-        sender.getMessages().add(newMessage);
+        room.getMessages().add(newMsg);
+        sender.getMessages().add(newMsg);
 
-        this.messageRepository.save(newMessage);
-        this.userRepository.save(sender);
-        this.conversationRepository.save(conversation);
+        this.messageRepository.save(newMsg);
+        this.accountRepository.save(sender);
+        this.roomRepository.save(room);
     }
 
     //Edit message

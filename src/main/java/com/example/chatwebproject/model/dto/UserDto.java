@@ -1,15 +1,14 @@
-package com.example.chatwebproject.model.vm;
+package com.example.chatwebproject.model.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
-public class UserVM {
+public class UserDto {
     @NotBlank(message = "Name may not be blank")
     private String username;
 

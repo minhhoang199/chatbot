@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model.vm;
+package com.example.chatwebproject.model.dto;
 
 import com.example.chatwebproject.model.enums.MessageStatus;
 import com.example.chatwebproject.model.enums.MessageType;
@@ -7,14 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MessageVM {
-    private String sender;
+public class MessageDto {
+    private String senderPhone;
     private String content;
     private MessageType messageType;
     private MessageStatus messageStatus;

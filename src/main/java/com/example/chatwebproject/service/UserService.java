@@ -1,7 +1,7 @@
 package com.example.chatwebproject.service;
 
 import com.example.chatwebproject.model.Account;
-import com.example.chatwebproject.model.vm.UserVM;
+import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.repository.AccountRepository;
 import org.springframework.stereotype.Service;
 
@@ -49,7 +49,7 @@ public class UserService {
     }
 
 
-    public void updateUserInfo(Long userId, UserVM userVM) {
+    public void updateUserInfo(Long userId, UserDto userVM) {
         if (userId == null ||
                 userId <= 0) {
             throw new RuntimeException("Invalid user Id");

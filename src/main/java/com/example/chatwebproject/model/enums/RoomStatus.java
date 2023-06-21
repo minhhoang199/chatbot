@@ -1,6 +1,6 @@
 package com.example.chatwebproject.model.enums;
 
-public enum ConversationStatus {
+public enum RoomStatus {
     ENABLE,
     DISABLE
 }

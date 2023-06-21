@@ -37,7 +37,7 @@ public class Message extends BaseEntity implements Serializable {
     private MessageStatus messageStatus;
 
     @ManyToOne
-    @JoinColumn(name = "conversation_id")
+    @JoinColumn(name = "room_id")
     @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
-    private Conversation conversation;
+    private Room room;
 }

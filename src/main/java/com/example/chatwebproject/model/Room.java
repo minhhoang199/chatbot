@@ -1,7 +1,7 @@
 package com.example.chatwebproject.model;
 
-import com.example.chatwebproject.model.enums.ConversationStatus;
-import com.example.chatwebproject.model.enums.ConversationType;
+import com.example.chatwebproject.model.enums.RoomStatus;
+import com.example.chatwebproject.model.enums.RoomType;
 import com.sun.istack.NotNull;
 import lombok.*;
 
@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Conversation extends BaseEntity implements Serializable {
+public class Room extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,15 +25,15 @@ public class Conversation extends BaseEntity implements Serializable {
     private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "conversation_status", nullable = false)
-    private ConversationStatus conversationStatus;
+    @Column(name = "room_status", nullable = false)
+    private RoomStatus roomStatus;
 
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "conversation_type", nullable = false)
-    private ConversationType conversationType;
+    private RoomType roomType;
 
-    @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private Set<Message> messages = new HashSet<>();
 
     @ManyToMany

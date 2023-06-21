@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model.vm;
+package com.example.chatwebproject.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class InviteeVM {
+public class InviteeDto {
     @NotEmpty
     @Size(min = 1, message = "Number of phones must be higher than 0")
     private List<String> inviteePhones;

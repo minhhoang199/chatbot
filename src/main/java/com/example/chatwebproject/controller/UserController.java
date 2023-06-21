@@ -1,7 +1,7 @@
 package com.example.chatwebproject.controller;
 
 import com.example.chatwebproject.model.Account;
-import com.example.chatwebproject.model.vm.UserVM;
+import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +26,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     public ResponseEntity<String> editUserInfo(
             @PathVariable("userId") Long userId,
-            @RequestBody @Valid UserVM userVM
+            @RequestBody @Valid UserDto userVM
             ){
         this.userService.updateUserInfo(userId, userVM);
         return ResponseEntity.ok("Update succeed");

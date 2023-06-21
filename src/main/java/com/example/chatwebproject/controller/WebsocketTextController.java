@@ -1,7 +1,6 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.Message;
-import com.example.chatwebproject.model.vm.MessageVM;
+import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.service.MessageService;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -41,33 +40,23 @@ public class WebsocketTextController {
 //    }
 
     @MessageMapping("/sendMessage/{conversationId}/users/{senderId}")
-    public MessageVM sendMessage(@Payload MessageVM messageVm,
-                                 @DestinationVariable Long conversationId,
-                                 @DestinationVariable Long senderId,
-                                 SimpMessageHeaderAccessor headerAccessor){
-        messagingTemplate.convertAndSend("/topic/public/" + conversationId, messageVm);
-        Message newMsg = new Message();
-        newMsg.setContent(messageVm.getContent());
-        newMsg.setType(messageVm.getMessageType());
-        newMsg.setMessageStatus(messageVm.getMessageStatus());
-
-        this.messageService.saveMessage(newMsg, senderId, conversationId);
-        return messageVm;
+    public MessageDto sendMessage(@Payload MessageDto messageDto,
+                                  @DestinationVariable Long conversationId,
+                                  @DestinationVariable Long senderId,
+                                  SimpMessageHeaderAccessor headerAccessor){
+        messagingTemplate.convertAndSend("/topic/public/" + conversationId, messageDto);
+        this.messageService.saveMessage(messageDto, conversationId);
+        return messageDto;
     }
 
     @MessageMapping("/chat.register/{conversationId}/users/{senderId}")
-    public MessageVM register(@Payload MessageVM messageVm,
-                              @DestinationVariable Long conversationId,
-                              @DestinationVariable Long senderId,
-                              SimpMessageHeaderAccessor headerAccessor) {
-        messagingTemplate.convertAndSend("/topic/public/1", messageVm);
-        Message newMsg = new Message();
-        newMsg.setContent(messageVm.getContent());
-        newMsg.setType(messageVm.getMessageType());
-        newMsg.setMessageStatus(messageVm.getMessageStatus());
-
-        this.messageService.saveMessage(newMsg, senderId, conversationId);
-        headerAccessor.getSessionAttributes().put("username", messageVm.getSender());
-        return messageVm;
+    public MessageDto register(@Payload MessageDto messageDto,
+                               @DestinationVariable Long conversationId,
+                               @DestinationVariable Long senderId,
+                               SimpMessageHeaderAccessor headerAccessor) {
+        messagingTemplate.convertAndSend("/topic/public/1", messageDto);
+        this.messageService.saveMessage(messageDto, conversationId);
+        headerAccessor.getSessionAttributes().put("username", messageDto.getSenderPhone());
+        return messageDto;
     }
 }

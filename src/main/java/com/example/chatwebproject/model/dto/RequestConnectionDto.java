@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model.vm;
+package com.example.chatwebproject.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import javax.validation.constraints.Pattern;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestConnectionVM {
+public class RequestConnectionDto {
     @Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid following phone")
     private String followingPhone;
     @Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid followed phone")

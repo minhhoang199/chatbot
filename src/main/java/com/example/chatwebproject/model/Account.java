@@ -40,7 +40,7 @@ public class Account extends BaseEntity implements Serializable {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "accounts")
-    private Set<Conversation> conversations = new HashSet<>();
+    private Set<Room> rooms = new HashSet<>();
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "followingUser", "followedUser" }, allowSetters = true)
