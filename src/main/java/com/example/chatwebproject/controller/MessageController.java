@@ -6,15 +6,16 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestController
+@Controller
 @RequestMapping("/api/v1/messages")
 public class MessageController {
     private MessageService messageService;
     private SimpMessagingTemplate messagingTemplate;
 
-    @MessageMapping("/conversations/{roomId}")
+    @MessageMapping("/rooms/{roomId}")
     public void handleMessage(@Payload MessageDto messageDto,
                                  @DestinationVariable Long roomId){
         messageService.saveMessage(messageDto, roomId);

@@ -50,8 +50,12 @@ public class Account extends BaseEntity implements Serializable {
     @JsonIgnoreProperties(value = { "followingUser", "followedUser" }, allowSetters = true)
     private Set<Connection> followedConnections = new HashSet<>();
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private Set<Message> messages = new HashSet<>();
+//    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+//    private Set<Message> messages = new HashSet<>();
+
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @Override
     public boolean equals(Object o) {

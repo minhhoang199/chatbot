@@ -64,11 +64,11 @@ public class MessageService {
         }
         Room room = roomOtp.get();
 
-        newMsg.setSender(sender);
+//        newMsg.setSender(sender);
         newMsg.setRoom(room);
 
         room.getMessages().add(newMsg);
-        sender.getMessages().add(newMsg);
+//        sender.getMessages().add(newMsg);
 
         this.messageRepository.save(newMsg);
         this.accountRepository.save(sender);

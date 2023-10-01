@@ -21,10 +21,13 @@ public class Message extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_phone", referencedColumnName = "phone")
-    @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
-    private Account sender;
+//    @ManyToOne
+//    @JoinColumn(name = "sender_phone", referencedColumnName = "phone")
+//    @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
+//    private Account sender;
+
+    //test socket
+    private String sender;
 
     @Column(name = "content", nullable = false)
     private String content;
