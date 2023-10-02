@@ -4,13 +4,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <title>Spring Boot WebSocket Chat Application</title>
     <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 <body>
   <noscript>
     <h2>Sorry! Your browser doesn't support Javascript</h2>
   </noscript>
 
-  <div id="username-page">
+  <div id="login-page">
+      <h1>Login Form</h1>
+      <form id="login-form">
+          <label for="username">Username:</label>
+          <input type="text" id="username-login" name="username" required>
+          <label for="password">Password:</label>
+          <input type="password" id="password-login" name="password" required>
+          <button type="submit">Login</button>
+      </form>
+  </div>
+
+  <div id="signup-page"  class="hidden">
+      <h1>Signup Form</h1>
+      <form id="signup-form">
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required>
+          <label for="phone">Phone:</label>
+          <input type="text" id="phone" name="phone" required>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required>
+          <button type="submit">Signup</button>
+      </form>
+  </div>
+
+  <div id="username-page" class="hidden">
       <div class="username-page-container">
           <h1 class="title">Type your username</h1>
           <form id="usernameForm" name="usernameForm">

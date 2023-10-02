@@ -1,7 +1,7 @@
 package com.example.chatwebproject.security.service;
 
 
-import com.example.chatwebproject.model.Account;
+import com.example.chatwebproject.model.User;
 import com.example.chatwebproject.model.ERole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -28,12 +28,12 @@ public class UserDetailsImpl implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static UserDetailsImpl build(Account account) {
+    public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
-                account.getUsername(),
-                account.getPassword(),
-                account.getPhone(),
-                new SimpleGrantedAuthority(ERole.of(account.getRole().getRole().getId()).name())
+                user.getUsername(),
+                user.getPassword(),
+                user.getPhone(),
+                new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name())
         );
     }
 

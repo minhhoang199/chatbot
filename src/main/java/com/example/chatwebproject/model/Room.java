@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "conversation")
+@Table(name = "room")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -37,10 +37,10 @@ public class Room extends BaseEntity implements Serializable {
     private Set<Message> messages = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name = "conversation_account",
+    @JoinTable(name = "conversation_user",
             joinColumns = @JoinColumn(name = "conversation_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<Account> accounts = new HashSet<>();
+    private Set<User> users = new HashSet<>();
 
     @Column(name = "created_by", length = 200)
     private String createdBy;

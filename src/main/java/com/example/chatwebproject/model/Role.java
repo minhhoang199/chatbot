@@ -23,5 +23,5 @@ public class Role {
     private ERole role;
 
     @OneToMany(mappedBy = "role")
-    private List<Account> accounts = new ArrayList<>();
+    private List<User> users = new ArrayList<>();
 }

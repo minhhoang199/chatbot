@@ -1,6 +1,6 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.Account;
+import com.example.chatwebproject.model.User;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addNewUser(@RequestBody @Valid Account newUser){
+    public ResponseEntity<String> addNewUser(@RequestBody @Valid User newUser){
         this.userService.save(newUser);
         return ResponseEntity.ok("Add new user succeed");
     }

@@ -27,8 +27,23 @@ public class SecurityConfig {
     private final AuthenticationEntryPoint authenticationEntryPoint;
 
     @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthTokenFilter authenticationJwtTokenFilter() {
+        return new AuthTokenFilter();
     }
 
     @Bean
@@ -37,29 +52,21 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
-    }
-
-    @Bean
-    public AuthTokenFilter tokenFilter(){
-        return new AuthTokenFilter();
-    }
-
-
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(this.authenticationEntryPoint).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-//                .authorizeRequests()
-//                .antMatchers("/public/api/**").permitAll()
-//                .anyRequest().authenticated().and()
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class);
+                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+//                .and()
+//                .authorizeHttpRequests(auth ->
+//                        auth.antMatchers("/api/auth/**").permitAll()
+//                                .antMatchers("/api/test/**").permitAll()
+//                                .anyRequest().authenticated()
+//                );
+
+        http.authenticationProvider(authenticationProvider());
+
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 

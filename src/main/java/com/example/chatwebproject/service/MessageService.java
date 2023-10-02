@@ -3,12 +3,12 @@ package com.example.chatwebproject.service;
 //22/06: Update add new message saveMessage() method
 import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.Message;
-import com.example.chatwebproject.model.Account;
+import com.example.chatwebproject.model.User;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.enums.MessageStatus;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
-import com.example.chatwebproject.repository.AccountRepository;
+import com.example.chatwebproject.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,14 +17,14 @@ import java.util.List;
 @Service
 public class MessageService {
     private MessageRepository messageRepository;
-    private AccountRepository accountRepository;
+    private UserRepository userRepository;
     private RoomRepository roomRepository;
 
     public MessageService(MessageRepository messageRepository,
-                          AccountRepository userRepository,
+                          UserRepository userRepository,
                           RoomRepository roomRepository) {
         this.messageRepository = messageRepository;
-        this.accountRepository = userRepository;
+        this.userRepository = userRepository;
         this.roomRepository = roomRepository;
     }
 
@@ -46,11 +46,11 @@ public class MessageService {
 
         //validate sender phone
         String senderPhone = messageDto.getSenderPhone();
-        var senderOtp = this.accountRepository.findByPhone(senderPhone);
+        var senderOtp = this.userRepository.findByPhone(senderPhone);
         if (senderOtp.isEmpty()){
             throw new RuntimeException("Not found sender");
         }
-        Account sender = senderOtp.get();
+        User sender = senderOtp.get();
 
         //validate room id
         if (roomId == null ||
@@ -71,7 +71,7 @@ public class MessageService {
 //        sender.getMessages().add(newMsg);
 
         this.messageRepository.save(newMsg);
-        this.accountRepository.save(sender);
+        this.userRepository.save(sender);
         this.roomRepository.save(room);
     }
 

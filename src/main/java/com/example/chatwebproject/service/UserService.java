@@ -1,19 +1,19 @@
 package com.example.chatwebproject.service;
 
-import com.example.chatwebproject.model.Account;
+import com.example.chatwebproject.model.User;
 import com.example.chatwebproject.model.dto.UserDto;
-import com.example.chatwebproject.repository.AccountRepository;
+import com.example.chatwebproject.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    private AccountRepository userRepository;
+    private UserRepository userRepository;
 
-    public UserService(AccountRepository accountRepository) {
-        this.userRepository = accountRepository;
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public void save(Account newUser) {
+    public void save(User newUser) {
         if (newUser != null) {
 //            if (newUser.getUsername() == null ||
 //                    newUser.getUsername().length() == 0) {
@@ -36,7 +36,7 @@ public class UserService {
         }
     }
 
-    public Account getUserInfo(Long userId) {
+    public User getUserInfo(Long userId) {
         if (userId == null ||
                 userId <= 0) {
             throw new RuntimeException("Invalid user Id");
@@ -59,7 +59,7 @@ public class UserService {
             throw new RuntimeException("Not found user");
         }
 
-        Account currentUser = userOtp.get();
+        User currentUser = userOtp.get();
 
         String newUserName = userVM.getUsername();
         {
@@ -94,7 +94,7 @@ public class UserService {
             throw new RuntimeException("Not found user");
         }
 
-        Account currentUser = userOtp.get();
+        User currentUser = userOtp.get();
 
         if (newPassword != null) {
             if (newPassword.length() < 8) {

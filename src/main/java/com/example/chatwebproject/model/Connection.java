@@ -25,11 +25,11 @@ public class Connection {
     @ManyToOne
     @JoinColumn(name = "following_user",  referencedColumnName = "phone")
     @JsonIgnoreProperties(value = "messages", allowSetters = true)
-    private Account followingUser;
+    private User followingUser;
 
     @ManyToOne
     @JoinColumn(name = "followed_user", referencedColumnName = "phone")
     @JsonIgnoreProperties(value = "messages", allowSetters = true)
-    private Account followedUser;
+    private User followedUser;
 
 }

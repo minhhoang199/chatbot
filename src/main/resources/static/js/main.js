@@ -2,11 +2,15 @@
 
 var usernamePage = document.querySelector('#username-page');
 var chatPage = document.querySelector('#chat-page');
+var signupPage = document.querySelector('#signup-page');
+var loginPage = document.querySelector('#login-page');
 var usernameForm = document.querySelector('#usernameForm');
 var messageForm = document.querySelector('#messageForm');
 var messageInput = document.querySelector('#message');
 var messageArea = document.querySelector('#messageArea');
 var connectingElement = document.querySelector('.connecting');
+const formSignUp = document.getElementById('signup-form');
+const formLogin = document.getElementById('login-form');
 
 var stompClient = null;
 var username = null;
@@ -16,21 +20,88 @@ var colors = [
   '#ffc107', '#ff85af', '#FF9800', '#39bbb0'
 ];
 
-function connect(event) {
-  username = document.querySelector('#name').value.trim();
+formLogin.addEventListener('submit', async (event) => {
+    event.preventDefault();
 
-  if(username) {
-      usernamePage.classList.add('hidden');
-      chatPage.classList.remove('hidden');
+    username = formLogin.elements.username.value;
+    let password = formLogin.elements.password.value;
 
-      var socket = new SockJS('/ws');
-      stompClient = Stomp.over(socket);
+    try {
+        let response = await fetch('http://localhost:8020/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, password })
+        });
 
-      stompClient.connect({}, onConnected, onError);
-  }
-  event.preventDefault();
+        if (response.ok) {
+            // window.location.href = './js/index2.js';
+            openChatPage(username);
+        } else {
+            alert('Login failed');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Login failed');
+    }
+});
+
+formSignUp.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    username = formSignUp.elements.username.value;
+    let phone = formSignUp.elements.phone.value;
+    let password = formSignUp.elements.password.value;
+
+    try {
+        let response = await fetch('http://localhost:8020/api/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username, phone, password })
+        });
+
+        if (response.ok) {
+            // window.location.href = './js/index2.js';
+            openChatPage(username);
+        } else {
+            alert('Signup failed');
+        }
+    } catch (error) {
+        console.error(error);
+        alert('Signup failed');
+    }
+});
+
+// function connect(event) {
+//   username = document.querySelector('#name').value.trim();
+//
+//   if(username) {
+//       signupPage.classList.add('hidden');
+//       chatPage.classList.remove('hidden');
+//
+//       var socket = new SockJS('/ws');
+//       stompClient = Stomp.over(socket);
+//
+//       stompClient.connect({}, onConnected, onError);
+//   }
+//   event.preventDefault();
+// }
+
+function openChatPage(username) {
+    if (username) {
+        loginPage.classList.add('hidden');
+        signupPage.classList.add('hidden');
+        chatPage.classList.remove('hidden');
+
+        let socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+
+        stompClient.connect({}, onConnected, onError);
+    }
 }
-
 
 function onConnected() {
   // Subscribe to the Public Topic
@@ -114,5 +185,4 @@ function getAvatarColor(messageSender) {
   return colors[index];
 }
 
-usernameForm.addEventListener('submit', connect, true)
 messageForm.addEventListener('submit', sendMessage, true)

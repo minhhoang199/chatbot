@@ -15,12 +15,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account extends BaseEntity implements Serializable {
+public class User extends BaseEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,7 +29,7 @@ public class Account extends BaseEntity implements Serializable {
     @NotBlank(message = "Name may not be blank")
     private String username;
 
-    @Column(name = "password", length = 20, nullable = false)
+    @Column(name = "password", length = 100, nullable = false)
     @NotEmpty(message = "Password may not be empty")
     @Size(min = 8, message = "Password's length must be higher 8")
     private String password;
@@ -39,7 +39,7 @@ public class Account extends BaseEntity implements Serializable {
     private String phone;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "accounts")
+    @ManyToMany(mappedBy = "users")
     private Set<Room> rooms = new HashSet<>();
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
@@ -60,8 +60,8 @@ public class Account extends BaseEntity implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Account)) return false;
-        Account user = (Account) o;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
         return Objects.equals(getPhone(), user.getPhone());
     }
 }

@@ -1,6 +1,6 @@
 2022-09-18 23:58:01 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Constraint "PUBLIC.UK_DGDNJ692F2G5EBICY1XYC2L3W" is used by constraint "PUBLIC.FKLA0L2FND4S8024N6QGHQ4XSDY"; SQL statement:
-alter table account drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [90152-214]
+alter table user drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [90152-214]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
 	at org.h2.message.DbException.get(DbException.java:223)
@@ -49,7 +49,7 @@ alter table account drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [9015
 	at com.example.chatwebproject.ChatWebProjectApplication.main(ChatWebProjectApplication.java:10)
 2022-09-18 23:58:01 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Constraint "UK_DGDNJ692F2G5EBICY1XYC2L3W" already exists; SQL statement:
-alter table account add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [90045-214]
+alter table user add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [90045-214]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
 	at org.h2.message.DbException.get(DbException.java:223)
@@ -100,7 +100,7 @@ alter table account add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [
 	at com.example.chatwebproject.ChatWebProjectApplication.main(ChatWebProjectApplication.java:10)
 2023-06-06 22:13:52 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Constraint "PUBLIC.UK_DGDNJ692F2G5EBICY1XYC2L3W" is used by constraint "PUBLIC.FKLA0L2FND4S8024N6QGHQ4XSDY"; SQL statement:
-alter table account drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [90152-214]
+alter table user drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [90152-214]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
 	at org.h2.message.DbException.get(DbException.java:223)
@@ -149,7 +149,7 @@ alter table account drop constraint if exists UK_dgdnj692f2g5ebicy1xyc2l3w [9015
 	at com.example.chatwebproject.ChatWebProjectApplication.main(ChatWebProjectApplication.java:10)
 2023-06-06 22:13:52 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Constraint "UK_DGDNJ692F2G5EBICY1XYC2L3W" already exists; SQL statement:
-alter table account add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [90045-214]
+alter table user add constraint UK_dgdnj692f2g5ebicy1xyc2l3w unique (phone) [90045-214]
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:632)
 	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
 	at org.h2.message.DbException.get(DbException.java:223)
