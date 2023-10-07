@@ -11,4 +11,7 @@ import java.util.List;
 public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m WHERE m.content LIKE %?1%")
     List<Message> findByContentContaining(String content);
+
+    @Query("SELECT m FROM Message m WHERE m.room.id = ?1 ORDER BY m.createdAt")
+    List<Message> findAllByRoomId(Long roomId);
 }

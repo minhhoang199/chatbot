@@ -1,20 +1,27 @@
 package com.example.chatwebproject.service;
 
 //22/06: Update add new message saveMessage() method
-import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.Message;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.enums.MessageStatus;
+import com.example.chatwebproject.model.enums.MessageType;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.transformer.MessageTransformer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MessageService {
     private MessageRepository messageRepository;
     private UserRepository userRepository;
@@ -28,29 +35,41 @@ public class MessageService {
         this.roomRepository = roomRepository;
     }
 
-    public List<Message> getAllMessage(String content){
-//        if (content == null ||
-//                content.length() == 0) {
-//            throw new RuntimeException("Invalid message content");
-//        }
-        return messageRepository.findByContentContaining(content);
+    public List<MessageDto> getAllMessages(Long roomId){
+        List<Message> messages = this.messageRepository.findAllByRoomId(roomId);
+        List<MessageDto> messageDtos = new ArrayList<>();
+        for (Message message: messages
+             ) {
+            if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                messageDtos.add(MessageTransformer.toDto(message));
+            }
+        }
+
+        return messageDtos;
     }
 
     //Add new message
     @Transactional
     public void saveMessage(MessageDto messageDto, Long roomId) {
-        Message newMsg = new Message();
-        newMsg.setContent(messageDto.getContent());
-        newMsg.setType(messageDto.getMessageType());
-        newMsg.setMessageStatus(messageDto.getMessageStatus());
 
-        //validate sender phone
-        String senderPhone = messageDto.getSenderPhone();
-        var senderOtp = this.userRepository.findByPhone(senderPhone);
-        if (senderOtp.isEmpty()){
-            throw new RuntimeException("Not found sender");
-        }
-        User sender = senderOtp.get();
+        //validate sender
+        String username = messageDto.getSender();
+        var sender = this.userRepository.findByUsername(username).orElseThrow(() ->  new RuntimeException("Not found sender with username: " + username));
+
+        //Check user already in the room or not ?
+        Set<Room> setRoom = sender.getRooms().stream().filter(room -> room.getId() == roomId).collect(Collectors.toSet());
+        Message newMsg = new Message();
+        if (messageDto.getType().equals(MessageType.JOIN)){
+             if (!setRoom.isEmpty()) {
+                log.error("User " + sender.getUsername() + " already in the room");
+                return;
+            } else newMsg.setContent(messageDto.getSender() + " has joined");
+        } else if (messageDto.getType().equals(MessageType.LEAVE)){
+            if (setRoom.isEmpty()) {
+                log.error("User " + sender.getUsername() + " not in the room");
+                return;
+            } else newMsg.setContent(messageDto.getSender() + " has left");
+        } else newMsg.setContent(messageDto.getContent());
 
         //validate room id
         if (roomId == null ||
@@ -58,21 +77,15 @@ public class MessageService {
             throw new RuntimeException("Invalid room Id");
         }
 
-        var roomOtp = this.roomRepository.findById(roomId);
-        if (roomOtp.isEmpty()){
-            throw new RuntimeException("Not found room");
-        }
-        Room room = roomOtp.get();
+        var room = this.roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Not found room with Id: " + roomId));
 
-//        newMsg.setSender(sender);
+        newMsg.setType(messageDto.getType());
+        newMsg.setMessageStatus(MessageStatus.ACTIVE);
+
+        newMsg.setSender(sender);
         newMsg.setRoom(room);
 
-        room.getMessages().add(newMsg);
-//        sender.getMessages().add(newMsg);
-
         this.messageRepository.save(newMsg);
-        this.userRepository.save(sender);
-        this.roomRepository.save(room);
     }
 
     //Edit message

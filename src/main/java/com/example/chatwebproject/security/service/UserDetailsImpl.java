@@ -14,12 +14,11 @@ import java.util.Collections;
 
 @Data
 public class UserDetailsImpl implements UserDetails {
-    private String username;
-    private String phone;
-
+    private final String username;
+    private final String phone;
     @JsonIgnore
-    private String password;
-    private GrantedAuthority authorities;
+    private final String password;
+    private final GrantedAuthority authorities;
 
     public UserDetailsImpl(String username, String phone, String password, GrantedAuthority authorities) {
         this.username = username;
@@ -31,8 +30,8 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
                 user.getUsername(),
-                user.getPassword(),
                 user.getPhone(),
+                user.getPassword(),
                 new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name())
         );
     }

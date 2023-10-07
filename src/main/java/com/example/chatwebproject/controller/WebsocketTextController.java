@@ -56,7 +56,7 @@ public class WebsocketTextController {
                                SimpMessageHeaderAccessor headerAccessor) {
         messagingTemplate.convertAndSend("/topic/public/1", messageDto);
         this.messageService.saveMessage(messageDto, conversationId);
-        headerAccessor.getSessionAttributes().put("username", messageDto.getSenderPhone());
+        headerAccessor.getSessionAttributes().put("username", messageDto.getSender());
         return messageDto;
     }
 }

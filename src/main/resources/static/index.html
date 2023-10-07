@@ -22,7 +22,7 @@
       </form>
   </div>
 
-  <div id="signup-page"  class="hidden">
+  <div id="signup-page" class="hidden">
       <h1>Signup Form</h1>
       <form id="signup-form">
           <label for="username">Username:</label>
@@ -53,6 +53,7 @@
       <div class="chat-container">
           <div class="chat-header">
               <h2>Spring WebSocket Chat Demo</h2>
+              <button id="button-leave" class="primary">LEAVE</button>
           </div>
           <div class="connecting">
               Connecting...
@@ -74,5 +75,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
   <script src="./js/main.js"></script>
+  <script src="./js/messageService.js"></script>
 </body>
 </html>

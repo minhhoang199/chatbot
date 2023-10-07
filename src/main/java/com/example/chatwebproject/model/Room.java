@@ -37,8 +37,8 @@ public class Room extends BaseEntity implements Serializable {
     private Set<Message> messages = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name = "conversation_user",
-            joinColumns = @JoinColumn(name = "conversation_id"),
+    @JoinTable(name = "room_user",
+            joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users = new HashSet<>();
 

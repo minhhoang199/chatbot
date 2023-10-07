@@ -1,6 +1,6 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.Message;
+import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.enums.MessageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class WebSocketEventListener {
         if(username != null) {
             logger.info("User Disconnected : " + username);
 
-            Message chatMessage = new Message();
+            MessageDto chatMessage = new MessageDto();
             chatMessage.setType(MessageType.LEAVE);
             chatMessage.setSender(username);
 
