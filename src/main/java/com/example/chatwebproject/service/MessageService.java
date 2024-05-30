@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,7 +45,6 @@ public class MessageService {
                 messageDtos.add(MessageTransformer.toDto(message));
             }
         }
-
         return messageDtos;
     }
 
@@ -53,8 +53,7 @@ public class MessageService {
     public void saveMessage(MessageDto messageDto, Long roomId) {
 
         //validate sender
-        String username = messageDto.getSender();
-        var sender = this.userRepository.findByUsername(username).orElseThrow(() ->  new RuntimeException("Not found sender with username: " + username));
+        var sender = this.userRepository.findById(messageDto.getSenderId()).orElseThrow(() ->  new RuntimeException("Not found sender with id: " + messageDto.getSenderId()));
 
         //Check user already in the room or not ?
         Set<Room> setRoom = sender.getRooms().stream().filter(room -> room.getId() == roomId).collect(Collectors.toSet());
@@ -86,6 +85,8 @@ public class MessageService {
         newMsg.setRoom(room);
 
         this.messageRepository.save(newMsg);
+        messageDto.setCreatedAt(LocalDateTime.now());
+        messageDto.setUpdatedAt(LocalDateTime.now());
     }
 
     //Edit message

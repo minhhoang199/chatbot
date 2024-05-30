@@ -22,7 +22,7 @@ public class Message extends BaseEntity implements Serializable {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sender_username", referencedColumnName = "username")
+    @JoinColumn(name = "sender", referencedColumnName = "id")
     @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
     private User sender;
 

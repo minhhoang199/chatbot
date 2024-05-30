@@ -15,11 +15,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomDto {
+    private Long id;
     @NotBlank(message = "Name may not be blank")
     private String name;
     @NotEmpty(message = "Phones list may not be empty")
-    @Size(min = 2, message = "Number of phones must be higher than 1")
-    private List<String> phones;
+    @Size(min = 2, message = "Number of usernames must be higher than 1")
+    private List<String> usernames;
     //@Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid invitor phone")
     @NotBlank(message = "RoomType may not be blank")
     private RoomType roomType;

@@ -17,8 +17,11 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageDto extends BaseEntity {
-    @NotBlank
+    private Long id;
     private String sender; //Sender user name
+    @NotBlank
+    private Long senderId; //Sender user name
+    @NotBlank
     private String content;
     @NotBlank
     private MessageType type;

@@ -106,6 +106,7 @@ function openChatPage(username) {
     }
 }
 
+//Connect to message broker
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
@@ -126,7 +127,7 @@ function onError(error) {
     connectingElement.style.color = 'red';
 }
 
-
+//Send a new message
 function sendMessage(event) {
     var messageContent = messageInput.value.trim();
     if (messageContent && stompClient) {
@@ -157,7 +158,7 @@ function leaveRoom() {
     }
 }
 
-
+//Get new message from broker
 function onMessageReceived(payload) {
     let message = JSON.parse(payload.body);
 

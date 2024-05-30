@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 
 @RestController
-@RequestMapping("/api/v1/conversations")
+@RequestMapping("/api/v1/rooms")
 public class RoomController {
     private RoomService roomService;
 
@@ -20,34 +21,31 @@ public class RoomController {
         this.roomService = roomService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<Room>> getAll() {
-        return ResponseEntity.ok(roomService.getAll());
-    }
-
-    @PostMapping("/groupConversation")
+    @PostMapping
     public ResponseEntity<String> createRoom(
-            @RequestBody @Valid RoomDto groupConversationVM
+            @RequestBody @Valid RoomDto roomDto
     ) {
-        this.roomService.addNewRoom(groupConversationVM);
-        return ResponseEntity.ok("Create group conversation succeed");
+        this.roomService.addNewRoom(roomDto);
+        return ResponseEntity.ok("Create room succeed");
     }
 
-    @PostMapping("/{conversationId}")
+    @PostMapping("/{id}")
     public ResponseEntity<String> addAccounts(
-            @PathVariable("conversationId") Long conversationId,
+            @PathVariable("id") Long conversationId,
             @RequestBody @Valid InviteeDto inviteeDto
     ) {
         this.roomService.addMoreUser(inviteeDto, conversationId);
         return ResponseEntity.ok("Add more users succeed");
     }
 
-    @PatchMapping("/{conversationId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<String> changeStatus(
-            @PathVariable("conversationId") Long conversationId,
+            @PathVariable("id") Long id,
             @RequestBody RoomStatus roomStatus
     ){
-        this.roomService.changeConversationStatus(conversationId, roomStatus);
+        this.roomService.changeConversationStatus(id, roomStatus);
         return ResponseEntity.ok("Change conversation status succeed");
     }
+
+
 }

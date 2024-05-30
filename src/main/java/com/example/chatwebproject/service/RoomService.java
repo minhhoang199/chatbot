@@ -13,15 +13,20 @@ import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.transformer.RoomTransformer;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class RoomService {
     private RoomRepository roomRepository;
     private UserRepository userRepository;
@@ -117,7 +122,7 @@ public class RoomService {
             List<Message> messages = new ArrayList<>();
 
             //add users to the list
-            for (String phone : roomDto.getPhones()
+            for (String phone : roomDto.getUsernames()
             ) {
                 validatePhone(phone);
 
@@ -151,8 +156,16 @@ public class RoomService {
         }
     }
 
-    public List<Room> getAll() {
-        return roomRepository.findAll();
+    public Set<RoomDto> getAllByUserId(Long userId) {
+        List<Room> rooms = roomRepository.findByUserId(userId);
+        if (!CollectionUtils.isEmpty(rooms)){
+            return rooms.stream()
+                    .map(RoomTransformer::toDto)
+                    .collect(Collectors.toSet());
+        }
+
+        log.error("RoomService :: getAll : Not found any room with userId " + userId);
+        return null;
     }
 
     public void addMoreUser(InviteeDto inviteeDto, Long conversationId) {
