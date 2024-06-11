@@ -25,7 +25,9 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Query(value = sql, nativeQuery = true)
     List<RoomProjection> findByUserId2(Long userId);
-    public final String sql = "Select r.id, r.name, r.conversation_type AS conversationType from ROOM r " +
+    public final String sql = "Select r.id, r.name, r.conversation_type AS conversationType," +
+            " r.last_message_content AS lastMessageContent, r.last_message_time AS lastMessageTime" +
+            " from ROOM r " +
             " JOIN room_user ru on r.id = ru.room_id " +
             " JOIN user_info u on ru.user_id = u.id " +
             " WHERE u.id = :userId";

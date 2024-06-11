@@ -25,7 +25,7 @@ public class Message extends BaseEntity implements Serializable {
     @JoinColumn(name = "sender", referencedColumnName = "id")
     private User sender;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content", length = 2000, nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)

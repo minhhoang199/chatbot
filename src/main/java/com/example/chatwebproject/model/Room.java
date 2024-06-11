@@ -9,6 +9,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,6 +26,12 @@ public class Room extends BaseEntity implements Serializable {
 
     @Column(name = "name", length = 50, nullable = false)
     private String name;
+
+    @Column(name = "last_message_content", length = 2000)
+    private String lastMessageContent;
+
+    @Column(name = "last_message_time", length = 50)
+    private LocalDateTime lastMessageTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "room_status", nullable = false)

@@ -28,6 +28,8 @@ public class RoomTransformer {
         roomDto.setId(roomProjection.getId());
         roomDto.setRoomType(RoomType.fromString(roomProjection.getConversationType()));
         roomDto.setName(roomProjection.getName());
+        roomDto.setLastMessageContent(roomProjection.getLastMessageContent());
+        roomDto.setLastMessageTime(roomProjection.getLastMessageTime());
         return roomDto;
     }
 }

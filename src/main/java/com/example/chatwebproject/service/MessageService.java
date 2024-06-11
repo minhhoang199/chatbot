@@ -87,6 +87,9 @@ public class MessageService {
         this.messageRepository.save(newMsg);
         messageDto.setCreatedAt(LocalDateTime.now());
         messageDto.setUpdatedAt(LocalDateTime.now());
+
+        room.setLastMessageContent(newMsg.getContent());
+        room.setLastMessageTime(messageDto.getUpdatedAt());
     }
 
     //Edit message
