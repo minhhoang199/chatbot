@@ -21,9 +21,8 @@ public class Message extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender", referencedColumnName = "id")
-    @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
     private User sender;
 
     @Column(name = "content", nullable = false)
@@ -36,8 +35,7 @@ public class Message extends BaseEntity implements Serializable {
     @Column(name = "message_status", nullable = false)
     private MessageStatus messageStatus;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
-    @JsonIgnoreProperties(value = {"messages"}, allowSetters = true)
     private Room room;
 }

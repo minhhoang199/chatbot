@@ -1,6 +1,8 @@
 package com.example.chatwebproject.service;
 
 //22/06: Update create room chat addNewRoom() method
+import com.example.chatwebproject.dto.RoomProjection;
+import com.example.chatwebproject.dto.request.GetListRoomRequest;
 import com.example.chatwebproject.model.Connection;
 import com.example.chatwebproject.model.Message;
 import com.example.chatwebproject.model.Room;
@@ -156,15 +158,15 @@ public class RoomService {
         }
     }
 
-    public Set<RoomDto> getAllByUserId(Long userId) {
-        List<Room> rooms = roomRepository.findByUserId(userId);
+    public List<RoomDto> getAllByUserId(GetListRoomRequest request) {
+        List<RoomProjection> rooms = roomRepository.findByUserId2(request.getUserId());
         if (!CollectionUtils.isEmpty(rooms)){
             return rooms.stream()
-                    .map(RoomTransformer::toDto)
-                    .collect(Collectors.toSet());
+                    .map(RoomTransformer::toDtoFromProjection)
+                    .collect(Collectors.toList());
         }
 
-        log.error("RoomService :: getAll : Not found any room with userId " + userId);
+        log.error("RoomService :: getAll : Not found any room with userId " + request.getUserId());
         return null;
     }
 

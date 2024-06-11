@@ -4,6 +4,7 @@ import com.example.chatwebproject.model.BaseEntity;
 import com.example.chatwebproject.model.enums.MessageStatus;
 import com.example.chatwebproject.model.enums.MessageType;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import javax.validation.constraints.Size;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 public class MessageDto extends BaseEntity {
     private Long id;
     private String sender; //Sender user name

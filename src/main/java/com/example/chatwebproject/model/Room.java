@@ -2,6 +2,8 @@ package com.example.chatwebproject.model;
 
 import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.enums.RoomType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.sun.istack.NotNull;
 import lombok.*;
 
@@ -33,13 +35,15 @@ public class Room extends BaseEntity implements Serializable {
     @Column(name = "conversation_type", nullable = false)
     private RoomType roomType;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Message> messages = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "room_user",
             joinColumns = @JoinColumn(name = "room_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonIgnore
     private Set<User> users = new HashSet<>();
 
     @Column(name = "created_by", length = 200)

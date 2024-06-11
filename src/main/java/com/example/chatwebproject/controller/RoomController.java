@@ -1,5 +1,7 @@
 package com.example.chatwebproject.controller;
 
+import com.example.chatwebproject.dto.request.GetListRoomRequest;
+import com.example.chatwebproject.dto.response.ResponseObject;
 import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.dto.RoomDto;
@@ -47,5 +49,13 @@ public class RoomController {
         return ResponseEntity.ok("Change conversation status succeed");
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseObject> getAllRoomsByUserId(
+            @PathVariable("id") Long id
+    ){
+        GetListRoomRequest request = new GetListRoomRequest();
+        request.setUserId(id);
+        List<RoomDto> rooms = this.roomService.getAllByUserId(request);
+        return ResponseEntity.ok(new ResponseObject("201", "Success", rooms));
+    }
 }

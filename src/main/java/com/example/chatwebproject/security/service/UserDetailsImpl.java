@@ -16,15 +16,17 @@ import java.util.Collections;
 public class UserDetailsImpl implements UserDetails {
     private final String username;
     private final String phone;
+    private final Long id;
     @JsonIgnore
     private final String password;
     private final GrantedAuthority authorities;
 
-    public UserDetailsImpl(String username, String phone, String password, GrantedAuthority authorities) {
+    public UserDetailsImpl(String username, String phone, String password, GrantedAuthority authorities, Long id) {
         this.username = username;
         this.phone = phone;
         this.password = password;
         this.authorities = authorities;
+        this.id = id;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -32,7 +34,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getUsername(),
                 user.getPhone(),
                 user.getPassword(),
-                new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name())
+                new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name()),
+                user.getId()
         );
     }
 
@@ -70,4 +73,6 @@ public class UserDetailsImpl implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public Long getId(){return this.id;}
 }

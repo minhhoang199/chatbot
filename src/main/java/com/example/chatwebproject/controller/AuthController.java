@@ -39,7 +39,7 @@ public class AuthController {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String jwtToken = this.jwtProvider.generateJwtToken(authentication);
 
 
@@ -48,6 +48,7 @@ public class AuthController {
                         .token(jwtToken)
                         .username(userDetails.getUsername())
                         .role(userDetails.getAuthorities().toArray()[0].toString())
+                        .id(userDetails.getId())
                         .build());
     }
 

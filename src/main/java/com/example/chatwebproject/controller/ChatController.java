@@ -19,6 +19,7 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public MessageDto sendMessage(@Payload MessageDto chatMessage) {
+        System.out.println(chatMessage);
         this.messageService.saveMessage(chatMessage, 1L);
         return chatMessage;
     }

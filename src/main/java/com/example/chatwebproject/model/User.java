@@ -39,7 +39,7 @@ public class User extends BaseEntity implements Serializable {
     private String phone;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private Set<Room> rooms = new HashSet<>();
 
     @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
@@ -50,7 +50,7 @@ public class User extends BaseEntity implements Serializable {
     @JsonIgnoreProperties(value = { "followingUser", "followedUser" }, allowSetters = true)
     private Set<Connection> followedConnections = new HashSet<>();
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender", fetch = FetchType.LAZY)
     private Set<Message> messages = new HashSet<>();
 
     @ManyToOne
