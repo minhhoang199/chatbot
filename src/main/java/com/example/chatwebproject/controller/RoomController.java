@@ -27,7 +27,7 @@ public class RoomController {
     public AddRoomResponse createRoom(
             @RequestBody @Valid AddRoomRequest request
     ) {
-        return this.roomService.addNewRoom(request);
+        return this.roomService.addNewGroupRoom(request);
     }
 
     @PostMapping("/{id}")

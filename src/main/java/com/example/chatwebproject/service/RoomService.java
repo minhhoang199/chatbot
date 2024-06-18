@@ -114,14 +114,14 @@ public class RoomService {
     }
 
 
-    public AddRoomResponse addNewRoom(AddRoomRequest request) {
+    public AddRoomResponse addNewGroupRoom(AddRoomRequest request) {
         AddRoomResponse response = new AddRoomResponse();
         Result result;
         RoomDto roomDto = request.getRoomDto();
         //validate
         Room newRoom = new Room();
         newRoom.setName(roomDto.getName());
-        newRoom.setRoomType(roomDto.getRoomType());
+        newRoom.setRoomType(RoomType.GROUP_CHAT); //API này chỉ tạo Group_chat
 
         Set<User> users = new HashSet<>();
         List<Message> messages = new ArrayList<>();
