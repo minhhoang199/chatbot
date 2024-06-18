@@ -1,6 +1,6 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.dto.response.ResponseObject;
+import com.example.chatwebproject.dto.response.Result;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.service.MessageService;
 import lombok.AllArgsConstructor;
@@ -21,8 +21,8 @@ public class MessageController {
     private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/{roomId}")
-    public ResponseEntity<ResponseObject> getAllMessagesByRoomId(@PathVariable("roomId") Long roomId){
+    public ResponseEntity<Result> getAllMessagesByRoomId(@PathVariable("roomId") Long roomId){
         List<MessageDto> messageDtoList = this.messageService.getAllMessages(roomId);
-        return ResponseEntity.ok(new ResponseObject("201", "Success", messageDtoList));
+        return ResponseEntity.ok(new Result("201", "Success", messageDtoList));
     }
 }

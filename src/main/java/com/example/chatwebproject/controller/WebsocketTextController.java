@@ -38,25 +38,25 @@ public class WebsocketTextController {
 //        headerAccessor.getSessionAttributes().put("username", message.getSender().getUsername());
 //        return message;
 //    }
-
-    @MessageMapping("/sendMessage/{conversationId}/users/{senderId}")
-    public MessageDto sendMessage(@Payload MessageDto messageDto,
-                                  @DestinationVariable Long conversationId,
-                                  @DestinationVariable Long senderId,
-                                  SimpMessageHeaderAccessor headerAccessor){
-        messagingTemplate.convertAndSend("/topic/public/" + conversationId, messageDto);
-        this.messageService.saveMessage(messageDto, conversationId);
-        return messageDto;
-    }
-
-    @MessageMapping("/chat.register/{conversationId}/users/{senderId}")
-    public MessageDto register(@Payload MessageDto messageDto,
-                               @DestinationVariable Long conversationId,
-                               @DestinationVariable Long senderId,
-                               SimpMessageHeaderAccessor headerAccessor) {
-        messagingTemplate.convertAndSend("/topic/public/1", messageDto);
-        this.messageService.saveMessage(messageDto, conversationId);
-        headerAccessor.getSessionAttributes().put("username", messageDto.getSender());
-        return messageDto;
-    }
+//
+//    @MessageMapping("/sendMessage/{conversationId}/users/{senderId}")
+//    public MessageDto sendMessage(@Payload MessageDto messageDto,
+//                                  @DestinationVariable Long conversationId,
+//                                  @DestinationVariable Long senderId,
+//                                  SimpMessageHeaderAccessor headerAccessor){
+//        messagingTemplate.convertAndSend("/topic/public/" + conversationId, messageDto);
+//        this.messageService.saveMessage(messageDto, conversationId);
+//        return messageDto;
+//    }
+//
+//    @MessageMapping("/chat.register/{conversationId}/users/{senderId}")
+//    public MessageDto register(@Payload MessageDto messageDto,
+//                               @DestinationVariable Long conversationId,
+//                               @DestinationVariable Long senderId,
+//                               SimpMessageHeaderAccessor headerAccessor) {
+//        messagingTemplate.convertAndSend("/topic/public/1", messageDto);
+//        this.messageService.saveMessage(messageDto, conversationId);
+//        headerAccessor.getSessionAttributes().put("username", messageDto.getSender());
+//        return messageDto;
+//    }
 }

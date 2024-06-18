@@ -1,8 +1,9 @@
 package com.example.chatwebproject.controller;
 
+import com.example.chatwebproject.dto.request.AddRoomRequest;
 import com.example.chatwebproject.dto.request.GetListRoomRequest;
-import com.example.chatwebproject.dto.response.ResponseObject;
-import com.example.chatwebproject.model.Room;
+import com.example.chatwebproject.dto.response.AddRoomResponse;
+import com.example.chatwebproject.dto.response.Result;
 import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.dto.InviteeDto;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/rooms")
@@ -24,11 +24,10 @@ public class RoomController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createRoom(
-            @RequestBody @Valid RoomDto roomDto
+    public AddRoomResponse createRoom(
+            @RequestBody @Valid AddRoomRequest request
     ) {
-        this.roomService.addNewRoom(roomDto);
-        return ResponseEntity.ok("Create room succeed");
+        return this.roomService.addNewRoom(request);
     }
 
     @PostMapping("/{id}")
@@ -50,12 +49,12 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject> getAllRoomsByUserId(
+    public ResponseEntity<Result> getAllRoomsByUserId(
             @PathVariable("id") Long id
     ){
         GetListRoomRequest request = new GetListRoomRequest();
         request.setUserId(id);
         List<RoomDto> rooms = this.roomService.getAllByUserId(request);
-        return ResponseEntity.ok(new ResponseObject("201", "Success", rooms));
+        return ResponseEntity.ok(new Result("201", "Success", rooms));
     }
 }

@@ -19,7 +19,7 @@ public class RoomTransformer {
         List<String> usernames = room.getUsers().stream()
                 .map(User::getUsername)
                 .collect(Collectors.toList());
-        roomDto.setUsernames(usernames);
+        roomDto.setPhones(usernames);
         return roomDto;
     }
 

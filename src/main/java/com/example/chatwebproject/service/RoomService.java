@@ -1,8 +1,12 @@
 package com.example.chatwebproject.service;
 
 //22/06: Update create room chat addNewRoom() method
+
 import com.example.chatwebproject.dto.RoomProjection;
+import com.example.chatwebproject.dto.request.AddRoomRequest;
 import com.example.chatwebproject.dto.request.GetListRoomRequest;
+import com.example.chatwebproject.dto.response.AddRoomResponse;
+import com.example.chatwebproject.dto.response.Result;
 import com.example.chatwebproject.model.Connection;
 import com.example.chatwebproject.model.Message;
 import com.example.chatwebproject.model.Room;
@@ -35,12 +39,10 @@ public class RoomService {
     private ConnectionRepository connectionRepository;
     private MessageRepository messageRepository;
 
-    private void validatePhone(String phone) {
+    private boolean validatePhone(String phone) {
         Pattern pattern = Pattern.compile("^0\\d{9}$|^84\\d{9}$");
         Matcher matcher = pattern.matcher(phone);
-        if (!matcher.find()) {
-            throw new RuntimeException(phone + ": Invalid phone format");
-        }
+        return matcher.find();
     }
 
 
@@ -70,8 +72,8 @@ public class RoomService {
             User invitee = optionalInvitee.get();
 
             List<Room> roomList = this.roomRepository.findByPhoneAndType(invitorPhone, RoomType.PRIVATE_CHAT);
-            for (Room room : roomList){
-                if (room.getUsers().contains(invitee)){
+            for (Room room : roomList) {
+                if (room.getUsers().contains(invitee)) {
                     throw new RuntimeException("Private chat already existed");
                 }
             }
@@ -112,55 +114,66 @@ public class RoomService {
     }
 
 
+    public AddRoomResponse addNewRoom(AddRoomRequest request) {
+        AddRoomResponse response = new AddRoomResponse();
+        Result result;
+        RoomDto roomDto = request.getRoomDto();
+        //validate
+        Room newRoom = new Room();
+        newRoom.setName(roomDto.getName());
+        newRoom.setRoomType(roomDto.getRoomType());
 
-    public void addNewRoom(RoomDto roomDto) {
-        if (roomDto != null) {
-            //validate
-            Room newRoom = new Room();
-            newRoom.setName(roomDto.getName());
-            newRoom.setRoomType(roomDto.getRoomType());
-
-            Set<User> users = new HashSet<>();
-            List<Message> messages = new ArrayList<>();
-
-            //add users to the list
-            for (String phone : roomDto.getUsernames()
-            ) {
-                validatePhone(phone);
-
-                Optional<User> optionalUser = this.userRepository.findByPhone(phone);
-                if (optionalUser.isEmpty()) {
-                    throw new RuntimeException("Not found account by phone");
-                }
-
-                User currentUser = optionalUser.get();
-                //Save join messages for group
-                if (roomDto.getRoomType().equals(RoomType.GROUP_CHAT)){
-                    Message newMessage = new Message();
-                    newMessage.setMessageStatus(MessageStatus.ACTIVE);
-                    newMessage.setType(MessageType.JOIN);
-                    newMessage.setRoom(newRoom);
-                    newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
-                    messages.add(newMessage);
-                }
-
-                currentUser.getRooms().add(newRoom);
-                users.add(currentUser);
+        Set<User> users = new HashSet<>();
+        List<Message> messages = new ArrayList<>();
+        //add users to the list
+        for (String phone : roomDto.getPhones()
+        ) {
+            if (!validatePhone(phone)) {
+                result = new Result("400", "Invalid phone format: " + phone, null);
+                response.setResult(result);
+                return response;
             }
-            newRoom.setUsers(users);
-            newRoom.setRoomStatus(RoomStatus.ENABLE);
-            newRoom.getMessages().addAll(messages);
 
-            //Save to database
-            this.userRepository.saveAll(users);
-            this.roomRepository.save(newRoom);
-            this.messageRepository.saveAll(messages);
+            Optional<User> optionalUser = this.userRepository.findByPhone(phone);
+            if (optionalUser.isEmpty()) {
+                result = new Result("404", "Not found user by phone: " + phone, null);
+                response.setResult(result);
+                return response;
+            }
+
+            User currentUser = optionalUser.get();
+            //Save join messages for group
+            Message newMessage = new Message();
+            newMessage.setMessageStatus(MessageStatus.ACTIVE);
+            newMessage.setType(MessageType.JOIN);
+            newMessage.setRoom(newRoom);
+            newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
+            messages.add(newMessage);
+
+            currentUser.getRooms().add(newRoom);
+            users.add(currentUser);
         }
+        newRoom.setUsers(users);
+        newRoom.setRoomStatus(RoomStatus.ENABLE);
+        newRoom.getMessages().addAll(messages);
+
+        //Save to database
+        this.userRepository.saveAll(users);
+        this.roomRepository.save(newRoom);
+        this.messageRepository.saveAll(messages);
+
+        result = new Result("200", "Create room succeed", null);
+        response.setResult(result);
+        return response;
     }
+
+    //TODO: Khi kết bạn, tự động tạo 1 Private chat -> API addRoom chỉ để tạo Group_chat
+    //TODO: API tạo request kết bạn (connection)
+    //TODO: API Đồng ý/Từ chối kết bạn (changeStatus connection) -> Nếu đồng ý thì tạo thêm 1 private_chat
 
     public List<RoomDto> getAllByUserId(GetListRoomRequest request) {
         List<RoomProjection> rooms = roomRepository.findByUserId2(request.getUserId());
-        if (!CollectionUtils.isEmpty(rooms)){
+        if (!CollectionUtils.isEmpty(rooms)) {
             return rooms.stream()
                     .map(RoomTransformer::toDtoFromProjection)
                     .collect(Collectors.toList());

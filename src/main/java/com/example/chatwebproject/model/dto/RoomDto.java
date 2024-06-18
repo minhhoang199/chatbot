@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
@@ -17,13 +18,12 @@ import java.util.List;
 @AllArgsConstructor
 public class RoomDto {
     private Long id;
-    @NotBlank(message = "Name may not be blank")
+    @NotBlank(message = "Room name may not be blank")
     private String name;
-    @NotEmpty(message = "User list may not be empty")
-    @Size(min = 2, message = "Number of usernames must be higher than 1")
-    private List<String> usernames;
+    @NotEmpty(message = "Email list may not be empty")
+    @Size(min = 2, message = "Number of emails must be higher than 1")
+    private List<String> phones;
     //@Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid invitor phone")
-    @NotBlank(message = "RoomType may not be blank")
     private RoomType roomType;
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;

@@ -50,8 +50,8 @@ public class MessageService {
 
     //Add new message
     @Transactional
-    public void saveMessage(MessageDto messageDto, Long roomId) {
-
+    public void saveMessage(MessageDto messageDto) {
+        Long roomId = messageDto.getRoomId();
         //validate sender
         var sender = this.userRepository.findById(messageDto.getSenderId()).orElseThrow(() ->  new RuntimeException("Not found sender with id: " + messageDto.getSenderId()));
 
