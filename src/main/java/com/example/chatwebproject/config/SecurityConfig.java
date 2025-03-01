@@ -1,13 +1,14 @@
 package com.example.chatwebproject.config;
 
+import com.example.chatwebproject.model.ERole;
+import com.example.chatwebproject.security.jwt.AuthEntryPointJwt;
 import com.example.chatwebproject.security.jwt.AuthTokenFilter;
-import com.example.chatwebproject.security.service.UserDetailsServiceImpl;
+import com.example.chatwebproject.security.service.UserDetailServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -23,18 +23,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
-    private final UserDetailsServiceImpl userDetailsService;
-    private final AuthenticationEntryPoint authenticationEntryPoint;
-
-    @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(userDetailsService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
-    }
+    private final UserDetailServiceImpl userDetailService;
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,7 +32,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthTokenFilter authenticationJwtTokenFilter() {
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        authenticationProvider.setUserDetailsService(userDetailService);
+
+        return authenticationProvider;
+    }
+
+    @Bean
+    public AuthTokenFilter authTokenFilter(){
         return new AuthTokenFilter();
     }
 
@@ -52,21 +51,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(authenticationEntryPoint).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-//                .and()
-//                .authorizeHttpRequests(auth ->
-//                        auth.antMatchers("/api/auth/**").permitAll()
-//                                .antMatchers("/api/test/**").permitAll()
-//                                .anyRequest().authenticated()
-//                );
-
-        http.authenticationProvider(authenticationProvider());
-
-        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
+        http
+                .cors().and()
+                .csrf().disable()
+                .exceptionHandling().authenticationEntryPoint(this.unauthorizedHandler).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .authorizeRequests()
+                .antMatchers("/ws/**").permitAll()
+                .antMatchers("/api/auth/**").permitAll()
+//                .antMatchers("/api/test/**").hasAuthority(ERole.of(1).name())
+                .anyRequest().authenticated().and()
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

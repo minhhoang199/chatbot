@@ -42,11 +42,11 @@ public class User extends BaseEntity implements Serializable {
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private Set<Room> rooms = new HashSet<>();
 
-    @OneToMany(mappedBy = "followingUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "requestUser", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "followingUser", "followedUser" }, allowSetters = true)
     private Set<Connection> followingConnections = new HashSet<>();
 
-    @OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "acceptedUser", cascade = CascadeType.ALL)
     @JsonIgnoreProperties(value = { "followingUser", "followedUser" }, allowSetters = true)
     private Set<Connection> followedConnections = new HashSet<>();
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Data
 @AllArgsConstructor
 @Service
-public class UserDetailsServiceImpl implements UserDetailsService {
+public class UserDetailServiceImpl implements UserDetailsService {
     private UserRepository userRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

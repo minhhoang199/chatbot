@@ -1,6 +1,6 @@
 package com.example.chatwebproject.security.jwt;
 
-import com.example.chatwebproject.security.service.UserDetailsServiceImpl;
+import com.example.chatwebproject.security.service.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ import java.io.IOException;
 @Slf4j
 public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailServiceImpl userDetailsService;
     @Autowired
     private JwtProvider jwtProvider;
 

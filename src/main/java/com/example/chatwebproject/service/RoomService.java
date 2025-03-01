@@ -12,9 +12,8 @@ import com.example.chatwebproject.model.Message;
 import com.example.chatwebproject.model.Room;
 import com.example.chatwebproject.model.User;
 import com.example.chatwebproject.model.enums.*;
-import com.example.chatwebproject.model.dto.RoomDto;
+import com.example.chatwebproject.model.dto.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
-import com.example.chatwebproject.model.dto.PrivateConversationDto;
 import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.RoomRepository;
@@ -44,114 +43,56 @@ public class RoomService {
         Matcher matcher = pattern.matcher(phone);
         return matcher.find();
     }
+    //TODO: user thoát/join room
+    //TODO: user admin kick/add user khác
+    //TODO: user đổi tên nhóm
+    //TODO: user block/gỡ block private chat
 
-
-    public void addNewPrivateConversation(PrivateConversationDto privateConversationVM) {
-        if (privateConversationVM != null) {
-            //validation
-            String name = privateConversationVM.getName();
-//            if (name == null ||
-//                    name.length() <= 1) {
-//                throw new RuntimeException("Invalid name");
-//            }
-
-            String invitorPhone = privateConversationVM.getInvitorPhone();
-//            validatePhone(invitorPhone);
-            Optional<User> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
-            if (optionalInvitor.isEmpty()) {
-                throw new RuntimeException("Not found invitor");
-            }
-            User invitor = optionalInvitor.get();
-
-            String inviteePhone = privateConversationVM.getInviteePhone();
-//            validatePhone(inviteePhone);
-            Optional<User> optionalInvitee = this.userRepository.findByPhone(inviteePhone);
-            if (optionalInvitee.isEmpty()) {
-                throw new RuntimeException("Not found invitee");
-            }
-            User invitee = optionalInvitee.get();
-
-            List<Room> roomList = this.roomRepository.findByPhoneAndType(invitorPhone, RoomType.PRIVATE_CHAT);
-            for (Room room : roomList) {
-                if (room.getUsers().contains(invitee)) {
-                    throw new RuntimeException("Private chat already existed");
-                }
-            }
-
-            Room newRoom = new Room();
-            newRoom.setName(name);
-            newRoom.setRoomType(RoomType.PRIVATE_CHAT);
-
-            //add invitor to the list
-            Set<User> users = new HashSet<>();
-
-            //add users to the list
-            Optional<Connection> optionalConnectionWithInvitee = this.connectionRepository.findByUsersAndStatus(
-                    invitorPhone,
-                    inviteePhone,
-                    ConnectionStatus.CONNECTED);
-            Optional<Connection> optionalConnectionWithInvitor = this.connectionRepository.findByUsersAndStatus(
-                    inviteePhone,
-                    invitorPhone,
-                    ConnectionStatus.CONNECTED);
-            if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithInvitee.isEmpty()) {
-                throw new RuntimeException("Invalid connection between invitor and invitee");
-            }
-
-            invitor.getRooms().add(newRoom);
-            //this.userRepository.save(invitor);
-            users.add(invitor);
-
-            invitee.getRooms().add(newRoom);
-            //this.userRepository.save(invitee);
-            users.add(invitee);
-
-            newRoom.setUsers(users);
-            newRoom.setRoomStatus(RoomStatus.ENABLE);
-            this.userRepository.saveAll(users);
-            this.roomRepository.save(newRoom);
-        }
-    }
-
-
-    public AddRoomResponse addNewGroupRoom(AddRoomRequest request) {
+    //TODO: Khi tìm kiếm user khác và click vào user đó, tự động tạo 1 Private chat -> API addRoom chỉ để tạo Group_chat
+    public AddRoomResponse addNewRoom(AddRoomRequest request) {
         AddRoomResponse response = new AddRoomResponse();
         Result result;
-        RoomDto roomDto = request.getRoomDto();
+        SaveRoomRequest saveRoomRequest = request.getSaveRoomRequest();
         //validate
         Room newRoom = new Room();
-        newRoom.setName(roomDto.getName());
-        newRoom.setRoomType(RoomType.GROUP_CHAT); //API này chỉ tạo Group_chat
+        newRoom.setName(saveRoomRequest.getName());
+        newRoom.setRoomType(request.getIsPrivateChat() ? RoomType.PRIVATE_CHAT : RoomType.GROUP_CHAT);
 
         Set<User> users = new HashSet<>();
         List<Message> messages = new ArrayList<>();
         //add users to the list
-        for (String phone : roomDto.getPhones()
-        ) {
-            if (!validatePhone(phone)) {
-                result = new Result("400", "Invalid phone format: " + phone, null);
-                response.setResult(result);
-                return response;
+        //TODO: tạo 2 method riêng cho private và group
+        //TODO: private: check xem room chat giữa 2 người đã tồn tại chưa, số lượng user bắt buộc bằng 2
+        //TODO: group: số lượng user bắt buộc phải lớn hơn hoặc bằng 3, tên room + admin (là user tạo)
+        //TODO: nên đổi phone thành email
+        if (!request.getIsPrivateChat()) {
+            for (String phone : saveRoomRequest.getPhones()
+            ) {
+                if (!validatePhone(phone)) {
+                    result = new Result("400", "Invalid phone format: " + phone, null);
+                    response.setResult(result);
+                    return response;
+                }
+
+                Optional<User> optionalUser = this.userRepository.findByPhone(phone);
+                if (optionalUser.isEmpty()) {
+                    result = new Result("404", "Not found user by phone: " + phone, null);
+                    response.setResult(result);
+                    return response;
+                }
+
+                User currentUser = optionalUser.get();
+                //Save join messages for group
+                Message newMessage = new Message();
+                newMessage.setMessageStatus(MessageStatus.ACTIVE);
+                newMessage.setType(MessageType.JOIN);
+                newMessage.setRoom(newRoom);
+                newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
+                messages.add(newMessage);
+
+                currentUser.getRooms().add(newRoom);
+                users.add(currentUser);
             }
-
-            Optional<User> optionalUser = this.userRepository.findByPhone(phone);
-            if (optionalUser.isEmpty()) {
-                result = new Result("404", "Not found user by phone: " + phone, null);
-                response.setResult(result);
-                return response;
-            }
-
-            User currentUser = optionalUser.get();
-            //Save join messages for group
-            Message newMessage = new Message();
-            newMessage.setMessageStatus(MessageStatus.ACTIVE);
-            newMessage.setType(MessageType.JOIN);
-            newMessage.setRoom(newRoom);
-            newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
-            messages.add(newMessage);
-
-            currentUser.getRooms().add(newRoom);
-            users.add(currentUser);
         }
         newRoom.setUsers(users);
         newRoom.setRoomStatus(RoomStatus.ENABLE);
@@ -167,11 +108,7 @@ public class RoomService {
         return response;
     }
 
-    //TODO: Khi kết bạn, tự động tạo 1 Private chat -> API addRoom chỉ để tạo Group_chat
-    //TODO: API tạo request kết bạn (connection)
-    //TODO: API Đồng ý/Từ chối kết bạn (changeStatus connection) -> Nếu đồng ý thì tạo thêm 1 private_chat
-
-    public List<RoomDto> getAllByUserId(GetListRoomRequest request) {
+    public List<SaveRoomRequest> getAllByUserId(GetListRoomRequest request) {
         List<RoomProjection> rooms = roomRepository.findByUserId2(request.getUserId());
         if (!CollectionUtils.isEmpty(rooms)) {
             return rooms.stream()

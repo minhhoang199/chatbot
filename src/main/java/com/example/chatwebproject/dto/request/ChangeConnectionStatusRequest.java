@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model.dto;
+package com.example.chatwebproject.dto.request;
 
 import com.example.chatwebproject.model.enums.ConnectionStatus;
 
@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -14,11 +16,9 @@ import javax.validation.constraints.Pattern;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ConnectionStatusDto {
-    @Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid following phone")
-    private String followingPhone;
-    @Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid followed phone")
-    private String followedPhone;
+public class ChangeConnectionStatusRequest {
+    @Min(1)
+    private Long connectionId;
     @NotNull(message = "Connection status may not be null")
     private ConnectionStatus connectionStatus;
 }

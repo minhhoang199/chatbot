@@ -4,6 +4,7 @@ import com.example.chatwebproject.security.service.UserDetailsImpl;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.SneakyThrows;
@@ -53,8 +54,28 @@ public class JwtProvider {
 
     public String getUsernameFromToken(String token){
         return Jwts.parserBuilder().setSigningKey(key()).build()
-                .parseClaimsJwt(token)
+                .parseClaimsJws(token)
                 .getBody().get("USER_NAME").toString();
+    }
+
+    public Long getUserIdFromToken(String token){
+        try {
+            String userIdString = Jwts.parserBuilder().setSigningKey(key()).build()
+                    .parseClaimsJws(token)
+                    .getBody().get("USER_NAME").toString();
+            return Long.parseLong(userIdString);
+        } catch (ExpiredJwtException e) {
+            e.printStackTrace();
+        } catch (UnsupportedJwtException e) {
+            e.printStackTrace();
+        } catch (MalformedJwtException e) {
+            e.printStackTrace();
+        } catch (SignatureException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public boolean validateToken(String token){

@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RoomDto {
+public class SaveRoomRequest {
     private Long id;
     @NotBlank(message = "Room name may not be blank")
     private String name;
@@ -27,4 +27,5 @@ public class RoomDto {
     private RoomType roomType;
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;
+    private String admin;
 }

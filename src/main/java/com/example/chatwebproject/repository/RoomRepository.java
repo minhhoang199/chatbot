@@ -2,7 +2,6 @@ package com.example.chatwebproject.repository;
 
 import com.example.chatwebproject.dto.RoomProjection;
 import com.example.chatwebproject.model.Room;
-import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.enums.RoomType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

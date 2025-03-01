@@ -1,7 +1,8 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.dto.ConnectionStatusDto;
-import com.example.chatwebproject.model.dto.RequestConnectionDto;
+import com.example.chatwebproject.dto.request.CreateConnectionRequest;
+import com.example.chatwebproject.dto.response.CreateConnectionResponse;
+import com.example.chatwebproject.dto.request.ChangeConnectionStatusRequest;
 import com.example.chatwebproject.service.ConnectionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,15 +19,14 @@ public class ConnectionController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addNewConnection(@RequestBody @Valid RequestConnectionDto requestConnectionVM){
-        this.connectionService.createConnection(requestConnectionVM);
-        return ResponseEntity.ok("Create Connection success");
+    public CreateConnectionResponse addNewConnection(@RequestBody @Valid CreateConnectionRequest request){
+        return this.connectionService.createConnection(request);
     }
 
     @PatchMapping
     public ResponseEntity<String> changeStatus(
-            @RequestBody @Valid ConnectionStatusDto connectionStatusDto){
-        this.connectionService.changeConnectionStatus(connectionStatusDto);
+            @RequestBody @Valid ChangeConnectionStatusRequest changeConnectionStatusRequest){
+        this.connectionService.changeConnectionStatus(changeConnectionStatusRequest);
         return ResponseEntity.ok("Create Connection success");
     }
 }

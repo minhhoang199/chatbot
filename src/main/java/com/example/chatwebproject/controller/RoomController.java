@@ -5,7 +5,7 @@ import com.example.chatwebproject.dto.request.GetListRoomRequest;
 import com.example.chatwebproject.dto.response.AddRoomResponse;
 import com.example.chatwebproject.dto.response.Result;
 import com.example.chatwebproject.model.enums.RoomStatus;
-import com.example.chatwebproject.model.dto.RoomDto;
+import com.example.chatwebproject.model.dto.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
 import com.example.chatwebproject.service.RoomService;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class RoomController {
     public AddRoomResponse createRoom(
             @RequestBody @Valid AddRoomRequest request
     ) {
-        return this.roomService.addNewGroupRoom(request);
+        return this.roomService.addNewRoom(request);
     }
 
     @PostMapping("/{id}")
@@ -54,7 +54,7 @@ public class RoomController {
     ){
         GetListRoomRequest request = new GetListRoomRequest();
         request.setUserId(id);
-        List<RoomDto> rooms = this.roomService.getAllByUserId(request);
+        List<SaveRoomRequest> rooms = this.roomService.getAllByUserId(request);
         return ResponseEntity.ok(new Result("201", "Success", rooms));
     }
 }
