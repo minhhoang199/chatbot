@@ -1,8 +1,9 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.dto.request.CreateConnectionRequest;
-import com.example.chatwebproject.dto.response.CreateConnectionResponse;
-import com.example.chatwebproject.dto.request.ChangeConnectionStatusRequest;
+
+import com.example.chatwebproject.model.request.ChangeConnectionStatusRequest;
+import com.example.chatwebproject.model.request.CreateConnectionRequest;
+import com.example.chatwebproject.model.response.CreateConnectionResponse;
 import com.example.chatwebproject.service.ConnectionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

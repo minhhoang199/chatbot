@@ -1,13 +1,16 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.dto.request.AddRoomRequest;
-import com.example.chatwebproject.dto.request.GetListRoomRequest;
-import com.example.chatwebproject.dto.response.AddRoomResponse;
-import com.example.chatwebproject.dto.response.Result;
+import com.example.chatwebproject.aop.validation.ValidationRequest;
+import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.enums.RoomStatus;
-import com.example.chatwebproject.model.dto.SaveRoomRequest;
+import com.example.chatwebproject.model.request.GetListRoomRequest;
+import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
+import com.example.chatwebproject.model.response.RespBody;
+import com.example.chatwebproject.model.response.RespFactory;
+import com.example.chatwebproject.model.response.Result;
 import com.example.chatwebproject.service.RoomService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,19 +18,17 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/rooms")
 public class RoomController {
-    private RoomService roomService;
-
-    public RoomController(RoomService roomService) {
-        this.roomService = roomService;
-    }
+    private final RoomService roomService;
+    private final RespFactory respFactory;
 
     @PostMapping
-    public AddRoomResponse createRoom(
-            @RequestBody @Valid AddRoomRequest request
+    public ResponseEntity<RespBody> createRoom(
+            @RequestBody @Valid SaveRoomRequest request
     ) {
-        return this.roomService.addNewRoom(request);
+        return this.respFactory.success(this.roomService.addNewRoom(request));
     }
 
     @PostMapping("/{id}")
@@ -54,7 +55,7 @@ public class RoomController {
     ){
         GetListRoomRequest request = new GetListRoomRequest();
         request.setUserId(id);
-        List<SaveRoomRequest> rooms = this.roomService.getAllByUserId(request);
+        List<RoomDto> rooms = this.roomService.getAllByUserId(request);
         return ResponseEntity.ok(new Result("201", "Success", rooms));
     }
 }

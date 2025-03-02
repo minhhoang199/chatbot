@@ -15,15 +15,15 @@ import java.util.Collections;
 @Data
 public class UserDetailsImpl implements UserDetails {
     private final String username;
-    private final String phone;
+    private final String email;
     private final Long id;
     @JsonIgnore
     private final String password;
     private final GrantedAuthority authorities;
 
-    public UserDetailsImpl(String username, String phone, String password, GrantedAuthority authorities, Long id) {
+    public UserDetailsImpl(String username, String email, String password, GrantedAuthority authorities, Long id) {
         this.username = username;
-        this.phone = phone;
+        this.email = email;
         this.password = password;
         this.authorities = authorities;
         this.id = id;
@@ -32,7 +32,7 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user) {
         return new UserDetailsImpl(
                 user.getUsername(),
-                user.getPhone(),
+                user.getEmail(),
                 user.getPassword(),
                 new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name()),
                 user.getId()

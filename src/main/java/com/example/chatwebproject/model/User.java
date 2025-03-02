@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
@@ -34,9 +35,9 @@ public class User extends BaseEntity implements Serializable {
     @Size(min = 8, message = "Password's length must be higher 8")
     private String password;
 
-    @Column(name = "phone", length = 20, nullable = false)
-    @Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid phone")
-    private String phone;
+    @Column(name = "email", length = 20, nullable = false)
+    @Email(message = "invalid email")
+    private String email;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
@@ -62,6 +63,6 @@ public class User extends BaseEntity implements Serializable {
         if (this == o) return true;
         if (!(o instanceof User)) return false;
         User user = (User) o;
-        return Objects.equals(getPhone(), user.getPhone());
+        return Objects.equals(getEmail(), user.getEmail());
     }
 }

@@ -23,12 +23,12 @@ public class Connection {
     private ConnectionStatus connectionStatus;
 
     @ManyToOne
-    @JoinColumn(name = "following_user",  referencedColumnName = "phone")
+    @JoinColumn(name = "following_user",  referencedColumnName = "email")
     @JsonIgnoreProperties(value = "messages", allowSetters = true)
     private User requestUser;
 
     @ManyToOne
-    @JoinColumn(name = "followed_user", referencedColumnName = "phone")
+    @JoinColumn(name = "followed_user", referencedColumnName = "email")
     @JsonIgnoreProperties(value = "messages", allowSetters = true)
     private User acceptedUser;
 

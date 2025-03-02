@@ -1,4 +1,4 @@
-package com.example.chatwebproject.dto.request;
+package com.example.chatwebproject.model.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class SignupRequest {
     private String username;
     private String password;
-    private String phone;
+    private String email;
     private long roleId;
 }

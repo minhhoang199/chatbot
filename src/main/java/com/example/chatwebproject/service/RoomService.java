@@ -2,28 +2,33 @@ package com.example.chatwebproject.service;
 
 //22/06: Update create room chat addNewRoom() method
 
-import com.example.chatwebproject.dto.RoomProjection;
-import com.example.chatwebproject.dto.request.AddRoomRequest;
-import com.example.chatwebproject.dto.request.GetListRoomRequest;
-import com.example.chatwebproject.dto.response.AddRoomResponse;
-import com.example.chatwebproject.dto.response.Result;
+import com.example.chatwebproject.aop.validation.ValidationRequest;
+import com.example.chatwebproject.constant.Constants;
+import com.example.chatwebproject.constant.DomainCode;
+import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.model.Connection;
 import com.example.chatwebproject.model.Message;
 import com.example.chatwebproject.model.Room;
+import com.example.chatwebproject.model.RoomProjection;
 import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.enums.*;
-import com.example.chatwebproject.model.dto.SaveRoomRequest;
+import com.example.chatwebproject.model.request.GetListRoomRequest;
+import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
+import com.example.chatwebproject.model.response.AddRoomResponse;
 import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.transformer.RoomTransformer;
+import com.example.chatwebproject.utils.SecurityUtils;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.transaction.Transactional;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -49,66 +54,69 @@ public class RoomService {
     //TODO: user block/gỡ block private chat
 
     //TODO: Khi tìm kiếm user khác và click vào user đó, tự động tạo 1 Private chat -> API addRoom chỉ để tạo Group_chat
-    public AddRoomResponse addNewRoom(AddRoomRequest request) {
-        AddRoomResponse response = new AddRoomResponse();
-        Result result;
-        SaveRoomRequest saveRoomRequest = request.getSaveRoomRequest();
+    @Transactional
+    @ValidationRequest
+    public RoomDto addNewRoom(SaveRoomRequest request) {
         //validate
         Room newRoom = new Room();
-        newRoom.setName(saveRoomRequest.getName());
-        newRoom.setRoomType(request.getIsPrivateChat() ? RoomType.PRIVATE_CHAT : RoomType.GROUP_CHAT);
+        newRoom.setName(request.getName());
+        newRoom.setRoomType(request.getRoomType());
 
         Set<User> users = new HashSet<>();
         List<Message> messages = new ArrayList<>();
         //add users to the list
-        //TODO: tạo 2 method riêng cho private và group
-        //TODO: private: check xem room chat giữa 2 người đã tồn tại chưa, số lượng user bắt buộc bằng 2
-        //TODO: group: số lượng user bắt buộc phải lớn hơn hoặc bằng 3, tên room + admin (là user tạo)
-        //TODO: nên đổi phone thành email
-        if (!request.getIsPrivateChat()) {
-            for (String phone : saveRoomRequest.getPhones()
-            ) {
-                if (!validatePhone(phone)) {
-                    result = new Result("400", "Invalid phone format: " + phone, null);
-                    response.setResult(result);
-                    return response;
-                }
-
-                Optional<User> optionalUser = this.userRepository.findByPhone(phone);
-                if (optionalUser.isEmpty()) {
-                    result = new Result("404", "Not found user by phone: " + phone, null);
-                    response.setResult(result);
-                    return response;
-                }
-
-                User currentUser = optionalUser.get();
-                //Save join messages for group
-                Message newMessage = new Message();
-                newMessage.setMessageStatus(MessageStatus.ACTIVE);
-                newMessage.setType(MessageType.JOIN);
-                newMessage.setRoom(newRoom);
-                newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
-                messages.add(newMessage);
-
-                currentUser.getRooms().add(newRoom);
-                users.add(currentUser);
-            }
-        }
+        if (RoomType.GROUP_CHAT.equals(request.getRoomType())) {
+            this.createGroupRoom(request, newRoom, users, messages);
+        } else this.createPrivateRoom(request, newRoom, users);
         newRoom.setUsers(users);
         newRoom.setRoomStatus(RoomStatus.ENABLE);
         newRoom.getMessages().addAll(messages);
 
         //Save to database
         this.userRepository.saveAll(users);
-        this.roomRepository.save(newRoom);
+        Room roomEntity = this.roomRepository.save(newRoom);
         this.messageRepository.saveAll(messages);
-
-        result = new Result("200", "Create room succeed", null);
-        response.setResult(result);
-        return response;
+        return RoomTransformer.toDto(roomEntity);
     }
 
-    public List<SaveRoomRequest> getAllByUserId(GetListRoomRequest request) {
+    private void createPrivateRoom(SaveRoomRequest request, Room newRoom, Set<User> users){
+        StringBuilder sb = new StringBuilder(Constants.EMPTY_STRING);
+        for (String email : request.getEmails()) {
+            Optional<User> optionalUser = this.userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found user by email " + email});
+            }
+
+            User currentUser = optionalUser.get();
+            currentUser.getRooms().add(newRoom);
+            users.add(currentUser);
+        }
+        newRoom.setPrivateKey(String.join("-", request.getEmails()));
+    }
+
+    private void createGroupRoom(SaveRoomRequest request, Room newRoom, Set<User> users, List<Message> messages){
+        for (String email : request.getEmails()) {
+            Optional<User> optionalUser = this.userRepository.findByEmail(email);
+            if (optionalUser.isEmpty()) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found user by email " + email});
+            }
+
+            User currentUser = optionalUser.get();
+            //Save join messages for group
+            Message newMessage = new Message();
+            newMessage.setMessageStatus(MessageStatus.ACTIVE);
+            newMessage.setType(MessageType.JOIN);
+            newMessage.setRoom(newRoom);
+            newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
+            messages.add(newMessage);
+
+            currentUser.getRooms().add(newRoom);
+            users.add(currentUser);
+        }
+        newRoom.setAdmin(SecurityUtils.getCurrentEmailLogin());
+    }
+
+    public List<RoomDto> getAllByUserId(GetListRoomRequest request) {
         List<RoomProjection> rooms = roomRepository.findByUserId2(request.getUserId());
         if (!CollectionUtils.isEmpty(rooms)) {
             return rooms.stream()
@@ -121,10 +129,9 @@ public class RoomService {
     }
 
     public void addMoreUser(InviteeDto inviteeDto, Long conversationId) {
-        String invitorPhone = inviteeDto.getInvitorPhone();
-        validatePhone(invitorPhone);
+        String invitorEmail = inviteeDto.getInvitorEmail();
 
-        Optional<User> optionalInvitor = this.userRepository.findByPhone(invitorPhone);
+        Optional<User> optionalInvitor = this.userRepository.findByEmail(invitorEmail);
         if (optionalInvitor.isEmpty()) {
             throw new RuntimeException("Not found invitor");
         }
@@ -142,22 +149,18 @@ public class RoomService {
             throw new RuntimeException("Invitor does not belong to conversation");
         }
 
-        List<String> inviteePhones = inviteeDto.getInviteePhones();
-        for (String phone : inviteePhones
-        ) {
-            validatePhone(phone);
-
-            Optional<User> optionalUser = this.userRepository.findByPhone(phone);
+        for (String email : inviteeDto.getInviteeEmails()) {
+            Optional<User> optionalUser = this.userRepository.findByEmail(email);
             if (optionalUser.isEmpty()) {
-                throw new RuntimeException("Not found account by phone " + phone);
+                throw new RuntimeException("Not found account by email " + email);
             }
             Optional<Connection> optionalConnectionWithUser = this.connectionRepository.findByUsersAndStatus(
-                    invitorPhone,
-                    phone,
+                    invitorEmail,
+                    email,
                     ConnectionStatus.CONNECTED);
             Optional<Connection> optionalConnectionWithInvitor = this.connectionRepository.findByUsersAndStatus(
-                    phone,
-                    invitorPhone,
+                    email,
+                    invitorEmail,
                     ConnectionStatus.CONNECTED);
             if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithUser.isEmpty()) {
                 throw new RuntimeException("Invalid connection between invitor and User");

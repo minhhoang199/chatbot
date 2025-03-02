@@ -1,7 +1,7 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.dto.response.Result;
 import com.example.chatwebproject.model.dto.MessageDto;
+import com.example.chatwebproject.model.response.Result;
 import com.example.chatwebproject.service.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

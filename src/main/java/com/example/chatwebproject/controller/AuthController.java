@@ -1,11 +1,11 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.dto.request.LoginRequest;
-import com.example.chatwebproject.dto.request.SignupRequest;
-import com.example.chatwebproject.dto.response.LoginResponse;
 import com.example.chatwebproject.model.ERole;
 import com.example.chatwebproject.model.Role;
 import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.request.LoginRequest;
+import com.example.chatwebproject.model.request.SignupRequest;
+import com.example.chatwebproject.model.response.LoginResponse;
 import com.example.chatwebproject.repository.RoleRepository;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.security.jwt.JwtProvider;

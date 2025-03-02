@@ -1,6 +1,7 @@
 package com.example.chatwebproject.security.jwt;
 
 import com.example.chatwebproject.security.service.UserDetailServiceImpl;
+import com.example.chatwebproject.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -43,7 +44,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                userDetails.getUsername(),
+                userDetails,
                 null,
                 userDetails.getAuthorities()
         );

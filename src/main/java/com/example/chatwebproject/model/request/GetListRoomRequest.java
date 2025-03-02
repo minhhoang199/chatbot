@@ -1,4 +1,4 @@
-package com.example.chatwebproject.dto.request;
+package com.example.chatwebproject.model.request;
 
 import lombok.Data;
 

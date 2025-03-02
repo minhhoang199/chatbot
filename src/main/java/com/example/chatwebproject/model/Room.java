@@ -37,10 +37,12 @@ public class Room extends BaseEntity implements Serializable {
     @Column(name = "room_status", nullable = false)
     private RoomStatus roomStatus;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "conversation_type", nullable = false)
     private RoomType roomType;
+
+    @Column(name = "admin")
+    private String admin;
 
     @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
     @JsonIgnore
@@ -52,6 +54,9 @@ public class Room extends BaseEntity implements Serializable {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonIgnore
     private Set<User> users = new HashSet<>();
+
+    @Column(name = "private_key")
+    private String privateKey;
 
     @Column(name = "created_by", length = 200)
     private String createdBy;

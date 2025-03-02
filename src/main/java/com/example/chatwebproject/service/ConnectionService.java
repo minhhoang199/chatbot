@@ -1,15 +1,15 @@
 package com.example.chatwebproject.service;
 
-import com.example.chatwebproject.dto.request.AddRoomRequest;
-import com.example.chatwebproject.dto.request.CreateConnectionRequest;
-import com.example.chatwebproject.dto.response.ChangeConnectionStatusResponse;
-import com.example.chatwebproject.dto.response.CreateConnectionResponse;
-import com.example.chatwebproject.dto.response.Result;
+
 import com.example.chatwebproject.model.Connection;
 import com.example.chatwebproject.model.User;
-import com.example.chatwebproject.model.dto.SaveRoomRequest;
+import com.example.chatwebproject.model.request.ChangeConnectionStatusRequest;
+import com.example.chatwebproject.model.request.CreateConnectionRequest;
+import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.enums.ConnectionStatus;
-import com.example.chatwebproject.dto.request.ChangeConnectionStatusRequest;
+import com.example.chatwebproject.model.response.ChangeConnectionStatusResponse;
+import com.example.chatwebproject.model.response.CreateConnectionResponse;
+import com.example.chatwebproject.model.response.Result;
 import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.utils.Constant;
@@ -34,26 +34,18 @@ public class ConnectionService {
         this.userRepository = userRepository;
     }
 
-//    private void validatePhone(String phone) {
-//        Pattern pattern = Pattern.compile("^0\\d{9}$|^84\\d{9}$");
-//        Matcher matcher = pattern.matcher(phone);
-//        if (!matcher.find()) {
-//            throw new RuntimeException(phone + ": Invalid phone format");
-//        }
-//    }
-
     //TODO: API tạo request kết bạn (connection)
     //TODO: API Đồng ý/Từ chối kết bạn (changeStatus connection) -> Nếu đồng ý thì tạo thêm 1 private_chat
     @Transactional
     public CreateConnectionResponse createConnection(CreateConnectionRequest request) {
         CreateConnectionResponse response = new CreateConnectionResponse();
         Result result = new Result("200", "Succeed", null);
-        String requestPhone = request.getRequestPhone();
-        String acceptedPhone = request.getAcceptedPhone();
+        String requestEmail = request.getRequestEmail();
+        String acceptedEmail = request.getAcceptedEmail();
 
         try {
-            Optional<Connection> otpConnection = this.connectionRepository.findByUsersAndStatus(requestPhone,
-                    acceptedPhone,
+            Optional<Connection> otpConnection = this.connectionRepository.findByUsersAndStatus(requestEmail,
+                    acceptedEmail,
                     ConnectionStatus.DISCONNECTED);
             if (otpConnection.isPresent()) {
                 result = new Result("400", "Connection already existed", null);
@@ -61,16 +53,16 @@ public class ConnectionService {
                 return response;
             }
 
-            Optional<User> otpRequestUser = this.userRepository.findByPhone(requestPhone);
+            Optional<User> otpRequestUser = this.userRepository.findByEmail(requestEmail);
             if (otpRequestUser.isEmpty()) {
-                result = new Result("404", "Not found request user: " + requestPhone, null);
+                result = new Result("404", "Not found request user: " + requestEmail, null);
                 response.setResult(result);
                 return response;
             }
 
-            Optional<User> otpAcceptedUser = this.userRepository.findByPhone(acceptedPhone);
+            Optional<User> otpAcceptedUser = this.userRepository.findByEmail(acceptedEmail);
             if (otpAcceptedUser.isEmpty()) {
-                result = new Result("404", "Not found accept user: " + acceptedPhone, null);
+                result = new Result("404", "Not found accept user: " + acceptedEmail, null);
                 response.setResult(result);
                 return response;
             }
@@ -128,16 +120,13 @@ public class ConnectionService {
             if (Constant.NO.equals(connection.getAccepted()) && ConnectionStatus.CONNECTED.equals(request.getConnectionStatus())) {
                 User requestUser = connection.getRequestUser();
                 User acceptedUser = connection.getAcceptedUser();
-                AddRoomRequest addRoomRequest = new AddRoomRequest();
                 SaveRoomRequest saveRoomRequest = new SaveRoomRequest();
                 StringBuilder sbRoomName = new StringBuilder("");
                 sbRoomName.append(requestUser.getId()).append(":").append(requestUser.getUsername()).append("#")
                         .append(acceptedUser.getId()).append(":").append(acceptedUser.getUsername());
                 saveRoomRequest.setName(sbRoomName.toString());
-                saveRoomRequest.setPhones(List.of(requestUser.getPhone(), acceptedUser.getPhone()));
-                addRoomRequest.setSaveRoomRequest(saveRoomRequest);
-                addRoomRequest.setIsPrivateChat(true);
-                roomService.addNewRoom(addRoomRequest);
+                saveRoomRequest.setEmails(List.of(requestUser.getEmail(), acceptedUser.getEmail()));
+                roomService.addNewRoom(saveRoomRequest);
             }
         } catch (Exception e) {
             result = new Result("500", "Create connection occur error: " + e.getMessage(), null);

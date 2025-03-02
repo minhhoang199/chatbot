@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model.dto;
+package com.example.chatwebproject.model.request;
 
 import com.example.chatwebproject.model.enums.RoomType;
 import lombok.AllArgsConstructor;
@@ -17,13 +17,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SaveRoomRequest {
-    private Long id;
     @NotBlank(message = "Room name may not be blank")
     private String name;
     @NotEmpty(message = "Email list may not be empty")
     @Size(min = 2, message = "Number of emails must be higher than 1")
-    private List<String> phones;
-    //@Pattern(regexp = "^0\\d{9}$|^84\\d{9}$", message = "Invalid invitor phone")
+    private List<String> emails;
+    @NotNull
     private RoomType roomType;
     private String lastMessageContent;
     private LocalDateTime lastMessageTime;

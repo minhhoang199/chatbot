@@ -10,12 +10,12 @@ import java.util.Optional;
 
 @Repository
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
-    @Query("SELECT c FROM Connection c Where c.requestUser.phone = ?1 " +
-            "AND c.acceptedUser.phone = ?2 " +
+    @Query("SELECT c FROM Connection c Where c.requestUser.email = ?1 " +
+            "AND c.acceptedUser.email = ?2 " +
             "AND c.connectionStatus = ?3")
-    Optional<Connection> findByUsersAndStatus(String followingPhone, String followedPhone, ConnectionStatus connectionStatus);
+    Optional<Connection> findByUsersAndStatus(String followingEmail, String followedEmail, ConnectionStatus connectionStatus);
 
-    @Query("SELECT c FROM Connection c Where c.requestUser.phone = ?1 " +
-            "AND c.acceptedUser.phone = ?2")
-    Optional<Connection> findByUsers(String followingPhone, String followedPhone);
+    @Query("SELECT c FROM Connection c Where c.requestUser.email = ?1 " +
+            "AND c.acceptedUser.email = ?2")
+    Optional<Connection> findByUsers(String followingEmail, String followedEmail);
 }

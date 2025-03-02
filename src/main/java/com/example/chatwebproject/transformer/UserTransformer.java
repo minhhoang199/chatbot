@@ -1,16 +1,16 @@
 package com.example.chatwebproject.transformer;
 
 
-import com.example.chatwebproject.dto.request.SignupRequest;
 import com.example.chatwebproject.model.ERole;
 import com.example.chatwebproject.model.Role;
 import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.request.SignupRequest;
 
 public class UserTransformer {
     public static User transferToUser(SignupRequest signupRequest, String encodePassword){
         User user = new User();
         user.setUsername(signupRequest.getUsername());
-        user.setPhone(signupRequest.getPhone());
+        user.setEmail(signupRequest.getEmail());
         user.setPassword(encodePassword);
         return user;
     }

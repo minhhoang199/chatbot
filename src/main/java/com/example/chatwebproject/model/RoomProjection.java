@@ -1,4 +1,4 @@
-package com.example.chatwebproject.dto;
+package com.example.chatwebproject.model;
 
 import java.time.LocalDateTime;
 

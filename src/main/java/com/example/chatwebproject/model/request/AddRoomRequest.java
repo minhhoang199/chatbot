@@ -1,6 +1,5 @@
-package com.example.chatwebproject.dto.request;
+package com.example.chatwebproject.model.request;
 
-import com.example.chatwebproject.model.dto.SaveRoomRequest;
 import lombok.Data;
 
 import javax.validation.Valid;
@@ -11,6 +10,4 @@ public class AddRoomRequest {
     @NotNull
     @Valid
     private SaveRoomRequest saveRoomRequest;
-
-    private Boolean isPrivateChat;
 }

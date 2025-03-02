@@ -15,22 +15,9 @@ public class UserService {
 
     public void save(User newUser) {
         if (newUser != null) {
-//            if (newUser.getUsername() == null ||
-//                    newUser.getUsername().length() == 0) {
-//                throw new RuntimeException("Invalid username");
-//            }
-//            if (newUser.getPassword() == null ||
-//                    newUser.getPhone().length() < 8) {
-//                throw new RuntimeException("Invalid password");
-//            }
-//            if (newUser.getPhone() == null ||
-//                    newUser.getPhone().length() != 10 &&
-//                    newUser.getPhone().length() != 11) {
-//                throw new RuntimeException("Invalid phone");
-//            }
-            var userOtp = userRepository.findByPhone(newUser.getPhone());
+            var userOtp = userRepository.findByEmail(newUser.getEmail());
             if (userOtp.isPresent()) {
-                throw new RuntimeException("Phone already existed");
+                throw new RuntimeException("Email already existed");
             }
             this.userRepository.save(newUser);
         }
@@ -69,17 +56,13 @@ public class UserService {
             currentUser.setUsername(newUserName);
         }
 
-        String newUserPhone = userVM.getPhone();
+        String userVMEmail = userVM.getEmail();
 
-//            if (newUserPhone.length() != 10 || newUserPhone.length() != 11) {
-//                throw new RuntimeException("Invalid phone");
-//            }
-
-        var checkedUserOtp = userRepository.findByPhone(newUserPhone);
+        var checkedUserOtp = userRepository.findByEmail(userVMEmail);
         if (checkedUserOtp.isPresent()) {
-            throw new RuntimeException("Phone already existed");
+            throw new RuntimeException("Email already existed");
         }
-        currentUser.setPhone(newUserPhone);
+        currentUser.setEmail(userVMEmail);
         this.userRepository.save(currentUser);
     }
 
