@@ -1,8 +1,8 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.ERole;
-import com.example.chatwebproject.model.Role;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.entity.ERole;
+import com.example.chatwebproject.model.entity.Role;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.request.LoginRequest;
 import com.example.chatwebproject.model.request.SignupRequest;
 import com.example.chatwebproject.model.response.LoginResponse;
@@ -17,7 +17,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 

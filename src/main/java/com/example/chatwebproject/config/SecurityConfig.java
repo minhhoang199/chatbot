@@ -1,6 +1,5 @@
 package com.example.chatwebproject.config;
 
-import com.example.chatwebproject.model.ERole;
 import com.example.chatwebproject.security.jwt.AuthEntryPointJwt;
 import com.example.chatwebproject.security.jwt.AuthTokenFilter;
 import com.example.chatwebproject.security.service.UserDetailServiceImpl;

@@ -1,6 +1,6 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.service.UserService;
 import org.springframework.http.ResponseEntity;

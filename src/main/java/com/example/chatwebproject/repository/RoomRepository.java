@@ -1,7 +1,7 @@
 package com.example.chatwebproject.repository;
 
-import com.example.chatwebproject.model.Room;
-import com.example.chatwebproject.model.RoomProjection;
+import com.example.chatwebproject.model.entity.Room;
+import com.example.chatwebproject.model.entity.RoomProjection;
 import com.example.chatwebproject.model.enums.RoomType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
@@ -34,4 +35,9 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     @Query("SELECT DISTINCT  r FROM Room r WHERE r.privateKey IN :privateKeys AND r.roomType = 'PRIVATE_CHAT'")
     List<Room> findByPrivateKeyIn(@Param("privateKeys") List<String> privateKeys);
+
+    @Query("SELECT c FROM Room c " +
+            " where c.id = :roomId " +
+            " AND (c.delFlag IS NULL OR c.delFlag = false)")
+    Optional<Room> findByIdAndDelFlag(@Param("roomId") Long roomId);
 }

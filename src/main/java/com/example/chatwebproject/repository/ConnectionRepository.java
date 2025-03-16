@@ -1,6 +1,6 @@
 package com.example.chatwebproject.repository;
 
-import com.example.chatwebproject.model.Connection;
+import com.example.chatwebproject.model.entity.Connection;
 import com.example.chatwebproject.model.enums.ConnectionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

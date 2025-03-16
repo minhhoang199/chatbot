@@ -1,6 +1,6 @@
 package com.example.chatwebproject.transformer;
 
-import com.example.chatwebproject.model.Message;
+import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.dto.MessageDto;
 
 public class MessageTransformer {

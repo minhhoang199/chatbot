@@ -1,6 +1,6 @@
 package com.example.chatwebproject.security.service;
 
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;

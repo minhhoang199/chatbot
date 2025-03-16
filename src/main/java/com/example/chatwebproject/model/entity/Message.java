@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model;
+package com.example.chatwebproject.model.entity;
 
 
 import com.example.chatwebproject.model.enums.MessageStatus;
@@ -9,7 +9,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "message")
@@ -25,7 +28,7 @@ public class Message extends BaseEntity implements Serializable {
     @JoinColumn(name = "sender", referencedColumnName = "id")
     private User sender;
 
-    @Column(name = "content", length = 2000, nullable = false)
+    @Column(name = "content", columnDefinition ="TEXT", length = 2000, nullable = false)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -38,4 +41,7 @@ public class Message extends BaseEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
+    private Set<AttachedFile> attachedFiles = new HashSet<>();
 }

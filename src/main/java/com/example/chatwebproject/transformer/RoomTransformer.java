@@ -1,8 +1,8 @@
 package com.example.chatwebproject.transformer;
 
-import com.example.chatwebproject.model.Room;
-import com.example.chatwebproject.model.RoomProjection;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.entity.Room;
+import com.example.chatwebproject.model.entity.RoomProjection;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.enums.RoomType;
 

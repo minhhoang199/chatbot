@@ -1,8 +1,8 @@
 package com.example.chatwebproject.controller;
 
-import com.example.chatwebproject.aop.validation.ValidationRequest;
 import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.enums.RoomStatus;
+import com.example.chatwebproject.model.request.ChangeUserListRequest;
 import com.example.chatwebproject.model.request.GetListRoomRequest;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
@@ -50,12 +50,34 @@ public class RoomController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Result> getAllRoomsByUserId(
-            @PathVariable("id") Long id
-    ){
+    public ResponseEntity<Result> getAllRoomsByUserId(@PathVariable("id") Long id){
         GetListRoomRequest request = new GetListRoomRequest();
         request.setUserId(id);
         List<RoomDto> rooms = this.roomService.getAllByUserId(request);
         return ResponseEntity.ok(new Result("201", "Success", rooms));
+    }
+
+    @PutMapping("/outRoom/{roomId}")
+    public ResponseEntity<RespBody> outRoom(@PathVariable("roomId") Long roomId){
+        this.roomService.outRoom(roomId);
+        return this.respFactory.success("Success");
+    }
+
+    @PutMapping("/add-users")
+    public ResponseEntity<RespBody> addUserToRoom(@RequestBody @Valid ChangeUserListRequest request){
+        this.roomService.addUserToRoom(request.getEmails(), request.getRoomId());
+        return this.respFactory.success("Success");
+    }
+
+    @PutMapping("/remove-users")
+    public ResponseEntity<RespBody> removeUsersToRoom(@RequestBody @Valid ChangeUserListRequest request){
+        this.roomService.removeUsersToRoom(request.getEmails(), request.getRoomId());
+        return this.respFactory.success("Success");
+    }
+
+    @PutMapping("/change-name/{roomId}")
+    public ResponseEntity<RespBody> changeRoomName(@PathVariable("roomId") Long roomId, @RequestBody SaveRoomRequest request){
+        this.roomService.changeRoomName(roomId, request.getName());
+        return this.respFactory.success("Success");
     }
 }

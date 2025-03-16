@@ -1,8 +1,8 @@
 package com.example.chatwebproject.security.service;
 
 
-import com.example.chatwebproject.model.User;
-import com.example.chatwebproject.model.ERole;
+import com.example.chatwebproject.model.entity.User;
+import com.example.chatwebproject.model.entity.ERole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

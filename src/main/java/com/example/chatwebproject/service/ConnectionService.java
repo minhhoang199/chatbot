@@ -1,8 +1,8 @@
 package com.example.chatwebproject.service;
 
 
-import com.example.chatwebproject.model.Connection;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.entity.Connection;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.request.ChangeConnectionStatusRequest;
 import com.example.chatwebproject.model.request.CreateConnectionRequest;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
@@ -13,7 +13,7 @@ import com.example.chatwebproject.model.response.Result;
 import com.example.chatwebproject.repository.ConnectionRepository;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.utils.Constant;
-import com.example.chatwebproject.utils.SessionIDUtils;
+import com.example.chatwebproject.utils.SecurityUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -26,7 +26,6 @@ public class ConnectionService {
     private ConnectionRepository connectionRepository;
     private UserRepository userRepository;
     private RoomService roomService;
-    private SessionIDUtils sessionIDUtils;
 
 
     public ConnectionService(ConnectionRepository connectionRepository, UserRepository userRepository) {
@@ -53,14 +52,14 @@ public class ConnectionService {
                 return response;
             }
 
-            Optional<User> otpRequestUser = this.userRepository.findByEmail(requestEmail);
+            Optional<User> otpRequestUser = this.userRepository.findByEmailAndDelFlg(requestEmail);
             if (otpRequestUser.isEmpty()) {
                 result = new Result("404", "Not found request user: " + requestEmail, null);
                 response.setResult(result);
                 return response;
             }
 
-            Optional<User> otpAcceptedUser = this.userRepository.findByEmail(acceptedEmail);
+            Optional<User> otpAcceptedUser = this.userRepository.findByEmailAndDelFlg(acceptedEmail);
             if (otpAcceptedUser.isEmpty()) {
                 result = new Result("404", "Not found accept user: " + acceptedEmail, null);
                 response.setResult(result);
@@ -105,7 +104,7 @@ public class ConnectionService {
             }
 
             //TODO: use redis to store session data
-            Long userId = this.sessionIDUtils.getUserIdFromAccessToken();
+            Long userId = SecurityUtil.getCurrentUserIdLogin();
             if (!Objects.equals(userId, connection.getAcceptedUser().getId())) {
                 result = new Result("CB1002", "This user can not accept this request connection: " + request.getConnectionId(), null);
                 response.setResult(result);

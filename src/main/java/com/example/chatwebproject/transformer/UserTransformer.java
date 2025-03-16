@@ -1,9 +1,9 @@
 package com.example.chatwebproject.transformer;
 
 
-import com.example.chatwebproject.model.ERole;
-import com.example.chatwebproject.model.Role;
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.model.entity.ERole;
+import com.example.chatwebproject.model.entity.Role;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.request.SignupRequest;
 
 public class UserTransformer {

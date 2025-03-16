@@ -2,23 +2,16 @@ package com.example.chatwebproject.aop.validation;
 
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
-import com.example.chatwebproject.model.Room;
+import com.example.chatwebproject.model.entity.Room;
 import com.example.chatwebproject.model.enums.RoomType;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.repository.RoomRepository;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-        import org.aspectj.lang.annotation.Around;
-        import org.aspectj.lang.annotation.Aspect;
-        import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;

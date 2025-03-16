@@ -1,16 +1,15 @@
-package com.example.chatwebproject.model;
+package com.example.chatwebproject.model.entity;
 
 import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.enums.RoomType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -63,4 +62,12 @@ public class Room extends BaseEntity implements Serializable {
 
     @Column(name = "updated_by", length = 200)
     private String updatedBy;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Room)) return false;
+        Room room = (Room) o;
+        return Objects.equals(getId(), room.getId());
+    }
 }

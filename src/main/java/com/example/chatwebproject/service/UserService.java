@@ -1,6 +1,8 @@
 package com.example.chatwebproject.service;
 
-import com.example.chatwebproject.model.User;
+import com.example.chatwebproject.constant.DomainCode;
+import com.example.chatwebproject.exception.ChatApplicationException;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,7 @@ public class UserService {
 
     public void save(User newUser) {
         if (newUser != null) {
-            var userOtp = userRepository.findByEmail(newUser.getEmail());
+            var userOtp = userRepository.findByEmailAndDelFlg(newUser.getEmail());
             if (userOtp.isPresent()) {
                 throw new RuntimeException("Email already existed");
             }
@@ -23,16 +25,10 @@ public class UserService {
         }
     }
 
-    public User getUserInfo(Long userId) {
-        if (userId == null ||
-                userId <= 0) {
-            throw new RuntimeException("Invalid user Id");
-        }
-        var userOtp = this.userRepository.findById(userId);
-        if (userOtp.isEmpty()) {
-            throw new RuntimeException("Not found user");
-        }
-        return userOtp.get();
+    public User getUserInfo(String email) {
+        return this.userRepository.findByEmailAndDelFlg(email).orElseThrow(
+                () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found user by email: " + email})
+        );
     }
 
 
@@ -58,7 +54,7 @@ public class UserService {
 
         String userVMEmail = userVM.getEmail();
 
-        var checkedUserOtp = userRepository.findByEmail(userVMEmail);
+        var checkedUserOtp = userRepository.findByEmailAndDelFlg(userVMEmail);
         if (checkedUserOtp.isPresent()) {
             throw new RuntimeException("Email already existed");
         }

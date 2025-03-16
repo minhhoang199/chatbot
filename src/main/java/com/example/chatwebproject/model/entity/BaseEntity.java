@@ -1,4 +1,4 @@
-package com.example.chatwebproject.model;
+package com.example.chatwebproject.model.entity;
 
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -17,4 +17,6 @@ public abstract class BaseEntity {
     private LocalDateTime createdAt;
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    private Boolean delFlag = false;
 }
