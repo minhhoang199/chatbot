@@ -14,7 +14,6 @@ import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.UserRepository;
-import com.example.chatwebproject.service.minio.MinIOService;
 import com.example.chatwebproject.transformer.MessageTransformer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +85,7 @@ public class MessageService {
         newMsg.setSender(sender);
         newMsg.setRoom(room);
 
-        if (CollectionUtils.isEmpty(messageDto.getAttachedFiles())) {
+        if (!CollectionUtils.isEmpty(messageDto.getAttachedFiles())) {
             Set<AttachedFile> files = this.attachedFileRepository.findAllByIdAndDelFlag(messageDto.getAttachedFiles().stream().map(AttachedFileDto::getId).collect(Collectors.toList()));
             if (CollectionUtils.isEmpty(files)) {
                 throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found any file"});
@@ -136,7 +135,7 @@ public class MessageService {
             throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message"});
         }
         Message currentMessage = messageOtp.get();
-        currentMessage.setMessageStatus(MessageStatus.DEACTIVE);
+        currentMessage.setMessageStatus(MessageStatus.INACTIVE);
 
         this.messageRepository.save(currentMessage);
     }

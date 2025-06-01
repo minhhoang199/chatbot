@@ -16,7 +16,7 @@ import lombok.Setter;
 public class AttachedFileDto {
     private Long id;
 
-    private Long message_id;
+    private Long messageId;
 
     private String linkFile;
 
