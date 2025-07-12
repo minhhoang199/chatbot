@@ -1,7 +1,7 @@
 package com.example.chatwebproject.utils;
 
 import com.example.chatwebproject.constant.Constants;
-import com.example.chatwebproject.security.service.UserDetailsImpl;
+import com.example.chatwebproject.security.service.UserDetailImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -56,8 +56,8 @@ public final class SecurityUtil {
     private static String extractPrincipalForEmail(Authentication authentication) {
         if (authentication == null) {
             return null;
-        } else if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            UserDetailsImpl springSecurityUser = (UserDetailsImpl) authentication.getPrincipal();
+        } else if (authentication.getPrincipal() instanceof UserDetailImpl) {
+            UserDetailImpl springSecurityUser = (UserDetailImpl) authentication.getPrincipal();
             return springSecurityUser.getEmail();
         }
         return Constants.EMPTY_STRING;
@@ -72,8 +72,8 @@ public final class SecurityUtil {
     private static Long extractPrincipalForUserId(Authentication authentication) {
         if (authentication == null) {
             return null;
-        } else if (authentication.getPrincipal() instanceof UserDetailsImpl) {
-            UserDetailsImpl springSecurityUser = (UserDetailsImpl) authentication.getPrincipal();
+        } else if (authentication.getPrincipal() instanceof UserDetailImpl) {
+            UserDetailImpl springSecurityUser = (UserDetailImpl) authentication.getPrincipal();
             return springSecurityUser.getId();
         }
         return null;

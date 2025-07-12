@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,6 +19,11 @@ import javax.validation.ConstraintViolationException;
 @RequiredArgsConstructor
 public class GlobalExceptionHandler {
     private final RespFactory responseFactory;
+
+    @ExceptionHandler(AuthenticationException.class)
+    public final ResponseEntity<RespBody> handleIllegalArgumentException(AuthenticationException ex) {
+        return responseFactory.failWithAuthenticationException(ex);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<RespBody> handleMethodArgumentNotValid(MethodArgumentNotValidException ex) {

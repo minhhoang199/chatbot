@@ -6,6 +6,7 @@ package com.example.chatwebproject.constant;
 public final class Constants {
 
     public static final String SYSTEM = "system";
+    public static final String AUTHORIZATION_HEADER = "Authorization";;
 
     private Constants() {
     }

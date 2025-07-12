@@ -13,11 +13,13 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
@@ -85,6 +87,12 @@ public class RespFactory {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RespBody().withCode(DomainCode.INVALID_PARAMETER.getCode()).withMessage(messageSource.getMessage(DomainCode.INVALID_PARAMETER.getCode(), null, this.locale())).withFieldErrors(fieldErrors));
     }
 
+    public ResponseEntity<RespBody> failNotFoundData(Exception e) {
+        Set<FieldErrorDto> fieldErrors = parseErrorData(e);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RespBody().withCode(DomainCode.NOT_FOUND_DATA.getCode()).withMessage(messageSource.getMessage(DomainCode.NOT_FOUND_DATA.getCode(), null, this.locale())).withFieldErrors(fieldErrors));
+    }
+
     public ResponseEntity<RespBody> failWithMethodNotAllowInputParameter(HttpRequestMethodNotSupportedException e) {
         Set<FieldErrorDto> fieldErrors = parseErrorData(e);
 
@@ -134,6 +142,10 @@ public class RespFactory {
             });
         }
         return errorSet;
+    }
+
+    public ResponseEntity<RespBody> failWithAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RespBody.builder().code(String.valueOf(HttpServletResponse.SC_UNAUTHORIZED)).message(e.getMessage()).build());
     }
 }
 

@@ -35,7 +35,7 @@ public class User extends BaseEntity implements Serializable {
     @Size(min = 8, message = "Password's length must be higher 8")
     private String password;
 
-    @Column(name = "email", length = 20, nullable = false)
+    @Column(name = "email", length = 20, nullable = false, unique = true)
     @Email(message = "invalid email")
     private String email;
 

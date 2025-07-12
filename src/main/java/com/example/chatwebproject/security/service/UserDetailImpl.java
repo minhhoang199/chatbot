@@ -1,10 +1,9 @@
 package com.example.chatwebproject.security.service;
 
 
-import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.entity.ERole;
+import com.example.chatwebproject.model.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,31 +11,29 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-@Data
-public class UserDetailsImpl implements UserDetails {
+public class UserDetailImpl implements UserDetails {
     private final String username;
-    private final String email;
     private final Long id;
     @JsonIgnore
     private final String password;
+    private final String email;
     private final GrantedAuthority authorities;
 
-    public UserDetailsImpl(String username, String email, String password, GrantedAuthority authorities, Long id) {
+    public UserDetailImpl(String username, String password, String email, GrantedAuthority authorities, Long id) {
         this.username = username;
-        this.email = email;
         this.password = password;
+        this.email = email;
         this.authorities = authorities;
         this.id = id;
     }
 
-    public static UserDetailsImpl build(User user) {
-        return new UserDetailsImpl(
+    public static UserDetails build(User user) {
+        return new UserDetailImpl(
                 user.getUsername(),
-                user.getEmail(),
                 user.getPassword(),
+                user.getEmail(),
                 new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name()),
-                user.getId()
-        );
+                user.getId()); // new SimpleGrantedAuthority(String)
     }
 
     @Override
@@ -52,6 +49,10 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String getUsername() {
         return this.username;
+    }
+
+    public String getEmail() {
+        return this.email;
     }
 
     @Override
