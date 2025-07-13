@@ -50,12 +50,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     private void handleUserToken(String jwt, HttpServletRequest request) {
-        String username = this.jwtProvider.getUserNameFromToken(jwt);
-        UserDetailImpl userDetails = (UserDetailImpl)this.userDetailsService.loadUserByUsername(username);
+        String email = this.jwtProvider.getEmailFromToken(jwt);
+        UserDetailImpl userDetails = (UserDetailImpl)this.userDetailsService.loadUserByUsername(email);
 
         //check sessionId trong redis
-        String sessionIdJwt = this.jwtProvider.getSessionIdFromToken(jwt);
-        String key = "userId:" + userDetails.getId();
+//        String sessionIdJwt = this.jwtProvider.getSessionIdFromToken(jwt);
+//        String key = "userId:" + userDetails.getId();
 //        String sessionIdRedis = this.redisUtil.getValue(key);
 //        if (!org.apache.commons.lang.StringUtils.equals(sessionIdJwt, sessionIdRedis)) {
 //            log.error("sessionId is invalid");

@@ -33,70 +33,70 @@ public class RespFactory {
 
     private final MessageSource messageSource;
 
-    public ResponseEntity<RespBody> failWithDomainException(ChatApplicationException e) {
-        RespBody responseBody = new RespBody();
+    public ResponseEntity<BaseResponse> failWithDomainException(ChatApplicationException e) {
+        BaseResponse responseBody = new BaseResponse();
         responseBody.setCode(e.getDomainCode().getCode());
         responseBody.setMessage(this.messageSource.getMessage(e.getDomainCode().getCode(), e.getArgs(), this.locale()));
         return ResponseEntity.status(e.getDomainCode().getStatus()).body(responseBody);
     }
 
-    public ResponseEntity<RespBody> success(Object data) {
-        RespBody responseBody = new RespBody();
+    public ResponseEntity<BaseResponse> success(Object data) {
+        BaseResponse responseBody = new BaseResponse();
         responseBody.setCode(DomainCode.SUCCESS.getCode());
         responseBody.setMessage(this.messageSource.getMessage(DomainCode.SUCCESS.getCode(), null, this.locale()));
         responseBody.setData(data);
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public ResponseEntity<RespBody> success(DomainCode domainCode, Object... args) {
-        RespBody responseBody = new RespBody();
+    public ResponseEntity<BaseResponse> success(DomainCode domainCode, Object... args) {
+        BaseResponse responseBody = new BaseResponse();
         responseBody.setCode(domainCode.getCode());
         responseBody.setMessage(this.messageSource.getMessage(domainCode.getCode(), args, this.locale()));
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public ResponseEntity<RespBody> success(DomainCode domainCode) {
-        RespBody responseBody = new RespBody();
+    public ResponseEntity<BaseResponse> success(DomainCode domainCode) {
+        BaseResponse responseBody = new BaseResponse();
         responseBody.setCode(domainCode.getCode());
         responseBody.setMessage(this.messageSource.getMessage(domainCode.getCode(), null, this.locale()));
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public ResponseEntity<RespBody> success() {
-        RespBody responseBody = new RespBody();
+    public ResponseEntity<BaseResponse> success() {
+        BaseResponse responseBody = new BaseResponse();
         responseBody.setCode(DomainCode.SUCCESS.getCode());
         responseBody.setMessage(this.messageSource.getMessage(DomainCode.SUCCESS.getCode(), null, this.locale()));
         return ResponseEntity.status(HttpStatus.OK).body(responseBody);
     }
 
-    public ResponseEntity<RespBody> failWithValidationRequestException(ValidationRequestException ex) {
-        RespBody responseBody = new RespBody();
+    public ResponseEntity<BaseResponse> failWithValidationRequestException(ValidationRequestException ex) {
+        BaseResponse responseBody = new BaseResponse();
         responseBody.setCode(ex.getDomainCode().getCode());
         responseBody.setMessage(this.messageSource.getMessage(ex.getDomainCode().getCode(), ex.getArgs(), this.locale()));
         responseBody.setFieldErrors(parseErrorData(ex.getException()));
         return ResponseEntity.status(ex.getStatus()).body(responseBody);
     }
 
-    public ResponseEntity<RespBody> failWithInternalException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new RespBody().withCode(DomainCode.INTERNAL_SERVICE_ERROR.getCode()).withMessage(messageSource.getMessage(DomainCode.INVALID_PARAMETER.getCode(), new Object[]{e.getMessage()}, this.locale())));
+    public ResponseEntity<BaseResponse> failWithInternalException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new BaseResponse().withCode(DomainCode.INTERNAL_SERVICE_ERROR.getCode()).withMessage(messageSource.getMessage(DomainCode.INVALID_PARAMETER.getCode(), new Object[]{e.getMessage()}, this.locale())));
     }
 
-    public ResponseEntity<RespBody> failWithBadInputParameter(Exception e) {
+    public ResponseEntity<BaseResponse> failWithBadInputParameter(Exception e) {
         Set<FieldErrorDto> fieldErrors = parseErrorData(e);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new RespBody().withCode(DomainCode.INVALID_PARAMETER.getCode()).withMessage(messageSource.getMessage(DomainCode.INVALID_PARAMETER.getCode(), null, this.locale())).withFieldErrors(fieldErrors));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new BaseResponse().withCode(DomainCode.INVALID_PARAMETER.getCode()).withMessage(messageSource.getMessage(DomainCode.INVALID_PARAMETER.getCode(), null, this.locale())).withFieldErrors(fieldErrors));
     }
 
-    public ResponseEntity<RespBody> failNotFoundData(Exception e) {
+    public ResponseEntity<BaseResponse> failNotFoundData(Exception e) {
         Set<FieldErrorDto> fieldErrors = parseErrorData(e);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new RespBody().withCode(DomainCode.NOT_FOUND_DATA.getCode()).withMessage(messageSource.getMessage(DomainCode.NOT_FOUND_DATA.getCode(), null, this.locale())).withFieldErrors(fieldErrors));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new BaseResponse().withCode(DomainCode.NOT_FOUND_DATA.getCode()).withMessage(messageSource.getMessage(DomainCode.NOT_FOUND_DATA.getCode(), null, this.locale())).withFieldErrors(fieldErrors));
     }
 
-    public ResponseEntity<RespBody> failWithMethodNotAllowInputParameter(HttpRequestMethodNotSupportedException e) {
+    public ResponseEntity<BaseResponse> failWithMethodNotAllowInputParameter(HttpRequestMethodNotSupportedException e) {
         Set<FieldErrorDto> fieldErrors = parseErrorData(e);
 
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new RespBody().withCode(DomainCode.INVALID_PARAMETER.getCode()).withMessage(e.getMessage()).withFieldErrors(fieldErrors));
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(new BaseResponse().withCode(DomainCode.INVALID_PARAMETER.getCode()).withMessage(e.getMessage()).withFieldErrors(fieldErrors));
     }
 
     public Locale locale() {
@@ -144,8 +144,8 @@ public class RespFactory {
         return errorSet;
     }
 
-    public ResponseEntity<RespBody> failWithAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(RespBody.builder().code(String.valueOf(HttpServletResponse.SC_UNAUTHORIZED)).message(e.getMessage()).build());
+    public ResponseEntity<BaseResponse> failWithAuthenticationException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(BaseResponse.builder().code(String.valueOf(HttpServletResponse.SC_UNAUTHORIZED)).message(e.getMessage()).build());
     }
 }
 

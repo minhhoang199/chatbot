@@ -17,7 +17,6 @@ public class ChatController {
     private MessageService messageService;
     private SimpMessagingTemplate messagingTemplate;
 
-    //TODO: each room have it own topic
     @MessageMapping("/chat.sendMessage")
 //    @SendTo("/topic/room")
     public MessageDto sendMessage(@Payload MessageDto chatMessage) {

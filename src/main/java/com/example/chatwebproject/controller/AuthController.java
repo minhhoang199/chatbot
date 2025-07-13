@@ -11,6 +11,7 @@ import com.example.chatwebproject.model.request.LoginRequest;
 import com.example.chatwebproject.model.request.LogoutRequest;
 import com.example.chatwebproject.model.request.SignupRequest;
 import com.example.chatwebproject.model.response.LoginResponse;
+import com.example.chatwebproject.model.response.BaseResponse;
 import com.example.chatwebproject.model.response.RespFactory;
 import com.example.chatwebproject.repository.RoleRepository;
 import com.example.chatwebproject.repository.UserRepository;
@@ -56,7 +57,7 @@ public class AuthController {
 
 //    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
-    public ResponseEntity<?> signIn(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<BaseResponse> signIn(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -68,7 +69,7 @@ public class AuthController {
 //        String key = "email:" + userDetails.getEmail();
 //        this.redisUtil.setValue(key, sessionId);
 
-        return ResponseEntity.ok(LoginResponse.builder()
+        return this.respFactory.success(LoginResponse.builder()
                 .token(jwtToken)
                 .username(userDetails.getUsername())
                 .email(userDetails.getEmail())

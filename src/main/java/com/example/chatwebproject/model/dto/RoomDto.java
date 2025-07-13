@@ -1,6 +1,7 @@
 package com.example.chatwebproject.model.dto;
 
 import com.example.chatwebproject.model.enums.RoomType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public class RoomDto {
     @NotNull
     private RoomType roomType;
     private String lastMessageContent;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastMessageTime;
     private String admin;
     private String privateKey;

@@ -62,11 +62,11 @@ public class JwtProvider {
                 .getBody().get("USER_NAME").toString(); //get username String from payload
     }
 
-    public String getSessionIdFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key()).build() //build a JwtParser object to parse and verify token
-                .parseClaimsJws(token) //the JwtParser object get a token to parse
-                .getBody().get("SESSION_ID").toString(); //get sessionId String from payload
-    }
+//    public String getSessionIdFromToken(String token) {
+//        return Jwts.parserBuilder().setSigningKey(key()).build() //build a JwtParser object to parse and verify token
+//                .parseClaimsJws(token) //the JwtParser object get a token to parse
+//                .getBody().get("SESSION_ID").toString(); //get sessionId String from payload
+//    }
 
     public String getEmailFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key()).build() //build a JwtParser object to parse and verify token

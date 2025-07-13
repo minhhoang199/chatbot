@@ -3,6 +3,7 @@ package com.example.chatwebproject.controller;
 
 import com.example.chatwebproject.model.request.ChangeConnectionStatusRequest;
 import com.example.chatwebproject.model.request.CreateConnectionRequest;
+import com.example.chatwebproject.model.response.BaseResponse;
 import com.example.chatwebproject.model.response.CreateConnectionResponse;
 import com.example.chatwebproject.service.ConnectionService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class ConnectionController {
     }
 
     @PostMapping
-    public CreateConnectionResponse addNewConnection(@RequestBody @Valid CreateConnectionRequest request){
+    public ResponseEntity<BaseResponse> addNewConnection(@RequestBody @Valid CreateConnectionRequest request){
         return this.connectionService.createConnection(request);
     }
 
