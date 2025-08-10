@@ -33,6 +33,11 @@ public class MessageDto extends BaseEntity {
     private MessageStatus messageStatus;
     @Size(min = 1)
     private Long roomId;
+    //reply
+    private Long replyId;
+    private Boolean isReply = false;
+    private String replyContent;
 
+    //attachedFile
     private Set<AttachedFileDto> attachedFiles;
 }

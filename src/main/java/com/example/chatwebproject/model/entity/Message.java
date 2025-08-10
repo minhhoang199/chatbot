@@ -44,4 +44,7 @@ public class Message extends BaseEntity implements Serializable {
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL)
     private Set<AttachedFile> attachedFiles = new HashSet<>();
+
+    @OneToOne
+    private Message replyMessage;
 }

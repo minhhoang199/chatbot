@@ -52,7 +52,7 @@ public class MessageService {
 
     //Add new message
     @Transactional
-    public void saveMessage(MessageDto messageDto) {
+    public MessageDto saveMessage(MessageDto messageDto) {
         Long roomId = messageDto.getRoomId();
         //validate sender
         var sender = this.userService.getUserInfo(messageDto.getSender());
@@ -63,12 +63,12 @@ public class MessageService {
         if (messageDto.getType().equals(MessageType.JOIN)){
              if (!setRoom.isEmpty()) {
                 log.error("User " + sender.getUsername() + " already in the room");
-                return;
+                return null;
             } else newMsg.setContent(messageDto.getSender() + " has joined");
         } else if (messageDto.getType().equals(MessageType.LEAVE)){
             if (setRoom.isEmpty()) {
                 log.error("User " + sender.getUsername() + " not in the room");
-                return;
+                return null;
             } else newMsg.setContent(messageDto.getSender() + " has left");
         } else newMsg.setContent(messageDto.getContent());
 
@@ -86,6 +86,15 @@ public class MessageService {
         newMsg.setSender(sender);
         newMsg.setRoom(room);
 
+        //reply message
+        if (messageDto.getReplyId() != null) {
+            Message replyMessage = this.messageRepository.getByIdAndNotDel(messageDto.getId()).orElseThrow(
+                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message"})
+            );
+            newMsg.setReplyMessage(replyMessage);
+        }
+
+        //attached file
         if (!CollectionUtils.isEmpty(messageDto.getAttachedFiles())) {
             Set<AttachedFile> files = this.attachedFileRepository.findAllByIdAndDelFlag(messageDto.getAttachedFiles().stream().map(AttachedFileDto::getId).collect(Collectors.toList()));
             if (CollectionUtils.isEmpty(files)) {
@@ -93,13 +102,15 @@ public class MessageService {
             }
             newMsg.setAttachedFiles(files);
         }
+        newMsg.setCreatedAt(LocalDateTime.now());
+        newMsg.setUpdatedAt(LocalDateTime.now());
+        newMsg = this.messageRepository.save(newMsg);
 
-        this.messageRepository.save(newMsg);
-        messageDto.setCreatedAt(LocalDateTime.now());
-        messageDto.setUpdatedAt(LocalDateTime.now());
 
         room.setLastMessageContent(newMsg.getContent());
-        room.setLastMessageTime(messageDto.getUpdatedAt());
+        room.setLastMessageTime(newMsg.getUpdatedAt());
+
+        return MessageTransformer.toDto(newMsg);
     }
 
     //Edit message

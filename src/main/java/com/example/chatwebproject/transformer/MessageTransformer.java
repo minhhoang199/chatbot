@@ -2,6 +2,9 @@ package com.example.chatwebproject.transformer;
 
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.dto.MessageDto;
+import org.springframework.util.CollectionUtils;
+
+import java.util.stream.Collectors;
 
 public class MessageTransformer {
     public static MessageDto toDto(Message message){
@@ -15,6 +18,15 @@ public class MessageTransformer {
         messageDto.setType(message.getType());
         messageDto.setCreatedAt(message.getCreatedAt());
         messageDto.setUpdatedAt(message.getUpdatedAt());
+        if (message.getReplyMessage() != null) {
+            messageDto.setIsReply(true);
+            messageDto.setReplyId(message.getReplyMessage().getId());
+            messageDto.setReplyContent(message.getReplyMessage().getContent());
+        }
+
+        if (CollectionUtils.isEmpty(message.getAttachedFiles())){
+            messageDto.setAttachedFiles(message.getAttachedFiles().stream().map(AttachedFileTransformer::toDto).collect(Collectors.toSet()));
+        }
         return messageDto;
     }
 }

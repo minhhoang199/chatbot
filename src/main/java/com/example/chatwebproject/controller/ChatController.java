@@ -2,6 +2,7 @@ package com.example.chatwebproject.controller;
 
 
 import com.example.chatwebproject.model.dto.MessageDto;
+import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.service.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -21,10 +22,10 @@ public class ChatController {
 //    @SendTo("/topic/room")
     public MessageDto sendMessage(@Payload MessageDto chatMessage) {
         System.out.println(chatMessage);
-        this.messageService.saveMessage(chatMessage);
+        MessageDto newMes = this.messageService.saveMessage(chatMessage);
         String destination = "/topic/room/" + chatMessage.getRoomId();
-        messagingTemplate.convertAndSend(destination, chatMessage);
-        return chatMessage;
+        messagingTemplate.convertAndSend(destination, newMes);
+        return newMes;
     }
 
     @MessageMapping("/chat.addUser")
@@ -33,8 +34,8 @@ public class ChatController {
                                SimpMessageHeaderAccessor headerAccessor) {
         // Add username in web socket session
         headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        this.messageService.saveMessage(chatMessage);
-        return chatMessage;
+        MessageDto newMes = this.messageService.saveMessage(chatMessage);
+        return newMes;
     }
 
 }
