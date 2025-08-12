@@ -16,6 +16,7 @@ public class MessageTransformer {
         messageDto.setRoomId(message.getRoom().getId());
         messageDto.setMessageStatus(message.getMessageStatus());
         messageDto.setType(message.getType());
+        messageDto.setEmoji(message.getEmoji());
         messageDto.setCreatedAt(message.getCreatedAt());
         messageDto.setUpdatedAt(message.getUpdatedAt());
         if (message.getReplyMessage() != null) {

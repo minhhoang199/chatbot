@@ -10,7 +10,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
@@ -21,22 +23,24 @@ import java.util.Set;
 @Data
 @Builder
 public class MessageDto extends BaseEntity {
+
     private Long id;
     private String sender;
-    @NotBlank
+    @NotNull
     private Long senderId;
     @NotBlank
     private String content;
-    @NotBlank
+
     private MessageType type;
-    @NotBlank
+
     private MessageStatus messageStatus;
-    @Size(min = 1)
+    @Min(1)
     private Long roomId;
     //reply
     private Long replyId;
     private Boolean isReply = false;
     private String replyContent;
+    private String emoji;
 
     //attachedFile
     private Set<AttachedFileDto> attachedFiles;

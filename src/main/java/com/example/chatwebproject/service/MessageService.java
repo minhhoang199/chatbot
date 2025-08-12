@@ -88,8 +88,8 @@ public class MessageService {
 
         //reply message
         if (messageDto.getReplyId() != null) {
-            Message replyMessage = this.messageRepository.getByIdAndNotDel(messageDto.getId()).orElseThrow(
-                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message"})
+            Message replyMessage = this.messageRepository.getByIdAndNotDel(messageDto.getReplyId()).orElseThrow(
+                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found replying message by id " + messageDto.getReplyId() })
             );
             newMsg.setReplyMessage(replyMessage);
         }
@@ -114,25 +114,21 @@ public class MessageService {
     }
 
     //Edit message
-    public void editMessage(Long messageId, String newContent) {
-        if (messageId == null ||
-                messageId <= 0) {
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid message Id"});
+    public MessageDto editMessage(MessageDto updateMessage) {
+        if (updateMessage.getId() == null) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Id must not be null"});
         }
-
-        var messageOtp = this.messageRepository.findById(messageId);
+        var messageOtp = this.messageRepository.findById(updateMessage.getId());
         if (messageOtp.isEmpty()){
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message"});
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message by id " + updateMessage.getId()});
         }
 
         Message currentMessage = messageOtp.get();
-
-        if (newContent == null ||
-                newContent.length() == 0) {
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid message content"});
-        }
-        currentMessage.setContent(newContent);
+        currentMessage.setContent(updateMessage.getContent());
+        currentMessage.setEmoji(updateMessage.getEmoji());
         messageRepository.save(currentMessage);
+
+        return MessageTransformer.toDto(currentMessage);
     }
 
     //Delete/Deactive message

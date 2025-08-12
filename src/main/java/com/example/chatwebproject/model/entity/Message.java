@@ -47,4 +47,7 @@ public class Message extends BaseEntity implements Serializable {
 
     @OneToOne
     private Message replyMessage;
+
+    @JoinColumn(name = "emoji")
+    private String emoji;
 }

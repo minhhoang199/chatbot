@@ -9,8 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -24,5 +28,10 @@ public class MessageController {
     public ResponseEntity<BaseResponse> getAllMessagesByRoomId(@PathVariable("roomId") Long roomId){
         List<MessageDto> messageDtoList = this.messageService.getAllMessages(roomId);
         return this.respFactory.success(messageDtoList);
+    }
+
+    @PutMapping("")
+    public ResponseEntity<BaseResponse> update(@RequestBody @Valid MessageDto messageDto){
+        return this.respFactory.success(this.messageService.editMessage(messageDto));
     }
 }
