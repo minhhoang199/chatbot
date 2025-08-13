@@ -6,6 +6,7 @@ import com.example.chatwebproject.model.response.RespFactory;
 import com.example.chatwebproject.service.MessageService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +24,7 @@ import java.util.List;
 public class MessageController {
     private MessageService messageService;
     private RespFactory respFactory;
+    private SimpMessagingTemplate messagingTemplate;
 
     @GetMapping("/{roomId}")
     public ResponseEntity<BaseResponse> getAllMessagesByRoomId(@PathVariable("roomId") Long roomId){
@@ -32,6 +34,9 @@ public class MessageController {
 
     @PutMapping("")
     public ResponseEntity<BaseResponse> update(@RequestBody @Valid MessageDto messageDto){
-        return this.respFactory.success(this.messageService.editMessage(messageDto));
+        MessageDto dto = this.messageService.editMessage(messageDto);
+        String destination = "/topic/room/" + dto.getRoomId();
+        messagingTemplate.convertAndSend(destination, dto);
+        return this.respFactory.success();
     }
 }

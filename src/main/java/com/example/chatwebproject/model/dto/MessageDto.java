@@ -14,6 +14,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -40,7 +41,7 @@ public class MessageDto extends BaseEntity {
     private Long replyId;
     private Boolean isReply = false;
     private String replyContent;
-    private String emoji;
+    private List<EmojiDto> emoji;
 
     //attachedFile
     private Set<AttachedFileDto> attachedFiles;

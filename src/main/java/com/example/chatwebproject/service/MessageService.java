@@ -15,6 +15,8 @@ import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.transformer.MessageTransformer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
@@ -33,102 +35,114 @@ import java.util.stream.Collectors;
 @Slf4j
 public class MessageService {
     private final MessageRepository messageRepository;
-    private final UserRepository userRepository;
+    private final ObjectMapper objectMapper;
     private final RoomRepository roomRepository;
     private final UserService userService;
     private final AttachedFileRepository attachedFileRepository;
 
     public List<MessageDto> getAllMessages(Long roomId){
-        List<Message> messages = this.messageRepository.findAllByRoomId(roomId);
-        List<MessageDto> messageDtos = new ArrayList<>();
-        for (Message message: messages
-             ) {
-            if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
-                messageDtos.add(MessageTransformer.toDto(message));
+        try {
+            List<Message> messages = this.messageRepository.findAllByRoomId(roomId);
+            List<MessageDto> messageDtos = new ArrayList<>();
+            for (Message message: messages
+                 ) {
+                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                    messageDtos.add(MessageTransformer.toDto(message));
+                }
             }
+            return messageDtos;
+        } catch (Exception e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Get messages failed: " + e});
         }
-        return messageDtos;
     }
 
     //Add new message
     @Transactional
     public MessageDto saveMessage(MessageDto messageDto) {
-        Long roomId = messageDto.getRoomId();
-        //validate sender
-        var sender = this.userService.getUserInfo(messageDto.getSender());
+        try {
+            Long roomId = messageDto.getRoomId();
+            //validate sender
+            var sender = this.userService.getUserInfo(messageDto.getSender());
 
-        //Check user already in the room or not ?
-        Set<Room> setRoom = sender.getRooms().stream().filter(room -> room.getId() == roomId).collect(Collectors.toSet());
-        Message newMsg = new Message();
-        if (messageDto.getType().equals(MessageType.JOIN)){
-             if (!setRoom.isEmpty()) {
-                log.error("User " + sender.getUsername() + " already in the room");
-                return null;
-            } else newMsg.setContent(messageDto.getSender() + " has joined");
-        } else if (messageDto.getType().equals(MessageType.LEAVE)){
-            if (setRoom.isEmpty()) {
-                log.error("User " + sender.getUsername() + " not in the room");
-                return null;
-            } else newMsg.setContent(messageDto.getSender() + " has left");
-        } else newMsg.setContent(messageDto.getContent());
+            //Check user already in the room or not ?
+            Set<Room> setRoom = sender.getRooms().stream().filter(room -> room.getId() == roomId).collect(Collectors.toSet());
+            Message newMsg = new Message();
+            if (messageDto.getType().equals(MessageType.JOIN)){
+                 if (!setRoom.isEmpty()) {
+                    log.error("User " + sender.getUsername() + " already in the room");
+                    return null;
+                } else newMsg.setContent(messageDto.getSender() + " has joined");
+            } else if (messageDto.getType().equals(MessageType.LEAVE)){
+                if (setRoom.isEmpty()) {
+                    log.error("User " + sender.getUsername() + " not in the room");
+                    return null;
+                } else newMsg.setContent(messageDto.getSender() + " has left");
+            } else newMsg.setContent(messageDto.getContent());
 
-        //validate room id
-        if (roomId == null ||
-                roomId <= 0) {
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid room Id"});
-        }
-
-        var room = this.roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Not found room with Id: " + roomId));
-
-        newMsg.setType(messageDto.getType());
-        newMsg.setMessageStatus(MessageStatus.ACTIVE);
-
-        newMsg.setSender(sender);
-        newMsg.setRoom(room);
-
-        //reply message
-        if (messageDto.getReplyId() != null) {
-            Message replyMessage = this.messageRepository.getByIdAndNotDel(messageDto.getReplyId()).orElseThrow(
-                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found replying message by id " + messageDto.getReplyId() })
-            );
-            newMsg.setReplyMessage(replyMessage);
-        }
-
-        //attached file
-        if (!CollectionUtils.isEmpty(messageDto.getAttachedFiles())) {
-            Set<AttachedFile> files = this.attachedFileRepository.findAllByIdAndDelFlag(messageDto.getAttachedFiles().stream().map(AttachedFileDto::getId).collect(Collectors.toList()));
-            if (CollectionUtils.isEmpty(files)) {
-                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found any file"});
+            //validate room id
+            if (roomId == null ||
+                    roomId <= 0) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid room Id"});
             }
-            newMsg.setAttachedFiles(files);
+
+            var room = this.roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Not found room with Id: " + roomId));
+
+            newMsg.setType(messageDto.getType());
+            newMsg.setMessageStatus(MessageStatus.ACTIVE);
+
+            newMsg.setSender(sender);
+            newMsg.setRoom(room);
+
+            //reply message
+            if (messageDto.getReplyId() != null) {
+                Message replyMessage = this.messageRepository.getByIdAndNotDel(messageDto.getReplyId()).orElseThrow(
+                        () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found replying message by id " + messageDto.getReplyId() })
+                );
+                newMsg.setReplyMessage(replyMessage);
+            }
+
+            //attached file
+            if (!CollectionUtils.isEmpty(messageDto.getAttachedFiles())) {
+                Set<AttachedFile> files = this.attachedFileRepository.findAllByIdAndDelFlag(messageDto.getAttachedFiles().stream().map(AttachedFileDto::getId).collect(Collectors.toList()));
+                if (CollectionUtils.isEmpty(files)) {
+                    throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found any file"});
+                }
+                newMsg.setAttachedFiles(files);
+            }
+            newMsg.setCreatedAt(LocalDateTime.now());
+            newMsg.setUpdatedAt(LocalDateTime.now());
+            newMsg = this.messageRepository.save(newMsg);
+
+
+            room.setLastMessageContent(newMsg.getContent());
+            room.setLastMessageTime(newMsg.getUpdatedAt());
+
+            return MessageTransformer.toDto(newMsg);
+        } catch (JsonProcessingException e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Save message failed " + e});
         }
-        newMsg.setCreatedAt(LocalDateTime.now());
-        newMsg.setUpdatedAt(LocalDateTime.now());
-        newMsg = this.messageRepository.save(newMsg);
-
-
-        room.setLastMessageContent(newMsg.getContent());
-        room.setLastMessageTime(newMsg.getUpdatedAt());
-
-        return MessageTransformer.toDto(newMsg);
     }
 
     //Edit message
     public MessageDto editMessage(MessageDto updateMessage) {
-        if (updateMessage.getId() == null) {
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Id must not be null"});
-        }
-        var messageOtp = this.messageRepository.findById(updateMessage.getId());
-        if (messageOtp.isEmpty()){
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message by id " + updateMessage.getId()});
-        }
+        try {
+            if (updateMessage.getId() == null) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Id must not be null"});
+            }
+            var messageOtp = this.messageRepository.findById(updateMessage.getId());
+            if (messageOtp.isEmpty()){
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message by id " + updateMessage.getId()});
+            }
 
-        Message currentMessage = messageOtp.get();
-        currentMessage.setContent(updateMessage.getContent());
-        currentMessage.setEmoji(updateMessage.getEmoji());
-        messageRepository.save(currentMessage);
+            Message currentMessage = messageOtp.get();
+            currentMessage.setContent(updateMessage.getContent());
+            currentMessage.setEmoji(objectMapper.writeValueAsString(updateMessage.getEmoji()));
+            messageRepository.save(currentMessage);
 
-        return MessageTransformer.toDto(currentMessage);
+            return MessageTransformer.toDto(currentMessage);
+        } catch (Exception e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Edit message failed " + e});
+        }
     }
 
     //Delete/Deactive message
