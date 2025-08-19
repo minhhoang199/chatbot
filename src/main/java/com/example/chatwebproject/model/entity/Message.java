@@ -42,8 +42,8 @@ public class Message extends BaseEntity implements Serializable {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<AttachedFile> attachedFiles = new HashSet<>();
+    @OneToOne
+    private AttachedFile attachedFile;
 
     @OneToOne
     private Message replyMessage;

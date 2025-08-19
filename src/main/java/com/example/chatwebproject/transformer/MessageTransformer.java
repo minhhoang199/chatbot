@@ -1,5 +1,6 @@
 package com.example.chatwebproject.transformer;
 
+import com.example.chatwebproject.model.dto.AttachedFileDto;
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.utils.CommonUtils;
@@ -27,8 +28,13 @@ public class MessageTransformer {
             messageDto.setReplyContent(message.getReplyMessage().getContent());
         }
 
-        if (CollectionUtils.isEmpty(message.getAttachedFiles())){
-            messageDto.setAttachedFiles(message.getAttachedFiles().stream().map(AttachedFileTransformer::toDto).collect(Collectors.toSet()));
+        if (message.getAttachedFile() != null) {
+            messageDto.setAttachedFile(AttachedFileDto.builder()
+                    .id(message.getAttachedFile().getId())
+                    .extension(message.getAttachedFile().getExtension())
+                    .linkFile(message.getAttachedFile().getLinkFile())
+                    .fileName(message.getAttachedFile().getFileName())
+                    .build());
         }
         return messageDto;
     }

@@ -13,6 +13,8 @@ public class AttachedFileTransformer {
         fileDto.setExtension(entity.getExtension());
         fileDto.setLinkFile(entity.getLinkFile());
         fileDto.setFileName(entity.getFileName());
+        fileDto.setRoomId(entity.getRoomId());
+        fileDto.setMessageId(entity.getMessage() != null ? entity.getMessage().getId() : null);
         return fileDto;
     }
 
@@ -22,14 +24,16 @@ public class AttachedFileTransformer {
         attachedFile.setExtension(dto.getExtension());
         attachedFile.setLinkFile(dto.getLinkFile());
         attachedFile.setFileName(dto.getFileName());
+        attachedFile.setRoomId(dto.getRoomId());
         return attachedFile;
     }
 
-    public static AttachedFile toEntityFromResponseInfo(UploadFileInfoResponse infoResponse){
+    public static AttachedFile toEntityFromResponseInfo(UploadFileInfoResponse infoResponse, Long roomId){
         AttachedFile attachedFile = new AttachedFile();
         attachedFile.setExtension(infoResponse.getExtension());
         attachedFile.setLinkFile(infoResponse.getLinkFile());
         attachedFile.setFileName(infoResponse.getFileName());
+        attachedFile.setRoomId(roomId);
         return attachedFile;
     }
 }

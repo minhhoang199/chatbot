@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +30,7 @@ public class AttachedFile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "message_id")
-    @JsonIgnoreProperties(value = "attachedFiles")
+    @OneToOne
     private Message message;
 
     @Column(name = "link_file")
@@ -42,4 +41,7 @@ public class AttachedFile extends BaseEntity {
 
     @Column(name = "extension")
     private String extension;
+
+    @Column(name = "room_id")
+    private Long roomId;
 }

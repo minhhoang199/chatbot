@@ -25,4 +25,6 @@ public class AttachedFileDto {
     private String linkPreview;
 
     private String extension;
+
+    private Long roomId;
 }

@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -15,4 +16,9 @@ public interface AttachedFileRepository extends JpaRepository<AttachedFile, Long
             " WHERE (:listIds IS NULL OR af.id IN :listIds) " +
             " AND (af.delFlag IS NULL OR af.delFlag = false)")
     Set<AttachedFile> findAllByIdAndDelFlag(@Param("listIds") List<Long> listIds);
+
+    @Query("SELECT af FROM AttachedFile af " +
+            " WHERE af.id = :fileId " +
+            " AND af.roomId = :roomId ")
+    Optional<AttachedFile> findByRoomIdAndFileId(@Param("roomId")Long roomId, @Param("fileId") Long fileId);
 }

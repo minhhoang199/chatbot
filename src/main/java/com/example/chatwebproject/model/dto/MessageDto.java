@@ -44,5 +44,5 @@ public class MessageDto extends BaseEntity {
     private List<EmojiDto> emoji;
 
     //attachedFile
-    private Set<AttachedFileDto> attachedFiles;
+    private AttachedFileDto attachedFile;
 }

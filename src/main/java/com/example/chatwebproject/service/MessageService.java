@@ -13,17 +13,18 @@ import com.example.chatwebproject.model.enums.MessageType;
 import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
-import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.transformer.MessageTransformer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,8 @@ public class MessageService {
     private final ObjectMapper objectMapper;
     private final RoomRepository roomRepository;
     private final UserService userService;
-    private final AttachedFileRepository attachedFileRepository;
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     public List<MessageDto> getAllMessages(Long roomId){
         try {
@@ -102,12 +104,12 @@ public class MessageService {
             }
 
             //attached file
-            if (!CollectionUtils.isEmpty(messageDto.getAttachedFiles())) {
-                Set<AttachedFile> files = this.attachedFileRepository.findAllByIdAndDelFlag(messageDto.getAttachedFiles().stream().map(AttachedFileDto::getId).collect(Collectors.toList()));
-                if (CollectionUtils.isEmpty(files)) {
+            if (messageDto.getAttachedFile() != null) {
+                AttachedFile file = entityManager.find(AttachedFile.class, messageDto.getAttachedFile().getId());
+                if (ObjectUtils.isEmpty(file)) {
                     throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found any file"});
                 }
-                newMsg.setAttachedFiles(files);
+                newMsg.setAttachedFile(file);
             }
             newMsg.setCreatedAt(LocalDateTime.now());
             newMsg.setUpdatedAt(LocalDateTime.now());

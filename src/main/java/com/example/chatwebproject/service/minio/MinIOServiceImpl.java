@@ -1,12 +1,14 @@
 package com.example.chatwebproject.service.minio;
 
 
-
 import com.example.chatwebproject.config.minio.MinIOProperties;
 import com.example.chatwebproject.constant.Constants;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
+import com.example.chatwebproject.model.dto.AttachedFileDto;
+import com.example.chatwebproject.model.entity.AttachedFile;
 import com.example.chatwebproject.model.response.UploadFileInfoResponse;
+import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.utils.CommonUtils;
 import com.example.chatwebproject.utils.DateUtil;
 import io.minio.CopyObjectArgs;
@@ -42,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 
@@ -53,11 +56,12 @@ public class MinIOServiceImpl implements MinIOService {
     private final String DRAFT_FILE_FOLDER = "draft_file";
     private final MinIOProperties minioProperties;
     private final MinioClient minioClient;
+    private final AttachedFileRepository attachedFileRepository;
 
     @Transactional
     @Override
     public UploadFileInfoResponse uploadFileMinIO(MultipartFile file, Long roomId) {
-        String contentType = getContentType(FilenameUtils.getExtension(file.getOriginalFilename()));
+        String contentType = getContentType(FilenameUtils.getExtension(file.getOriginalFilename())); //same as file.getContentType()
 
         if (StringUtils.isEmpty(contentType)) {
             log.debug("Content type is empty, contentType: {}", contentType);
@@ -76,7 +80,7 @@ public class MinIOServiceImpl implements MinIOService {
             minioClient.putObject(PutObjectArgs.builder().stream(dataFile, dataFile.available(), -1).bucket(minioProperties.getBucket()).object(path).contentType(contentType).build());
 
             return UploadFileInfoResponse.builder().linkFile(path).linkPreview(genPresignLinkUpload(path)).fileName(file.getOriginalFilename())
-                    .extension(CommonUtils.getFileExtension(file)).build();
+                    .extension(contentType).build();
 
         } catch (Exception e) {
             log.error("Error on upload file to MinIO with cause {}", e.getMessage());
@@ -141,31 +145,10 @@ public class MinIOServiceImpl implements MinIOService {
     }
 
     @Override
-    public byte[] downloadFile(Long roomId, String action) {
-        try {
-            return downloadFolderAsZip(roomId, action).readAllBytes();
-        } catch (Exception e) {
-            log.info("downloadFile fail with cause: {}", e.getMessage());
-            throw new ChatApplicationException(DomainCode.DOWNLOAD_FILE_FAIL);
-        }
-    }
+    public byte[] downloadFile(AttachedFileDto fileDto) throws IOException {
+        InputStream fileStream = getFileFromMinio(fileDto.getLinkFile());
 
-    public ByteArrayInputStream downloadFolderAsZip(Long transferId, String action) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ZipOutputStream zipOutputStream = new ZipOutputStream(byteArrayOutputStream);
-
-        // List all the files inside the folder
-//        List<AttachedFile> files = attachedFileRepository.findAllByTransferId(transferId);
-//        // For each file in the folder, add it to the zip file
-//        for (AttachedFile file : files) {
-//            InputStream fileStream = getFileFromMinio(file.getPath());
-//            zipOutputStream.putNextEntry(new ZipEntry(file.getPath()));
-//            IOUtils.copy(fileStream, zipOutputStream);
-//            zipOutputStream.closeEntry();
-//        }
-
-        zipOutputStream.close();
-        return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        return fileStream.readAllBytes();
     }
 
     private InputStream getFileFromMinio(String fileName) {
@@ -226,7 +209,7 @@ public class MinIOServiceImpl implements MinIOService {
     }
 
     @Override
-    public UploadFileInfoResponse moveDraftFileToTransferRequestFolder(String sourcePath, Long roomId, String fileType){
+    public UploadFileInfoResponse moveDraftFileToTransferRequestFolder(String sourcePath, Long roomId, String fileType) {
         String bucketName = this.getBucketName();
         String[] pathObjects = sourcePath.split("/");
         String minIOFileName = pathObjects[pathObjects.length - 1];
