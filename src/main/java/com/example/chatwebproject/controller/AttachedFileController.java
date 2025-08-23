@@ -4,6 +4,7 @@ import com.example.chatwebproject.model.response.BaseResponse;
 import com.example.chatwebproject.model.response.DownloadFileResponse;
 import com.example.chatwebproject.model.response.RespFactory;
 import com.example.chatwebproject.service.AttachedFileService;
+import com.example.chatwebproject.service.minio.MinIOService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -21,9 +22,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/attached-files")
 public class AttachedFileController {
     private final AttachedFileService attachedFileService;
+    private final MinIOService minIOService;
     private final RespFactory respFactory;
 
-    @PostMapping("")
+    @PostMapping("/upload")
     public ResponseEntity<BaseResponse> uploadFile(
             @RequestParam("file") MultipartFile file,
             @RequestParam("roomId") Long roomId
@@ -32,7 +34,7 @@ public class AttachedFileController {
     }
 
     @GetMapping("/download")
-    public ResponseEntity<byte[]> uploadFile(
+    public ResponseEntity<byte[]> downloadFile(
             @RequestParam("fileId") Long fileId,
             @RequestParam("roomId") Long roomId
     ) {
@@ -41,5 +43,13 @@ public class AttachedFileController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileResponse.getFileDto().getFileName() + "\"")
                 .contentType(MediaType.parseMediaType(downloadFileResponse.getFileDto().getExtension()))
                 .body(downloadFileResponse.getBytes());
+    }
+
+    @PostMapping("/gen-preview-link")
+    public ResponseEntity<BaseResponse> genPreviewLink(
+            @RequestParam("fileId") Long fileId,
+            @RequestParam("roomId") Long roomId
+    ) {
+        return this.respFactory.success(this.attachedFileService.genPresignLinkUpload(fileId, roomId));
     }
 }

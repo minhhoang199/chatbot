@@ -26,13 +26,13 @@ public class User extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", length = 50, nullable = false)
+    @Column(name = "username", length = 100, nullable = false)
     private String username;
 
     @Column(name = "password", length = 100, nullable = false)
     private String password;
 
-    @Column(name = "email", length = 20, nullable = false, unique = true)
+    @Column(name = "email", length = 100, nullable = false, unique = true)
     private String email;
 
     @JsonIgnore

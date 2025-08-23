@@ -92,7 +92,10 @@ public class MinIOServiceImpl implements MinIOService {
     @Override
     public String genPresignLinkUpload(String path) {
         try {
-            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(minioProperties.getBucket()).object(path).expiry(minioProperties.getExpiry()).build());
+            return minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
+                    .bucket(minioProperties.getBucket())
+                    .object(path)
+                    .expiry(minioProperties.getExpiry()).build());
         } catch (Exception exception) {
             log.error("Error on genPresignLinkUpload to MinIO with cause {}", exception.getMessage());
             throw new ChatApplicationException(DomainCode.MINIO_GEN_LINK_FAIL);
@@ -134,7 +137,7 @@ public class MinIOServiceImpl implements MinIOService {
         for (String file : files) {
             try {
                 minioClient.getObject(GetObjectArgs.builder().bucket(bucket).object(file).build());
-                String path = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucket).object(file).expiry(31536000).build());
+                String path = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET).bucket(bucket).object(file).expiry(60 * 60 * 5).build());
                 responseList.add(UploadFileInfoResponse.builder().fileName(file).linkPreview(path).build());
             } catch (Exception exception) {
                 log.error("Error on genPresignLinkUpload to MinIO with cause {}", exception.getMessage());
@@ -199,6 +202,9 @@ public class MinIOServiceImpl implements MinIOService {
 
         if ("msg".equals(extensionFile))
             return "application/vnd.ms-outlook";
+
+        if ("mp4".equals(extensionFile))
+            return "video/mp4";
 
         return null;
     }

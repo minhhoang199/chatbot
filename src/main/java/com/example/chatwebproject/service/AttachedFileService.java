@@ -70,4 +70,17 @@ public class AttachedFileService {
             throw new ChatApplicationException(DomainCode.DOWNLOAD_FILE_FAIL, new Object[]{e.getMessage()});
         }
     }
+
+    public String genPresignLinkUpload(Long fileId, Long roomId) {
+        try {
+            // Get file from DB
+            AttachedFile file = attachedFileRepository.findByRoomIdAndFileId(roomId, fileId).orElseThrow(
+                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found file by id and roomId"})
+            );
+
+            return this.minIOService.genPresignLinkUpload(file.getLinkFile());
+        } catch (Exception e) {
+            throw new ChatApplicationException(DomainCode.DOWNLOAD_FILE_FAIL, new Object[]{e.getMessage()});
+        }
+    }
 }
