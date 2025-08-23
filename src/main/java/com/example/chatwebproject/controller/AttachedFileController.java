@@ -33,7 +33,7 @@ public class AttachedFileController {
         return this.respFactory.success(this.attachedFileService.saveFile(roomId, file));
     }
 
-    @GetMapping("/download")
+    @PostMapping("/download")
     public ResponseEntity<byte[]> downloadFile(
             @RequestParam("fileId") Long fileId,
             @RequestParam("roomId") Long roomId
@@ -42,6 +42,7 @@ public class AttachedFileController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileResponse.getFileDto().getFileName() + "\"")
                 .contentType(MediaType.parseMediaType(downloadFileResponse.getFileDto().getExtension()))
+                .header(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "Content-Disposition")
                 .body(downloadFileResponse.getBytes());
     }
 

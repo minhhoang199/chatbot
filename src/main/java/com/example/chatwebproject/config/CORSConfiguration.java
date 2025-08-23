@@ -15,6 +15,7 @@ public class CORSConfiguration implements WebMvcConfigurer  {
                 .allowedOrigins("http://localhost:4200") // Allow your Angular app's origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
-                .allowCredentials(true);
+//                .allowCredentials(true)
+                .exposedHeaders("Content-Disposition");
     }
 }
