@@ -22,6 +22,7 @@ public class MessageTransformer {
         messageDto.setEmoji(CommonUtils.convertStringToEmojiObject(message.getEmoji()));
         messageDto.setCreatedAt(message.getCreatedAt());
         messageDto.setUpdatedAt(message.getUpdatedAt());
+        messageDto.setDelFlag(message.getDelFlag());
         if (message.getReplyMessage() != null) {
             messageDto.setIsReply(true);
             messageDto.setReplyId(message.getReplyMessage().getId());

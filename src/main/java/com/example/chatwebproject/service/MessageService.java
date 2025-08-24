@@ -14,6 +14,7 @@ import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.transformer.MessageTransformer;
+import com.example.chatwebproject.utils.SecurityUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -148,19 +149,22 @@ public class MessageService {
     }
 
     //Delete/Deactive message
-    public void deactiveMessage(Long messageId){
-        if (messageId == null ||
-                messageId <= 0) {
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid message Id"});
-        }
+    public MessageDto deactiveMessage(Long messageId){
+        try {
+            if (messageId == null) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid message Id"});
+            }
 
-        var messageOtp = this.messageRepository.findById(messageId);
-        if (messageOtp.isEmpty()){
-            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message"});
-        }
-        Message currentMessage = messageOtp.get();
-        currentMessage.setMessageStatus(MessageStatus.INACTIVE);
+            Message currentMessage = this.messageRepository.findByIdAndSender(messageId, SecurityUtil.getCurrentUserIdLogin()).orElseThrow(
+                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message by Id and sender"})
+            );
+            currentMessage.setMessageStatus(MessageStatus.INACTIVE);
+            currentMessage.setDelFlag(true);
 
-        this.messageRepository.save(currentMessage);
+            this.messageRepository.save(currentMessage);
+            return MessageTransformer.toDto(currentMessage);
+        } catch (JsonProcessingException e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Delete message failed"});
+        }
     }
 }
