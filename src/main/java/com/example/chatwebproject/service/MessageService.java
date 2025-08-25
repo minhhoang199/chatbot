@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -28,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,9 +45,9 @@ public class MessageService {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public List<MessageDto> getAllMessages(Long roomId){
+    public List<MessageDto> getAllMessages(Long roomId, LocalDateTime before, Integer limit){
         try {
-            List<Message> messages = this.messageRepository.findAllByRoomId(roomId);
+            List<Message> messages = this.messageRepository.findAllByRoomId(roomId, before, PageRequest.of(0, limit));
             List<MessageDto> messageDtos = new ArrayList<>();
             for (Message message: messages
                  ) {
@@ -53,7 +55,12 @@ public class MessageService {
                     messageDtos.add(MessageTransformer.toDto(message));
                 }
             }
-            return messageDtos;
+            return messageDtos.stream().sorted(new Comparator<MessageDto>() {
+                @Override
+                public int compare(MessageDto o1, MessageDto o2) {
+                    return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+                }
+            }).collect(Collectors.toList());
         } catch (Exception e) {
             throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Get messages failed: " + e});
         }
