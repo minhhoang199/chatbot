@@ -27,6 +27,7 @@ public class MessageTransformer {
             messageDto.setIsReply(true);
             messageDto.setReplyId(message.getReplyMessage().getId());
             messageDto.setReplyContent(message.getReplyMessage().getContent());
+            messageDto.setReplyCreatedDate(message.getReplyMessage().getCreatedAt());
         }
 
         if (message.getAttachedFile() != null) {

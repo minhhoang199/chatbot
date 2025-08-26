@@ -45,12 +45,54 @@ public class MessageService {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public List<MessageDto> getAllMessages(Long roomId, LocalDateTime before, Integer limit){
+    public List<MessageDto> getLimitMessages(Long roomId, LocalDateTime before, Integer limit){
         try {
             List<Message> messages = this.messageRepository.findAllByRoomId(roomId, before, PageRequest.of(0, limit));
             List<MessageDto> messageDtos = new ArrayList<>();
             for (Message message: messages
                  ) {
+                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                    messageDtos.add(MessageTransformer.toDto(message));
+                }
+            }
+            return messageDtos.stream().sorted(new Comparator<MessageDto>() {
+                @Override
+                public int compare(MessageDto o1, MessageDto o2) {
+                    return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+                }
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Get messages failed: " + e});
+        }
+    }
+
+    public List<MessageDto> getAllMessagesFromTo(Long roomId, LocalDateTime from, LocalDateTime to){
+        try {
+            List<Message> messages = this.messageRepository.findAllByRoomIdFromTo(roomId, from, to);
+            List<MessageDto> messageDtos = new ArrayList<>();
+            for (Message message: messages
+            ) {
+                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                    messageDtos.add(MessageTransformer.toDto(message));
+                }
+            }
+            return messageDtos.stream().sorted(new Comparator<MessageDto>() {
+                @Override
+                public int compare(MessageDto o1, MessageDto o2) {
+                    return o1.getCreatedAt().compareTo(o2.getCreatedAt());
+                }
+            }).collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Get messages failed: " + e});
+        }
+    }
+
+    public List<MessageDto> searchByContent(Long roomId, String content){
+        try {
+            List<Message> messages = this.messageRepository.searchByContent(roomId, content);
+            List<MessageDto> messageDtos = new ArrayList<>();
+            for (Message message: messages
+            ) {
                 if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
                     messageDtos.add(MessageTransformer.toDto(message));
                 }

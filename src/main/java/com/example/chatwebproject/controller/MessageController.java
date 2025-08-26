@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -31,12 +30,27 @@ public class MessageController {
     private RespFactory respFactory;
     private SimpMessagingTemplate messagingTemplate;
 
-    @GetMapping("")
-    public ResponseEntity<BaseResponse> getAllMessagesByRoomId(@RequestParam("roomId") Long roomId,
+    @GetMapping("/limit")
+    public ResponseEntity<BaseResponse> getLimitMessagesByRoomId(@RequestParam("roomId") Long roomId,
                                                                @RequestParam("before") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime before,
                                                                @RequestParam("limit") Integer limit){
         if (ObjectUtils.isEmpty(limit) || limit <= 0) limit = 50;
-        List<MessageDto> messageDtoList = this.messageService.getAllMessages(roomId, before, limit);
+        List<MessageDto> messageDtoList = this.messageService.getLimitMessages(roomId, before, limit);
+        return this.respFactory.success(messageDtoList);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<BaseResponse> getAllMessagesFromTo(@RequestParam("roomId") Long roomId,
+                                                               @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
+                                                               @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to){
+        List<MessageDto> messageDtoList = this.messageService.getAllMessagesFromTo(roomId, from, to);
+        return this.respFactory.success(messageDtoList);
+    }
+
+    @GetMapping("/search-by-content")
+    public ResponseEntity<BaseResponse> searchByContent(@RequestParam("roomId") Long roomId,
+                                                             @RequestParam(value = "content") String content){
+        List<MessageDto> messageDtoList = this.messageService.searchByContent(roomId, content);
         return this.respFactory.success(messageDtoList);
     }
 
