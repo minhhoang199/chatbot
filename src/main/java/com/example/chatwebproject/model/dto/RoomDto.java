@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class RoomDto {
     @NotNull
     private RoomType roomType;
     private String lastMessageContent;
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime lastMessageTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
+    private Instant lastMessageTime;
     private String admin;
     private String privateKey;
 }

@@ -42,10 +42,10 @@ public class Message extends BaseEntity implements Serializable {
     @JoinColumn(name = "room_id")
     private Room room;
 
-    @OneToOne
+    @OneToOne (fetch = FetchType.LAZY)
     private AttachedFile attachedFile;
 
-    @OneToOne
+    @OneToOne (fetch = FetchType.LAZY)
     private Message replyMessage;
 
     @JoinColumn(name = "emoji")

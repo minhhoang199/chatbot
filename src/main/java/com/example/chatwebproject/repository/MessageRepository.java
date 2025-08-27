@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -16,24 +17,34 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m WHERE m.content LIKE %?1% AND m.delFlag = FALSE")
     List<Message> findByContentContaining(String content);
 
-    @Query("SELECT m FROM Message m WHERE m.room.id = :roomId " +
+
+    @Query("SELECT m FROM Message m " +
+            " LEFT JOIN FETCH m.attachedFile " +
+            " LEFT JOIN FETCH m.replyMessage " +
+            " WHERE m.room.id = :roomId " +
             " AND m.createdAt < :createdAt " +
             " AND m.delFlag = FALSE " +
             " ORDER BY m.createdAt DESC")
     List<Message> findAllByRoomId(@Param("roomId") Long roomId,
-                                  @Param("createdAt") LocalDateTime createdAt,
+                                  @Param("createdAt") Instant createdAt,
                                   Pageable pageable);
 
-    @Query("SELECT m FROM Message m WHERE m.room.id = :roomId " +
+    @Query("SELECT m FROM Message m " +
+            " LEFT JOIN FETCH m.attachedFile " +
+            " LEFT JOIN FETCH m.replyMessage " +
+            " WHERE m.room.id = :roomId " +
             " AND m.createdAt >= COALESCE(:fromDate, m.createdAt) " +
             " AND m.createdAt <= COALESCE(:toDate, m.createdAt) " +
             " AND m.delFlag = FALSE " +
             " ORDER BY m.createdAt DESC")
     List<Message> findAllByRoomIdFromTo(@Param("roomId") Long roomId,
-                                        @Param("fromDate") LocalDateTime from,
-                                        @Param("toDate") LocalDateTime to);
+                                        @Param("fromDate") Instant from,
+                                        @Param("toDate") Instant to);
 
-    @Query("SELECT m FROM Message m WHERE m.room.id = :roomId " +
+    @Query("SELECT m FROM Message m " +
+            " LEFT JOIN FETCH m.attachedFile " +
+            " LEFT JOIN FETCH m.replyMessage " +
+            " WHERE m.room.id = :roomId " +
             " AND m.content LIKE %:content%" +
             " AND m.delFlag = FALSE " +
             " ORDER BY m.createdAt DESC")

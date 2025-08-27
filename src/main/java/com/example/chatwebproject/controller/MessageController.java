@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.Valid;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class MessageController {
 
     @GetMapping("/limit")
     public ResponseEntity<BaseResponse> getLimitMessagesByRoomId(@RequestParam("roomId") Long roomId,
-                                                               @RequestParam("before") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime before,
+                                                               @RequestParam("before") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant before,
                                                                @RequestParam("limit") Integer limit){
         if (ObjectUtils.isEmpty(limit) || limit <= 0) limit = 50;
         List<MessageDto> messageDtoList = this.messageService.getLimitMessages(roomId, before, limit);
@@ -41,8 +42,8 @@ public class MessageController {
 
     @GetMapping("/all")
     public ResponseEntity<BaseResponse> getAllMessagesFromTo(@RequestParam("roomId") Long roomId,
-                                                               @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime from,
-                                                               @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime to){
+                                                               @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant from,
+                                                               @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant to){
         List<MessageDto> messageDtoList = this.messageService.getAllMessagesFromTo(roomId, from, to);
         return this.respFactory.success(messageDtoList);
     }

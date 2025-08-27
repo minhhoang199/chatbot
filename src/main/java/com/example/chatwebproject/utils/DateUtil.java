@@ -87,6 +87,10 @@ public class DateUtil {
         return currentDate.format(formatter);
     }
 
+    public static LocalDateTime getCurrentDate() {
+        return LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+    }
+
     public static LocalTime getDefaultLocalTime(int hours, int minutes) {
         ZonedDateTime zonedDateTimeUtcPlus7 = ZonedDateTime.of(LocalDate.now(), LocalTime.of(hours, minutes), ZoneOffset.ofHours(7));
         ZonedDateTime systemZonedDateTime = zonedDateTimeUtcPlus7.withZoneSameInstant(zoneId);

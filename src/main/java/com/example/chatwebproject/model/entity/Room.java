@@ -7,6 +7,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -30,7 +31,7 @@ public class Room extends BaseEntity implements Serializable {
     private String lastMessageContent;
 
     @Column(name = "last_message_time", length = 50)
-    private LocalDateTime lastMessageTime;
+    private Instant lastMessageTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "room_status", nullable = false)

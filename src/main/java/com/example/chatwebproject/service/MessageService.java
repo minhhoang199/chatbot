@@ -14,6 +14,7 @@ import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.transformer.MessageTransformer;
+import com.example.chatwebproject.utils.DateUtil;
 import com.example.chatwebproject.utils.SecurityUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -45,7 +47,7 @@ public class MessageService {
     @PersistenceContext
     private final EntityManager entityManager;
 
-    public List<MessageDto> getLimitMessages(Long roomId, LocalDateTime before, Integer limit){
+    public List<MessageDto> getLimitMessages(Long roomId, Instant before, Integer limit){
         try {
             List<Message> messages = this.messageRepository.findAllByRoomId(roomId, before, PageRequest.of(0, limit));
             List<MessageDto> messageDtos = new ArrayList<>();
@@ -66,7 +68,7 @@ public class MessageService {
         }
     }
 
-    public List<MessageDto> getAllMessagesFromTo(Long roomId, LocalDateTime from, LocalDateTime to){
+    public List<MessageDto> getAllMessagesFromTo(Long roomId, Instant from, Instant to){
         try {
             List<Message> messages = this.messageRepository.findAllByRoomIdFromTo(roomId, from, to);
             List<MessageDto> messageDtos = new ArrayList<>();
@@ -161,8 +163,9 @@ public class MessageService {
                 }
                 newMsg.setAttachedFile(file);
             }
-            newMsg.setCreatedAt(LocalDateTime.now());
-            newMsg.setUpdatedAt(LocalDateTime.now());
+            newMsg.setCreatedAt(Instant.now());
+            newMsg.setUpdatedAt(Instant.now());
+            newMsg.setDelFlag(false);
             newMsg = this.messageRepository.save(newMsg);
 
 

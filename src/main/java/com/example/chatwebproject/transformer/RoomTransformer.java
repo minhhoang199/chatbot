@@ -34,6 +34,7 @@ public class RoomTransformer {
         roomDto.setName(roomProjection.getName());
         roomDto.setLastMessageContent(roomProjection.getLastMessageContent());
         roomDto.setLastMessageTime(roomProjection.getLastMessageTime());
+
         return roomDto;
     }
 }

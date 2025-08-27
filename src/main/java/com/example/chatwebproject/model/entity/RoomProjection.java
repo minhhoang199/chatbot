@@ -1,5 +1,6 @@
 package com.example.chatwebproject.model.entity;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 public interface RoomProjection {
@@ -7,5 +8,5 @@ public interface RoomProjection {
     String getName();
     String getConversationType();
     String getLastMessageContent();
-    LocalDateTime getLastMessageTime();
+    Instant getLastMessageTime();
 }
