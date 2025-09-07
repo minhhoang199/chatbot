@@ -2,6 +2,7 @@ package com.example.chatwebproject.model.request;
 
 import com.example.chatwebproject.model.enums.RoomType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SaveRoomRequest {
     @NotBlank(message = "Room name may not be blank")
     private String name;

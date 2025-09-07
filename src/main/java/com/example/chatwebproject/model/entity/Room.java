@@ -24,7 +24,7 @@ public class Room extends BaseEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length = 50, nullable = false)
+    @Column(name = "name", columnDefinition ="TEXT", length = 2000, nullable = false)
     private String name;
 
     @Column(name = "last_message_content", columnDefinition ="TEXT", length = 2000)
@@ -32,10 +32,6 @@ public class Room extends BaseEntity implements Serializable {
 
     @Column(name = "last_message_time", length = 50)
     private Instant lastMessageTime;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "room_status", nullable = false)
-    private RoomStatus roomStatus;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "conversation_type", nullable = false)
@@ -55,18 +51,16 @@ public class Room extends BaseEntity implements Serializable {
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
-    @JsonIgnore
-    private Set<RoomInvite> roomInvites = new HashSet<>();
+//    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+//    @JsonIgnore
+//    private Set<RoomInvite> roomInvites = new HashSet<>();
 
     @Column(name = "private_key")
     private String privateKey;
 
-    @Column(name = "created_by", length = 200)
-    private String createdBy;
-
-    @Column(name = "updated_by", length = 200)
-    private String updatedBy;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private RoomStatus status;
 
     @Override
     public boolean equals(Object o) {

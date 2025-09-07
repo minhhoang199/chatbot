@@ -79,4 +79,14 @@ public class RoomController {
         this.roomService.changeRoomName(roomId, request.getName());
         return this.respFactory.success("Success");
     }
+
+    @GetMapping("/get-by-email")
+    public ResponseEntity<BaseResponse> getByEmail(@RequestParam("email") String email){
+        return this.respFactory.success(this.roomService.getRoomByEmail(email));
+    }
+
+    @DeleteMapping("/{roomId}")
+    public ResponseEntity<BaseResponse> deleteRoom(@PathVariable("roomId") Long roomId){
+        return this.respFactory.success(this.roomService.deleteRoom(roomId));
+    }
 }

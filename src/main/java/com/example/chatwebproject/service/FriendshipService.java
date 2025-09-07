@@ -5,9 +5,12 @@ import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.dto.FriendshipDto;
+import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.User;
+import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.request.ChangeFriendshipStatusRequest;
+import com.example.chatwebproject.model.request.ChangeRoomStatusRequest;
 import com.example.chatwebproject.model.request.CreateFriendshipRequest;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.enums.FriendshipStatus;
@@ -91,6 +94,9 @@ public class FriendshipService {
             } else if (!friendship.getStatus().equals(FriendshipStatus.PENDING) && !friendship.getStatus().equals(FriendshipStatus.BLOCKED)) {
                 throw new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid status friendship: " + request.getFriendshipStatus()}, null);
             }
+            if (friendship.getStatus().equals(FriendshipStatus.BLOCKED)) {
+                this.changeRoomStatus(friendship.getAcceptedUserEmail().equals(currentEmail) ? friendship.getRequestUserEmail() : friendship.getAcceptedUserEmail(), RoomStatus.ENABLE);
+            }
         }
 
         //Rejected : status hiện tại phải là pending
@@ -102,6 +108,7 @@ public class FriendshipService {
             if (!friendship.getStatus().equals(FriendshipStatus.PENDING)) {
                 throw new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid status friendship: " + request.getFriendshipStatus()}, null);
             }
+            friendship.setDelFlag(true);
         }
 
         //Block : status hiện tại phải là accpeted
@@ -110,6 +117,7 @@ public class FriendshipService {
                 throw new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid status friendship: " + request.getFriendshipStatus()}, null);
             }
             friendship.setBlockUserEmail(currentEmail);
+            this.changeRoomStatus(friendship.getAcceptedUserEmail().equals(currentEmail) ? friendship.getRequestUserEmail() : friendship.getAcceptedUserEmail(), RoomStatus.BLOCKED);
         }
 
         //Removed (user request tự xóa hoặc unfriend nhau) : status hiện tại phải là accpeted hoặc pending
@@ -122,12 +130,21 @@ public class FriendshipService {
             if (!friendship.getStatus().equals(FriendshipStatus.ACCEPTED) && !friendship.getStatus().equals(FriendshipStatus.PENDING)) {
                 throw new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid status friendship: " + request.getFriendshipStatus()}, null);
             }
+            friendship.setDelFlag(true);
         }
 
         //Update connection
         friendship.setStatus(request.getFriendshipStatus());
+        friendship = this.friendshipRepository.save(friendship);
+        return FriendshipTransformer.toDto(friendship);
+    }
 
-        return FriendshipTransformer.toDto(this.friendshipRepository.save(friendship));
+    private void changeRoomStatus(String otherEmail, RoomStatus status) {
+        RoomDto roomDto = this.roomService.getRoomByEmail(otherEmail);
+        this.roomService.changeStatus(ChangeRoomStatusRequest.builder()
+                .id(roomDto.getId())
+                .roomStatus(status)
+                .build());
     }
 
     public List<FriendshipDto> getIncomingRequest() {

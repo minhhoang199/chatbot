@@ -1,5 +1,6 @@
 package com.example.chatwebproject.model.dto;
 
+import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.enums.RoomType;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -31,4 +32,5 @@ public class RoomDto {
     private Instant lastMessageTime;
     private String admin;
     private String privateKey;
+    private RoomStatus status;
 }

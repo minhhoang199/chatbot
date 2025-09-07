@@ -3,6 +3,7 @@ package com.example.chatwebproject.service;
 //22/06: Update add new message saveMessage() method
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
+import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.dto.AttachedFileDto;
 import com.example.chatwebproject.model.entity.AttachedFile;
 import com.example.chatwebproject.model.entity.Message;
@@ -10,6 +11,7 @@ import com.example.chatwebproject.model.entity.Room;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.enums.MessageStatus;
 import com.example.chatwebproject.model.enums.MessageType;
+import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.MessageRepository;
@@ -134,12 +136,11 @@ public class MessageService {
             } else newMsg.setContent(messageDto.getContent());
 
             //validate room id
-            if (roomId == null ||
-                    roomId <= 0) {
-                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid room Id"});
+            var room = this.roomRepository.findById(roomId).orElseThrow(
+                    () -> new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found room with Id: " + roomId}, null));
+            if (room.getStatus().equals(RoomStatus.BLOCKED) || room.getStatus().equals(RoomStatus.DISABLE)) {
+                throw new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"User can not send message in this room: " + roomId}, null);
             }
-
-            var room = this.roomRepository.findById(roomId).orElseThrow(() -> new RuntimeException("Not found room with Id: " + roomId));
 
             newMsg.setType(messageDto.getType());
             newMsg.setMessageStatus(MessageStatus.ACTIVE);

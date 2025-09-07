@@ -20,14 +20,21 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             "AND c.name LIKE %?2%")
     List<Room> findByUserIdAndChatName(Long userId, String name);
 
-    @Query("SELECT c FROM Room c INNER JOIN c.users u WHERE u.email = ?1 " +
-            "AND c.roomType = ?2")
-    List<Room> findByEmailAndType(String email, RoomType roomType);
+    @Query("SELECT r FROM Room r INNER JOIN r.users u" +
+            " WHERE u.email IN (:email1, :email2) " +
+            " AND r.roomType = :roomType " +
+            " AND r.delFlag = false " +
+            " GROUP BY r.id " +
+            " HAVING COUNT(DISTINCT u.email) = 2 ")
+    List<Room> findByEmailAndType(@Param("email1")String email1,
+                                  @Param("email2")String email2,
+                                  @Param("roomType")RoomType roomType);
 
     @Query(value = sql, nativeQuery = true)
     List<RoomProjection> findByUserId2(Long userId);
     public final String sql = "Select r.id, r.name, r.conversation_type AS conversationType," +
-            " r.last_message_content AS lastMessageContent, r.last_message_time AS lastMessageTime" +
+            " r.last_message_content AS lastMessageContent, r.last_message_time AS lastMessageTime," +
+            " r.status AS status " +
             " from ROOM r " +
             " JOIN room_user ru on r.id = ru.room_id " +
             " JOIN user_info u on ru.user_id = u.id " +

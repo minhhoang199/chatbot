@@ -1,6 +1,7 @@
 package com.example.chatwebproject.model.request;
 
 import com.example.chatwebproject.model.enums.FriendshipStatus;
+import com.example.chatwebproject.model.enums.RoomStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,9 +16,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChangeFriendshipStatusRequest {
+public class ChangeRoomStatusRequest {
     @Min(1)
     private Long id;
     @NotNull(message = "Status may not be null")
-    private FriendshipStatus friendshipStatus;
+    private RoomStatus roomStatus;
 }
