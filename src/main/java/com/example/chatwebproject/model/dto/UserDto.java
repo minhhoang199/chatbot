@@ -1,5 +1,7 @@
 package com.example.chatwebproject.model.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +11,11 @@ import javax.validation.constraints.Pattern;
 
 @Data
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class UserDto {
+    private Long id;
+
     @NotBlank(message = "Name may not be blank")
     private String username;
 

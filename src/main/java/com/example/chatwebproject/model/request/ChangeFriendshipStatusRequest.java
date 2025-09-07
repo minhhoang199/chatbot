@@ -1,6 +1,6 @@
 package com.example.chatwebproject.model.request;
 
-import com.example.chatwebproject.model.enums.ConnectionStatus;
+import com.example.chatwebproject.model.enums.FriendshipStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,9 +13,9 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeConnectionStatusRequest {
+public class ChangeFriendshipStatusRequest {
     @Min(1)
-    private Long connectionId;
-    @NotNull(message = "Connection status may not be null")
-    private ConnectionStatus connectionStatus;
+    private Long id;
+    @NotNull(message = "Status may not be null")
+    private FriendshipStatus friendshipStatus;
 }

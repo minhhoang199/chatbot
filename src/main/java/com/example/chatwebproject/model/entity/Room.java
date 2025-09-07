@@ -55,6 +55,10 @@ public class Room extends BaseEntity implements Serializable {
     @JsonIgnore
     private Set<User> users = new HashSet<>();
 
+    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Set<RoomInvite> roomInvites = new HashSet<>();
+
     @Column(name = "private_key")
     private String privateKey;
 

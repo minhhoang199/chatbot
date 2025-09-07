@@ -2,19 +2,27 @@ package com.example.chatwebproject.controller;
 
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
+import com.example.chatwebproject.model.response.BaseResponse;
+import com.example.chatwebproject.model.response.RespFactory;
 import com.example.chatwebproject.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
+    private final RespFactory respFactory;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    @GetMapping("/search-by-email")
+    public ResponseEntity<BaseResponse> searchByContent(@RequestParam(value = "email") String email){
+        List<UserDto> userDtos = this.userService.searchByEmail(email);
+        return this.respFactory.success(userDtos);
     }
 
     @PostMapping

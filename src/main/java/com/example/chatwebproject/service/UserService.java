@@ -5,7 +5,13 @@ import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.transformer.UserTransformer;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -29,6 +35,12 @@ public class UserService {
         return this.userRepository.findByEmailAndDelFlg(email).orElseThrow(
                 () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found user by email: " + email})
         );
+    }
+
+    public List<UserDto> searchByEmail(String email) {
+        List<User> users = this.userRepository.searchByEmail(email);
+        if (CollectionUtils.isEmpty(users)) return new ArrayList<>();
+        return UserTransformer.toDtoList(users);
     }
 
 

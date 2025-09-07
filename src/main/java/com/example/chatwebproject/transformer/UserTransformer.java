@@ -1,10 +1,15 @@
 package com.example.chatwebproject.transformer;
 
 
+import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.entity.ERole;
 import com.example.chatwebproject.model.entity.Role;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.request.SignupRequest;
+import org.apache.commons.lang3.ObjectUtils;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class UserTransformer {
     public static User transferToUser(SignupRequest signupRequest, String encodePassword){
@@ -20,6 +25,19 @@ public class UserTransformer {
         role.setId((long) roleId);
         role.setRole(roleId == 2 ? ERole.ROLE_ADMIN : ERole.ROLE_USER);
         return role;
+    }
+
+    public static UserDto toDto(User entity){
+        if (ObjectUtils.isEmpty(entity)) return null;
+        UserDto dto = new UserDto();
+        dto.setId(entity.getId());
+        dto.setUsername(entity.getUsername());
+        dto.setEmail(entity.getEmail());
+        return dto;
+    }
+
+    public static List<UserDto> toDtoList(List<User> users) {
+        return users.stream().map(UserTransformer::toDto).collect(Collectors.toList());
     }
 
 //    private static Role builAdminRole() {

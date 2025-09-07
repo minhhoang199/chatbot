@@ -6,7 +6,7 @@ import com.example.chatwebproject.aop.validation.ValidationRequest;
 import com.example.chatwebproject.constant.Constants;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
-import com.example.chatwebproject.model.entity.Connection;
+import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.entity.Room;
 import com.example.chatwebproject.model.entity.RoomProjection;
@@ -17,7 +17,7 @@ import com.example.chatwebproject.model.enums.*;
 import com.example.chatwebproject.model.request.GetListRoomRequest;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
-import com.example.chatwebproject.repository.ConnectionRepository;
+import com.example.chatwebproject.repository.FriendshipRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.UserRepository;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 public class RoomService {
     private final RoomRepository roomRepository;
     private final UserRepository userRepository;
-    private final ConnectionRepository connectionRepository;
+    private final FriendshipRepository friendshipRepository;
     private final MessageRepository messageRepository;
     @PersistenceContext
     private EntityManager entityManager;
@@ -140,14 +140,14 @@ public class RoomService {
         }
 
         for (String email : inviteeDto.getInviteeEmails()) {
-            Optional<Connection> optionalConnectionWithUser = this.connectionRepository.findByUsersAndStatus(
+            List<Friendship> optionalConnectionWithUser = this.friendshipRepository.findByUsersAndStatus(
                     invitorEmail,
                     email,
-                    ConnectionStatus.CONNECTED);
-            Optional<Connection> optionalConnectionWithInvitor = this.connectionRepository.findByUsersAndStatus(
+                    List.of(FriendshipStatus.ACCEPTED));
+            List<Friendship> optionalConnectionWithInvitor = this.friendshipRepository.findByUsersAndStatus(
                     email,
                     invitorEmail,
-                    ConnectionStatus.CONNECTED);
+                    List.of(FriendshipStatus.ACCEPTED));
             if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithUser.isEmpty()) {
                 throw new RuntimeException("Invalid connection between invitor and User");
             }

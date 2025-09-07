@@ -5,7 +5,7 @@ import lombok.Data;
 import javax.validation.constraints.Email;
 
 @Data
-public class CreateConnectionRequest {
+public class CreateFriendshipRequest {
     @Email
     private String requestEmail;
     @Email
