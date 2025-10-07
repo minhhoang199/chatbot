@@ -48,10 +48,15 @@ public class RoomController {
         return ResponseEntity.ok("Change conversation status succeed");
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<BaseResponse> getAllRoomsByUserId(@PathVariable("id") Long id){
+    @GetMapping ("/{id}")
+    public ResponseEntity<BaseResponse> getDetail(@PathVariable("id") Long id){
+        return this.respFactory.success(this.roomService.findRoomById(id));
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<BaseResponse> getAllRoomsByUserId(@PathVariable("userId") Long userId){
         GetListRoomRequest request = new GetListRoomRequest();
-        request.setUserId(id);
+        request.setUserId(userId);
         List<RoomDto> rooms = this.roomService.getAllByUserId(request);
         return this.respFactory.success(rooms);
     }
