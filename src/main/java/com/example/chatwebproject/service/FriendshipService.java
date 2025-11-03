@@ -6,6 +6,7 @@ import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.dto.FriendshipDto;
 import com.example.chatwebproject.model.dto.RoomDto;
+import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.enums.RoomStatus;

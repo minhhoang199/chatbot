@@ -2,10 +2,13 @@ package com.example.chatwebproject.service;
 
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
+import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.transformer.FriendshipTransformer;
 import com.example.chatwebproject.transformer.UserTransformer;
+import com.example.chatwebproject.utils.SecurityUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -94,5 +97,12 @@ public class UserService {
             currentUser.setPassword(newPassword);
         }
         this.userRepository.save(currentUser);
+    }
+
+    public List<UserDto> getFriends() {
+        String currentEmail = SecurityUtil.getCurrentEmailLogin();
+        List<User> userList = this.userRepository.getFriends(currentEmail);
+        if (CollectionUtils.isEmpty(userList)) return new ArrayList<>();
+        return UserTransformer.toDtoList(userList);
     }
 }

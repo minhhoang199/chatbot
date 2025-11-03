@@ -49,4 +49,9 @@ public class UserController {
         return ResponseEntity.ok("Change password succeed");
     }
 
+    @GetMapping("/get-friends")
+    public ResponseEntity<BaseResponse> getFriends(){
+        return respFactory.success(this.userService.getFriends());
+    }
+
 }

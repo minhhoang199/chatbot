@@ -25,4 +25,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> searchByEmail(@Param("email") String email);
 
     Optional<User> findByUsername(String username);
+
+    @Query(" SELECT u " +
+            " FROM User u " +
+            " JOIN Friendship fs " +
+            "  ON (u.email = fs.acceptedUserEmail OR u.email = fs.requestUserEmail) " +
+            " WHERE " +
+            "  (fs.acceptedUserEmail = :currentEmail OR fs.requestUserEmail = :currentEmail) " +
+            "  AND u.email <> :currentEmail ")
+    List<User> getFriends(String currentEmail);
 }
