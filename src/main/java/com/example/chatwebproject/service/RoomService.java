@@ -37,6 +37,7 @@ import org.springframework.util.CollectionUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -127,10 +128,12 @@ public class RoomService {
             users.add(currentUser);
         }
         newRoom.setAdmin(SecurityUtil.getCurrentEmailLogin());
+        newRoom.setLastMessageTime(Instant.now());
+        newRoom.setLastMessageContent(newRoom.getName() + " was created");
     }
 
     public List<RoomDto> getAllByUserId(GetListRoomRequest request) {
-        List<RoomProjection> rooms = roomRepository.findByUserId2(request.getUserId());
+        List<RoomProjection> rooms = roomRepository.findByUserId(request.getUserId());
         if (!CollectionUtils.isEmpty(rooms)) {
             return rooms.stream()
                     .map(RoomTransformer::toDtoFromProjection)

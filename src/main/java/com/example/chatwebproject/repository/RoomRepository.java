@@ -13,9 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
-    @Query("SELECT c FROM Room c INNER JOIN c.users u where u.id = ?1")
-    List<Room> findByUserId(Long userId);
-
     @Query("SELECT DISTINCT  c FROM Room c INNER JOIN c.users u WHERE u.id = ?1 " +
             "AND c.name LIKE %?2%")
     List<Room> findByUserIdAndChatName(Long userId, String name);
@@ -31,14 +28,16 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
                                   @Param("roomType")RoomType roomType);
 
     @Query(value = sql, nativeQuery = true)
-    List<RoomProjection> findByUserId2(Long userId);
+    List<RoomProjection> findByUserId(Long userId);
     public final String sql = "Select r.id, r.name, r.conversation_type AS conversationType," +
             " r.last_message_content AS lastMessageContent, r.last_message_time AS lastMessageTime," +
             " r.status AS status " +
             " from ROOM r " +
             " JOIN room_user ru on r.id = ru.room_id " +
             " JOIN user_info u on ru.user_id = u.id " +
-            " WHERE u.id = :userId";
+            " WHERE u.id = :userId " +
+            " AND r.del_flag = false " +
+            " ORDER BY r.last_message_time DESC ";
 
     @Query("SELECT DISTINCT  r FROM Room r WHERE r.privateKey IN :privateKeys AND r.roomType = 'PRIVATE_CHAT'")
     List<Room> findByPrivateKeyIn(@Param("privateKeys") List<String> privateKeys);

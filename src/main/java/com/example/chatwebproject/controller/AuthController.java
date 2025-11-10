@@ -39,8 +39,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/security/auth")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")//share by same wifi
-//@CrossOrigin(origins = "http://localhost:4200")
+//@CrossOrigin(origins = "http://192.168.1.115:4200")
+//@CrossOrigin(origins = "https://192.168.1.115:4200")
 public class AuthController {
     public static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String LOWER = UPPER.toLowerCase(Locale.ROOT);

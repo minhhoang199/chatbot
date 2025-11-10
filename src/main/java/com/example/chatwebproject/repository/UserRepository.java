@@ -26,12 +26,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
 
-    @Query(" SELECT u " +
+    @Query(" SELECT DISTINCT u " +
             " FROM User u " +
             " JOIN Friendship fs " +
             "  ON (u.email = fs.acceptedUserEmail OR u.email = fs.requestUserEmail) " +
             " WHERE " +
             "  (fs.acceptedUserEmail = :currentEmail OR fs.requestUserEmail = :currentEmail) " +
-            "  AND u.email <> :currentEmail ")
+            "  AND u.email <> :currentEmail " +
+            " AND fs.status = 'ACCEPTED'")
     List<User> getFriends(String currentEmail);
 }
