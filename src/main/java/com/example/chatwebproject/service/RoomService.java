@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -54,6 +55,7 @@ public class RoomService {
     private final ObjectMapper mapper;
     @PersistenceContext
     private EntityManager entityManager;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
     public RoomDto getRoomByEmail(String otherUserEmail) {
@@ -100,7 +102,13 @@ public class RoomService {
         this.userRepository.saveAll(users);
         Room roomEntity = this.roomRepository.save(newRoom);
         this.messageRepository.saveAll(messages);
-        return RoomTransformer.toDto(roomEntity);
+        RoomDto dto = RoomTransformer.toDto(roomEntity);
+        //Send newRoom to users id topic
+        for (User user: users) {
+            String destination = "/topic/user/" + user.getId();
+            messagingTemplate.convertAndSend(destination, dto);
+        }
+        return dto;
     }
 
     private void createPrivateRoom(SaveRoomRequest request, Room newRoom, Set<User> users) {

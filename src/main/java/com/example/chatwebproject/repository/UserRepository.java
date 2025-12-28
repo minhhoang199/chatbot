@@ -1,6 +1,7 @@
 package com.example.chatwebproject.repository;
 
 import com.example.chatwebproject.model.entity.User;
+import com.example.chatwebproject.model.enums.UserStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,9 +15,17 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u " +
             " WHERE u.email = :email " +
-            " AND (u.delFlag IS NULL OR u.delFlag = false)")
+            " AND (u.delFlag IS NULL OR u.delFlag = false) " +
+            " AND u.status = 'ACTIVE'")
 //    @EntityGraph(attributePaths = {"role"})
     Optional<User> findByEmailAndDelFlg(@Param("email") String email);
+
+    @Query("SELECT u FROM User u " +
+            " WHERE u.email = :email " +
+            " AND (u.delFlag IS NULL OR u.delFlag = false) " +
+            " AND u.status IN :statusList")
+//    @EntityGraph(attributePaths = {"role"})
+    Optional<User> findByEmailAndDelFlgAndStatus(@Param("email") String email, @Param("statusList") List<UserStatus> statusList);
 
 
     @Query("SELECT u FROM User u " +

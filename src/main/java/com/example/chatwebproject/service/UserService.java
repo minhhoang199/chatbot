@@ -5,6 +5,7 @@ import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
+import com.example.chatwebproject.model.enums.UserStatus;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.transformer.FriendshipTransformer;
 import com.example.chatwebproject.transformer.UserTransformer;
@@ -104,5 +105,11 @@ public class UserService {
         List<User> userList = this.userRepository.getFriends(currentEmail);
         if (CollectionUtils.isEmpty(userList)) return new ArrayList<>();
         return UserTransformer.toDtoList(userList);
+    }
+
+    public void changeUserStatus(String email, UserStatus status) {
+        User user = this.userRepository.findByEmailAndDelFlgAndStatus(email, List.of(UserStatus.INACTIVE))
+                .orElseThrow(() -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found inactive user by email: " + email}));
+        user.setStatus(status);
     }
 }

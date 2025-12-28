@@ -1,5 +1,6 @@
 package com.example.chatwebproject.model.dto;
 
+import com.example.chatwebproject.model.enums.UserStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,4 +22,6 @@ public class UserDto {
 
     @Email
     private String email;
+
+    private UserStatus status;
 }

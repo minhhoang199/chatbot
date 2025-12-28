@@ -1,5 +1,7 @@
 package com.example.chatwebproject.model.entity;
 
+import com.example.chatwebproject.model.enums.RoomStatus;
+import com.example.chatwebproject.model.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
@@ -32,7 +34,7 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "password", length = 100, nullable = false)
     private String password;
 
-    @Column(name = "email", length = 100, nullable = false, unique = true)
+    @Column(name = "email", length = 100, nullable = false)
     private String email;
 
     @JsonIgnore
@@ -53,6 +55,10 @@ public class User extends BaseEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus status;
 
     @Override
     public boolean equals(Object o) {

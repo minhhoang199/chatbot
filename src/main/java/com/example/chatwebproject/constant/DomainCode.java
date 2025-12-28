@@ -27,6 +27,7 @@ public enum DomainCode {
     CAMUNDA_SUBMIT_PROCESS_FAIL("TD-019", "Submit process fail", HttpStatus.INTERNAL_SERVER_ERROR.value()),
     CAMUNDA_INFO_FORBIDDEN("TD-020", "Get camunda rule info fail", HttpStatus.INTERNAL_SERVER_ERROR.value()),
     DUPLICATE_EMAIL_CONFIG_CODE("TD-021", "Duplicate email config code", HttpStatus.OK.value()),
+    VERIFY_OTP_FAILED("TD-022", "Verify OTP failed: : %s", HttpStatus.OK.value()),
     ;
 
     private final String code;

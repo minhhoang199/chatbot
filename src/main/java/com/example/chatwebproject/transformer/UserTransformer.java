@@ -33,6 +33,7 @@ public class UserTransformer {
         dto.setId(entity.getId());
         dto.setUsername(entity.getUsername());
         dto.setEmail(entity.getEmail());
+        dto.setStatus(entity.getStatus());
         return dto;
     }
 
