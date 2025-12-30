@@ -78,23 +78,9 @@ public class UserService {
         this.userRepository.save(currentUser);
     }
 
-    public void changePassword(Long userId, String newPassword) {
-        if (userId == null ||
-                userId <= 0) {
-            throw new RuntimeException("Invalid user Id");
-        }
-
-        var userOtp = this.userRepository.findById(userId);
-        if (userOtp.isEmpty()) {
-            throw new RuntimeException("Not found user");
-        }
-
-        User currentUser = userOtp.get();
-
+    public void changePassword(String email, String newPassword) {
+        User currentUser = this.getUserInfo(email);
         if (newPassword != null) {
-            if (newPassword.length() < 8) {
-                throw new RuntimeException("Invalid password");
-            }
             currentUser.setPassword(newPassword);
         }
         this.userRepository.save(currentUser);

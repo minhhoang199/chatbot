@@ -1,5 +1,6 @@
 package com.example.chatwebproject.model.entity;
 
+import com.example.chatwebproject.model.enums.OTPType;
 import com.example.chatwebproject.model.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -54,6 +55,13 @@ public class OTPVerification extends BaseEntity implements Serializable {
 
     @Column(name = "is_verified")
     private Boolean isVerified;
+
+    @Column(name = "otp_type")
+    @Enumerated(EnumType.STRING)
+    private OTPType otpType;
+
+    @Column(name = "new_password")
+    private String newPassword;
 
     @Override
     public boolean equals(Object o) {

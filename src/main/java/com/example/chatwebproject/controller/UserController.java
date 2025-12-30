@@ -40,15 +40,6 @@ public class UserController {
         return ResponseEntity.ok("Update succeed");
     }
 
-    @PatchMapping("/{userId}/password")
-    public ResponseEntity<String> changePassword(
-            @PathVariable("userId") Long userId,
-            @RequestBody String password
-    ){
-        this.userService.changePassword(userId, password);
-        return ResponseEntity.ok("Change password succeed");
-    }
-
     @GetMapping("/get-friends")
     public ResponseEntity<BaseResponse> getFriends(){
         return respFactory.success(this.userService.getFriends());

@@ -11,13 +11,10 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignupRequest {
-    @NotEmpty
-    private String username;
+public class ForgotPasswordRequest {
     @NotEmpty
     @Email
     private String email;
+    @NotEmpty
     private String password;
-    @NotNull
-    private Long roleId;
 }

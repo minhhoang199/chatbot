@@ -3,11 +3,14 @@ package com.example.chatwebproject.controller;
 
 import com.example.chatwebproject.constant.Constants;
 import com.example.chatwebproject.constant.DomainCode;
+import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.entity.ERole;
 import com.example.chatwebproject.model.entity.Role;
 import com.example.chatwebproject.model.entity.User;
+import com.example.chatwebproject.model.enums.OTPType;
 import com.example.chatwebproject.model.enums.UserStatus;
+import com.example.chatwebproject.model.request.ForgotPasswordRequest;
 import com.example.chatwebproject.model.request.LoginRequest;
 import com.example.chatwebproject.model.request.LogoutRequest;
 import com.example.chatwebproject.model.request.OTPSendRequest;
@@ -114,9 +117,12 @@ public class AuthController {
 
         newUser.setRole(role);
         this.userRepository.save(newUser);
-        this.otpService.generateAndSendOtp(OTPGenerateRequest.builder().email(newUser.getEmail()).build());
+        this.otpService.generateAndSendOtp(OTPGenerateRequest.builder()
+                .email(newUser.getEmail())
+                .otpType(OTPType.SIGN_UP)
+                .build());
 
-        return ResponseEntity.ok("Add user succeed");
+        return this.respFactory.success();
     }
 
     @PostMapping("/logout")
@@ -146,6 +152,26 @@ public class AuthController {
     @PostMapping("/re-send-OTP")
     public ResponseEntity<?> reSendOTP(@RequestBody OTPSendRequest otpSendRequest) {
         this.otpService.reSendOTP(otpSendRequest);
+        return this.respFactory.success();
+    }
+
+    @PutMapping("/forgot-password")
+    @Transactional
+    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordRequest forgotPasswordRequest) {
+        Optional<User> optionalUser = this.userRepository.findByEmailAndDelFlg(forgotPasswordRequest.getEmail());
+        if (forgotPasswordRequest.getPassword().length() < 8) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid password, at least 8 characters"});
+        }
+        if (optionalUser.isEmpty()) {
+            throw new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Email not exists: " + forgotPasswordRequest.getEmail()}, null);
+        }
+        User currentUser = optionalUser.get();
+        this.otpService.generateAndSendOtp(OTPGenerateRequest.builder()
+                .email(currentUser.getEmail())
+                .otpType(OTPType.CHANGE_PASSWORD)
+                .newPassword(this.passwordEncoder.encode(forgotPasswordRequest.getPassword()))
+                .build());
+
         return this.respFactory.success();
     }
 }

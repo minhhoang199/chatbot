@@ -5,6 +5,7 @@ import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.infrastructure.EmailQueue;
 import com.example.chatwebproject.model.entity.OTPVerification;
 import com.example.chatwebproject.model.entity.User;
+import com.example.chatwebproject.model.enums.OTPType;
 import com.example.chatwebproject.model.enums.UserStatus;
 import com.example.chatwebproject.model.request.OTPSendRequest;
 import com.example.chatwebproject.model.request.OTPGenerateRequest;
@@ -45,6 +46,8 @@ public class OTPService {
                 .expiredAt(expiredDate)
                 .otpCode(OTPcode)
                 .isVerified(false)
+                .otpType(request.getOtpType())
+                .newPassword(request.getNewPassword())
                 .build();
         this.otpRepository.save(newOTPVerification);
 
@@ -55,7 +58,6 @@ public class OTPService {
             // Queue full → fail fast or log
             throw new IllegalStateException("Email queue is full");
         }
-
     }
 
     private String getRandomCode() {
@@ -78,8 +80,13 @@ public class OTPService {
         } else {
             validateRetryTimes(otpVerification);
         }
-        //active user
-        this.userService.changeUserStatus(request.getEmail(), UserStatus.ACTIVE);
+        if (OTPType.SIGN_UP.equals(otpVerification.getOtpType())) {
+            //active user
+            this.userService.changeUserStatus(request.getEmail(), UserStatus.ACTIVE);
+        } else {
+            //change password
+            this.userService.changePassword(request.getEmail(), otpVerification.getNewPassword());
+        }
     }
 
     private void validateExpiredTimeOTP(OTPVerification otpVerification) {
