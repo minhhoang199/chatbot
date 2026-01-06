@@ -56,4 +56,10 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT m FROM Message m WHERE m.id = :messageId AND m.sender.id = :senderId AND m.delFlag = FALSE")
     Optional<Message> findByIdAndSender(@Param("messageId")Long messageId, @Param("senderId") Long senderId);
+
+    @Query("SELECT u.id FROM Message m " +
+            " JOIN m.room r " +
+            " JOIN r.users u " +
+            " WHERE m.id = :messageId AND m.delFlag = FALSE")
+    List<Long> findUsersInRoomByMessageId(@Param("messageId")Long messageId);
 }

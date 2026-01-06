@@ -47,6 +47,7 @@ public class MessageDto extends BaseEntity {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ssXXX", timezone = "UTC")
     private Instant replyCreatedDate;
     private List<EmojiDto> emoji;
+    private Boolean edited = false;
 
     //attachedFile
     private AttachedFileDto attachedFile;

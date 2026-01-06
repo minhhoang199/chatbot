@@ -20,6 +20,7 @@ public class MessageTransformer {
         messageDto.setMessageStatus(message.getMessageStatus());
         messageDto.setType(message.getType());
         messageDto.setEmoji(CommonUtils.convertStringToEmojiObject(message.getEmoji()));
+        messageDto.setEdited(message.getEdited());
         messageDto.setCreatedAt(message.getCreatedAt());
         messageDto.setUpdatedAt(message.getUpdatedAt());
         messageDto.setDelFlag(message.getDelFlag());

@@ -50,4 +50,7 @@ public class Message extends BaseEntity implements Serializable {
 
     @JoinColumn(name = "emoji")
     private String emoji;
+
+    @Column(name = "edited")
+    private Boolean edited = false;
 }

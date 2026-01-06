@@ -27,6 +27,10 @@ public class Room extends BaseEntity implements Serializable {
     @Column(name = "name", columnDefinition ="TEXT", length = 2000, nullable = false)
     private String name;
 
+    //TODO: update lastMessageContent when update message content in UI
+    @Column(name = "last_message_id")
+    private Long lastMessageId;
+
     @Column(name = "last_message_content", columnDefinition ="TEXT", length = 2000)
     private String lastMessageContent;
 

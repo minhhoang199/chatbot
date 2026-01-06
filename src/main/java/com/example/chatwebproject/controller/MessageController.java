@@ -60,7 +60,7 @@ public class MessageController {
         MessageDto dto = this.messageService.editMessage(messageDto);
         String destination = "/topic/room/" + dto.getRoomId();
         messagingTemplate.convertAndSend(destination, dto);
-        return this.respFactory.success();
+        return this.respFactory.success(dto);
     }
 
     @DeleteMapping("/{messageId}")

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +33,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -46,6 +48,7 @@ public class MessageService {
     private final ObjectMapper objectMapper;
     private final RoomRepository roomRepository;
     private final UserService userService;
+    private final MessageEditHistoryService messageEditHistoryService;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -180,6 +183,7 @@ public class MessageService {
     }
 
     //Edit message
+    @Transactional
     public MessageDto editMessage(MessageDto updateMessage) {
         try {
             if (updateMessage.getId() == null) {
@@ -191,12 +195,21 @@ public class MessageService {
             }
 
             Message currentMessage = messageOtp.get();
+            if (!StringUtils.equals(currentMessage.getContent(), updateMessage.getContent())) {
+                Instant now = DateUtil.localDateTimeToInstant(DateUtil.getCurrentDate());
+                Instant limitTime = currentMessage.getCreatedAt().plus(10, ChronoUnit.MINUTES);
+                if (now.isAfter(limitTime)) {
+                    throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Time out for edit this content"});
+                }
+                this.messageEditHistoryService.save(currentMessage.getContent(), updateMessage.getId());
+                currentMessage.setEdited(true);
+            }
             currentMessage.setContent(updateMessage.getContent());
             currentMessage.setEmoji(objectMapper.writeValueAsString(updateMessage.getEmoji()));
             messageRepository.save(currentMessage);
 
             return MessageTransformer.toDto(currentMessage);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
             throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Edit message failed " + e});
         }
     }
