@@ -31,6 +31,7 @@ public class AttachedFileService {
 
     @Transactional
     public AttachedFileDto saveFile(Long roomId, MultipartFile file) {
+        //TODO: validate user upload file must be in the room
         //validate roomId
         RoomDto roomDto = this.roomService.findRoomById(roomId);
         //add to minio
@@ -48,7 +49,7 @@ public class AttachedFileService {
                     .build());
             AttachedFileDto dto = AttachedFileTransformer.toDto(entity);
             dto.setLinkPreview(uploadFileInfoResponse.getLinkPreview());
-            String destination = "/topic/room/" + roomId;
+            String destination = "/topic/rooms/" + roomId;
             messagingTemplate.convertAndSend(destination, messageDto);
             return dto;
         } catch (Exception e) {

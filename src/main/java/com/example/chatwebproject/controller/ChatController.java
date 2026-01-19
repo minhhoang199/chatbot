@@ -23,7 +23,7 @@ public class ChatController {
     public MessageDto sendMessage(@Payload MessageDto chatMessage) {
         System.out.println(chatMessage);
         MessageDto newMes = this.messageService.saveMessage(chatMessage);
-        String destination = "/topic/room/" + chatMessage.getRoomId();
+        String destination = "/topic/rooms/" + chatMessage.getRoomId();
         messagingTemplate.convertAndSend(destination, newMes);
         return newMes;
     }

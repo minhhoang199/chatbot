@@ -58,7 +58,7 @@ public class MessageController {
     @PutMapping("")
     public ResponseEntity<BaseResponse> update(@RequestBody @Valid MessageDto messageDto){
         MessageDto dto = this.messageService.editMessage(messageDto);
-        String destination = "/topic/room/" + dto.getRoomId();
+        String destination = "/topic/rooms/" + dto.getRoomId();
         messagingTemplate.convertAndSend(destination, dto);
         return this.respFactory.success(dto);
     }
@@ -66,7 +66,7 @@ public class MessageController {
     @DeleteMapping("/{messageId}")
     public ResponseEntity<BaseResponse> deleteMessage(@PathVariable("messageId") Long messageId){
         MessageDto dto = this.messageService.deactiveMessage(messageId);
-        String destination = "/topic/room/" + dto.getRoomId();
+        String destination = "/topic/rooms/" + dto.getRoomId();
         messagingTemplate.convertAndSend(destination, dto);
         return this.respFactory.success();
     }
