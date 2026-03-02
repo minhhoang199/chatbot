@@ -199,7 +199,7 @@ public class MessageService {
                 Instant now = DateUtil.localDateTimeToInstant(DateUtil.getCurrentDate());
                 Instant limitTime = currentMessage.getCreatedAt().plus(10, ChronoUnit.MINUTES);
                 if (now.isAfter(limitTime)) {
-                    throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Time out for edit this content"});
+                    throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Message can only be edited within 10 minutes of being sent."});
                 }
                 this.messageEditHistoryService.save(currentMessage.getContent(), updateMessage.getId());
                 currentMessage.setEdited(true);
