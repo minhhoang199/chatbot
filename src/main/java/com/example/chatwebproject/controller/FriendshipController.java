@@ -40,12 +40,12 @@ public class FriendshipController {
         return respFactory.success(this.friendshipService.getOutgoingRequest());
     }
 
-    @GetMapping("/accepted-friend")
+    @GetMapping("/accepted-friends")
     public ResponseEntity<BaseResponse> getAcceptedFriend(@RequestParam(value = "findingEmail", required = false) String findingEmail){
         return respFactory.success(this.friendshipService.getAcceptedFriend(findingEmail));
     }
 
-    @GetMapping("/blocked-friend")
+    @GetMapping("/blocked-friends")
     public ResponseEntity<BaseResponse> getBlockedFriend(@RequestParam(value = "findingEmail", required = false) String findingEmail){
         return respFactory.success(this.friendshipService.getBlockedFriend(findingEmail));
     }

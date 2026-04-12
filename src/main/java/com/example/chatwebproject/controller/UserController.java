@@ -40,7 +40,7 @@ public class UserController {
         return ResponseEntity.ok("Update succeed");
     }
 
-    @GetMapping("/get-friends")
+    @GetMapping("/friends")
     public ResponseEntity<BaseResponse> getFriends(){
         return respFactory.success(this.userService.getFriends());
     }

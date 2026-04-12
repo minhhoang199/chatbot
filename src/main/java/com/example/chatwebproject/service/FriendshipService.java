@@ -1,6 +1,5 @@
 package com.example.chatwebproject.service;
 
-
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
