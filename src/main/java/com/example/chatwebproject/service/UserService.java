@@ -98,4 +98,11 @@ public class UserService {
                 .orElseThrow(() -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found inactive user by email: " + email}));
         user.setStatus(status);
     }
+
+    public List<UserDto> getRecentUserChat() {
+        String currentEmail = SecurityUtil.getCurrentEmailLogin();
+        List<User> userList = this.userRepository.getRecentUserChat(currentEmail);
+        if (CollectionUtils.isEmpty(userList)) return new ArrayList<>();
+        return UserTransformer.toDtoList(userList);
+    }
 }

@@ -49,8 +49,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/security/auth")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://192.168.1.115:4200")
-//@CrossOrigin(origins = "https://192.168.1.115:4200")
 public class AuthController {
     public static final String UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final String LOWER = UPPER.toLowerCase(Locale.ROOT);
@@ -64,9 +62,7 @@ public class AuthController {
     private final JwtProvider jwtProvider;
     private final RespFactory respFactory;
     private final OTPService otpService;
-//    private RedisUtil redisUtil;
 
-//    @CrossOrigin(origins = "http://localhost:4200")
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> signIn(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = this.authenticationManager.authenticate(

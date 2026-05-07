@@ -30,7 +30,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u " +
             " WHERE u.email LIKE %:email% " +
-            " AND (u.delFlag IS NULL OR u.delFlag = false)")
+            " AND (u.delFlag IS NULL OR u.delFlag = false )" +
+            " AND u.status = 'ACTIVE'")
     List<User> searchByEmail(@Param("email") String email);
 
     Optional<User> findByUsername(String username);
@@ -44,4 +45,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "  AND u.email <> :currentEmail " +
             " AND fs.status = 'ACCEPTED'")
     List<User> getFriends(String currentEmail);
+
+    @Query("SELECT u " +
+            " FROM Room r " +
+            " JOIN r.users currentUser " +
+            " JOIN r.users u " +
+            " WHERE currentUser.email = :currentEmail " +
+            " AND u.email <> :currentEmail " +
+            " AND r.roomType = 'PRIVATE_CHAT' " +
+            " AND r.delFlag = false " +
+            " ORDER BY r.lastMessageTime DESC")
+    List<User> getRecentUserChat(String currentEmail);
 }

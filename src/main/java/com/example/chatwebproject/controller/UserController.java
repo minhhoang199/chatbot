@@ -45,4 +45,9 @@ public class UserController {
         return respFactory.success(this.userService.getFriends());
     }
 
+    @GetMapping("/recent-chat-user")
+    public ResponseEntity<BaseResponse> getRecentUserChat(){
+        return respFactory.success(this.userService.getRecentUserChat());
+    }
+
 }
