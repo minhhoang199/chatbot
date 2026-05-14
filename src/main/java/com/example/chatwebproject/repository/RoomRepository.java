@@ -36,6 +36,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             " JOIN room_user ru on r.id = ru.room_id " +
             " JOIN user_info u on ru.user_id = u.id " +
             " WHERE u.id = :userId " +
+            " AND r.last_message_time IS NOT NULL " +
             " AND r.del_flag = false " +
             " ORDER BY r.last_message_time DESC ";
 

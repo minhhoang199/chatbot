@@ -31,8 +31,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u " +
             " WHERE u.email LIKE %:email% " +
             " AND (u.delFlag IS NULL OR u.delFlag = false )" +
-            " AND u.status = 'ACTIVE'")
-    List<User> searchByEmail(@Param("email") String email);
+            " AND u.status = 'ACTIVE' " +
+            " AND u.email <> :currentEmail")
+    List<User> searchByEmail(@Param("email") String email, @Param("currentEmail") String currentEmail);
 
     Optional<User> findByUsername(String username);
 

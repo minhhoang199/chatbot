@@ -41,8 +41,9 @@ public class UserService {
         );
     }
 
-    public List<UserDto> searchByEmail(String email) {
-        List<User> users = this.userRepository.searchByEmail(email);
+    public List<UserDto> searchByEmail(String searchingEmail) {
+        String currentEmail = SecurityUtil.getCurrentEmailLogin();
+        List<User> users = this.userRepository.searchByEmail(searchingEmail, currentEmail);
         if (CollectionUtils.isEmpty(users)) return new ArrayList<>();
         return UserTransformer.toDtoList(users);
     }
