@@ -30,7 +30,7 @@ public class RoomController {
         return this.respFactory.success(this.roomService.addNewRoom(request));
     }
 
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/add-user")
     public ResponseEntity<String> addAccounts(
             @PathVariable("id") Long conversationId,
             @RequestBody @Valid InviteeDto inviteeDto

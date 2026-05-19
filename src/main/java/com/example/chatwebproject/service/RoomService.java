@@ -153,7 +153,7 @@ public class RoomService {
     }
 
     public void addMoreUser(InviteeDto inviteeDto, Long conversationId) {
-        String invitorEmail = inviteeDto.getInvitorEmail();
+        String invitorEmail = SecurityUtil.getCurrentEmailLogin();
 
         User invitor = this.userService.getUserInfo(invitorEmail);
 
@@ -170,23 +170,23 @@ public class RoomService {
         }
 
         for (String email : inviteeDto.getInviteeEmails()) {
-            List<Friendship> optionalConnectionWithUser = this.friendshipRepository.findByUsersAndStatus(
-                    invitorEmail,
-                    email,
-                    List.of(FriendshipStatus.ACCEPTED));
-            List<Friendship> optionalConnectionWithInvitor = this.friendshipRepository.findByUsersAndStatus(
-                    email,
-                    invitorEmail,
-                    List.of(FriendshipStatus.ACCEPTED));
-            if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithUser.isEmpty()) {
-                throw new RuntimeException("Invalid connection between invitor and User");
-            }
+//            List<Friendship> optionalConnectionWithUser = this.friendshipRepository.findByUsersAndStatus(
+//                    invitorEmail,
+//                    email,
+//                    List.of(FriendshipStatus.ACCEPTED));
+//            List<Friendship> optionalConnectionWithInvitor = this.friendshipRepository.findByUsersAndStatus(
+//                    email,
+//                    invitorEmail,
+//                    List.of(FriendshipStatus.ACCEPTED));
+//            if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithUser.isEmpty()) {
+//                throw new RuntimeException("Invalid connection between invitor and User");
+//            }
 
-            User currentUser = this.userService.getUserInfo(email);
+            User invitee = this.userService.getUserInfo(email);
 
-            currentUser.getRooms().add(currentRoom);
-            this.userRepository.save(currentUser);
-            users.add(currentUser);
+            invitee.getRooms().add(currentRoom);
+            this.userRepository.save(invitee);
+            users.add(invitee);
         }
         currentRoom.setUsers(users);
         this.roomRepository.save(currentRoom);
@@ -269,14 +269,14 @@ public class RoomService {
         //add users to group
         Room roomEntity = this.entityManager.find(Room.class, roomId);
         for (String email : emails) {
-            User user = this.userService.getUserInfo(email);
+            User addedUser = this.userService.getUserInfo(email);
             this.messageService.saveMessage(MessageDto.builder()
                     .sender(email)
                     .roomId(roomId)
                     .type(MessageType.JOIN)
                     .build());
-            user.getRooms().add(roomEntity);
-            roomEntity.getUsers().add(user);
+            addedUser.getRooms().add(roomEntity);
+            roomEntity.getUsers().add(addedUser);
         }
         this.roomRepository.save(roomEntity);
         this.userRepository.saveAll(roomEntity.getUsers());
@@ -299,14 +299,14 @@ public class RoomService {
         //remove users to group
         Room roomEntity = this.entityManager.find(Room.class, roomId);
         for (String email : emails) {
-            User user = this.userService.getUserInfo(email);
-            user.getRooms().remove(roomEntity);
-            roomEntity.getUsers().remove(user);
+            User removedUser = this.userService.getUserInfo(email);
+            removedUser.getRooms().remove(roomEntity);
+            roomEntity.getUsers().remove(removedUser);
         }
         this.messageService.saveMessage(MessageDto.builder()
                 .sender(currentEmailLogin)
-                //.content(currentEmailLogin + " has remove " + String.join(" ,", emails))
-                .content(String.join(" ,", emails))
+                .content(currentEmailLogin + " has remove " + String.join(" ,", emails))
+//                .content(String.join(" ,", emails))
                 .roomId(roomId)
                 .type(MessageType.EDITED)
                 .build());

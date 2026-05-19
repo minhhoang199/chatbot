@@ -19,6 +19,4 @@ public class InviteeDto {
     @NotEmpty
     @Size(min = 1, message = "Number of emails must be higher than 0")
     private List<String> inviteeEmails;
-    @Email
-    private String invitorEmail;
 }

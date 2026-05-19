@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public interface RoomProjection {
     Long getId();
     String getName();
+    String getPrivateKey();
     String getConversationType();
     String getLastMessageContent();
     Instant getLastMessageTime();

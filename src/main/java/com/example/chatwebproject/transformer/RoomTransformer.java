@@ -36,6 +36,7 @@ public class RoomTransformer {
         roomDto.setLastMessageContent(roomProjection.getLastMessageContent());
         roomDto.setLastMessageTime(roomProjection.getLastMessageTime());
         roomDto.setStatus(roomProjection.getStatus());
+        roomDto.setPrivateKey(roomProjection.getPrivateKey());
 
         return roomDto;
     }
