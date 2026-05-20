@@ -313,7 +313,6 @@ public class RoomService {
         this.roomRepository.save(roomEntity);
     }
 
-    //TODO: add change name message
     @Transactional
     public void changeRoomName(Long roomId, String newName) {
         if (StringUtils.isBlank(newName)) {
@@ -324,6 +323,9 @@ public class RoomService {
         String currentEmailLogin = SecurityUtil.getCurrentEmailLogin();
         if (CollectionUtils.isEmpty(roomDto.getEmails()) || !roomDto.getEmails().contains(currentEmailLogin)) {
             throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"This user is not in group chat: " + roomId});
+        }
+        if (roomDto.getRoomType().equals(RoomType.PRIVATE_CHAT)) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Can not change private chat name: " + roomId});
         }
         //change room name
         Room roomEntity = this.entityManager.find(Room.class, roomId);

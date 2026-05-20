@@ -16,16 +16,12 @@ import org.springframework.stereotype.Controller;
 @AllArgsConstructor
 public class ChatController {
     private MessageService messageService;
-    private SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.sendMessage")
 //    @SendTo("/topic/room")
     public MessageDto sendMessage(@Payload MessageDto chatMessage) {
         System.out.println(chatMessage);
-        MessageDto newMes = this.messageService.saveMessage(chatMessage);
-        String destination = "/topic/rooms/" + chatMessage.getRoomId();
-        messagingTemplate.convertAndSend(destination, newMes);
-        return newMes;
+        return this.messageService.saveMessage(chatMessage);
     }
 
     @MessageMapping("/chat.addUser")

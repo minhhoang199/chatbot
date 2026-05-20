@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -49,6 +50,7 @@ public class MessageService {
     private final RoomRepository roomRepository;
     private final UserService userService;
     private final MessageEditHistoryService messageEditHistoryService;
+    private final SimpMessagingTemplate messagingTemplate;
     @PersistenceContext
     private final EntityManager entityManager;
 
@@ -176,7 +178,10 @@ public class MessageService {
             room.setLastMessageContent(newMsg.getContent());
             room.setLastMessageTime(newMsg.getUpdatedAt());
 
-            return MessageTransformer.toDto(newMsg);
+            MessageDto newMes = MessageTransformer.toDto(newMsg);
+            String destination = "/topic/rooms/" + roomId;
+            messagingTemplate.convertAndSend(destination, newMes);
+            return newMes;
         } catch (JsonProcessingException e) {
             throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Save message failed " + e});
         }

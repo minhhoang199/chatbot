@@ -2,6 +2,7 @@ package com.example.chatwebproject.controller;
 
 import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.enums.RoomStatus;
+import com.example.chatwebproject.model.request.ChangeRoomNameRequest;
 import com.example.chatwebproject.model.request.ChangeUserListRequest;
 import com.example.chatwebproject.model.request.GetListRoomRequest;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
@@ -79,8 +80,8 @@ public class RoomController {
         return this.respFactory.success("Success");
     }
 
-    @PutMapping("/change-name/{roomId}")
-    public ResponseEntity<BaseResponse> changeRoomName(@PathVariable("roomId") Long roomId, @RequestBody SaveRoomRequest request){
+    @PutMapping("/{roomId}/change-name")
+    public ResponseEntity<BaseResponse> changeRoomName(@PathVariable("roomId") Long roomId, @RequestBody ChangeRoomNameRequest request){
         this.roomService.changeRoomName(roomId, request.getName());
         return this.respFactory.success("Success");
     }
