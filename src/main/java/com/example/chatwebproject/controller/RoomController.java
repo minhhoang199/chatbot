@@ -1,6 +1,7 @@
 package com.example.chatwebproject.controller;
 
 import com.example.chatwebproject.model.dto.RoomDto;
+import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.model.request.ChangeRoomNameRequest;
 import com.example.chatwebproject.model.request.ChangeUserListRequest;
@@ -60,6 +61,12 @@ public class RoomController {
         request.setUserId(userId);
         List<RoomDto> rooms = this.roomService.getAllByUserId(request);
         return this.respFactory.success(rooms);
+    }
+
+    @GetMapping("/{roomId}/members")
+    public ResponseEntity<BaseResponse> getMembers(@PathVariable("roomId") Long roomId){
+        List<UserDto> members = this.roomService.getMembers(roomId);
+        return this.respFactory.success(members);
     }
 
     @PutMapping("/outRoom/{roomId}")

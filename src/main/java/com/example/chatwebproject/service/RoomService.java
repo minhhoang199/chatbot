@@ -7,6 +7,7 @@ import com.example.chatwebproject.constant.Constants;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
+import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.entity.Room;
@@ -25,6 +26,7 @@ import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.transformer.FriendshipTransformer;
 import com.example.chatwebproject.transformer.RoomTransformer;
+import com.example.chatwebproject.transformer.UserTransformer;
 import com.example.chatwebproject.utils.SecurityUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -299,6 +301,9 @@ public class RoomService {
         //remove users to group
         Room roomEntity = this.entityManager.find(Room.class, roomId);
         for (String email : emails) {
+            if (email.equals(currentEmailLogin)){
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Can not remove this user: " + email});
+            }
             User removedUser = this.userService.getUserInfo(email);
             removedUser.getRooms().remove(roomEntity);
             roomEntity.getUsers().remove(removedUser);
@@ -373,6 +378,15 @@ public class RoomService {
         room.setDelFlag(true);
 
         return RoomTransformer.toDto(this.roomRepository.save(room));
+    }
 
+    public List<UserDto> getMembers(Long roomId) {
+        List<User> users = roomRepository.getMember(roomId);
+        if (!CollectionUtils.isEmpty(users)) {
+            return UserTransformer.toDtoList(users);
+        }
+
+        log.error("RoomService :: getAll : Not found any member with roomId " + roomId);
+        return new ArrayList<>();
     }
 }

@@ -2,6 +2,7 @@ package com.example.chatwebproject.repository;
 
 import com.example.chatwebproject.model.entity.Room;
 import com.example.chatwebproject.model.entity.RoomProjection;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.enums.RoomType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -47,4 +48,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
             " where c.id = :roomId " +
             " AND (c.delFlag IS NULL OR c.delFlag = false)")
     Optional<Room> findByIdAndDelFlag(@Param("roomId") Long roomId);
+
+    @Query("SELECT u FROM Room r INNER JOIN r.users u" +
+            " WHERE r.id = :roomId ")
+    List<User> getMember(Long roomId);
 }
