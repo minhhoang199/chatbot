@@ -152,6 +152,7 @@ public class MessageService {
 
             newMsg.setSender(sender);
             newMsg.setRoom(room);
+            newMsg.setRemovedEmails(messageDto.getRemovedEmails());
 
             //reply message
             if (messageDto.getReplyId() != null) {
@@ -178,10 +179,10 @@ public class MessageService {
             room.setLastMessageContent(newMsg.getContent());
             room.setLastMessageTime(newMsg.getUpdatedAt());
 
-            MessageDto newMes = MessageTransformer.toDto(newMsg);
+            MessageDto toDto = MessageTransformer.toDto(newMsg);
             String destination = "/topic/rooms/" + roomId;
-            messagingTemplate.convertAndSend(destination, newMes);
-            return newMes;
+            messagingTemplate.convertAndSend(destination, toDto);
+            return toDto;
         } catch (JsonProcessingException e) {
             throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Save message failed " + e});
         }

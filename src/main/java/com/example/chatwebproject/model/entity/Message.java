@@ -53,4 +53,7 @@ public class Message extends BaseEntity implements Serializable {
 
     @Column(name = "edited")
     private Boolean edited = false;
+
+    @Column(name = "removed_emails")
+    private String removedEmails;
 }

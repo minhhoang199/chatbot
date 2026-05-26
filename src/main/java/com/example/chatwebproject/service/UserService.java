@@ -49,12 +49,8 @@ public class UserService {
     }
 
 
-    public void updateUserInfo(Long userId, UserDto userVM) {
-        if (userId == null ||
-                userId <= 0) {
-            throw new RuntimeException("Invalid user Id");
-        }
-        var userOtp = this.userRepository.findById(userId);
+    public void updateUserInfo(UserDto userVM) {
+        var userOtp = this.userRepository.findById(userVM.getId());
         if (userOtp.isEmpty()) {
             throw new RuntimeException("Not found user");
         }

@@ -48,6 +48,7 @@ public class MessageDto extends BaseEntity {
     private Instant replyCreatedDate;
     private List<EmojiDto> emoji;
     private Boolean edited = false;
+    private String removedEmails;
 
     //attachedFile
     private AttachedFileDto attachedFile;

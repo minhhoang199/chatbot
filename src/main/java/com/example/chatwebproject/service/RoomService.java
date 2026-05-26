@@ -154,46 +154,6 @@ public class RoomService {
         return null;
     }
 
-    public void addMoreUser(InviteeDto inviteeDto, Long conversationId) {
-        String invitorEmail = SecurityUtil.getCurrentEmailLogin();
-
-        User invitor = this.userService.getUserInfo(invitorEmail);
-
-        var optConversation = roomRepository.findById(conversationId);
-        if (optConversation.isEmpty()) {
-            throw new RuntimeException("Not found conversation");
-        } else if (optConversation.get().getRoomType() == RoomType.PRIVATE_CHAT) {
-            throw new RuntimeException("Invalid conversation Type: private chat can not add more users");
-        }
-        Room currentRoom = optConversation.get();
-        Set<User> users = currentRoom.getUsers();
-        if (!users.contains(invitor)) {
-            throw new RuntimeException("Invitor does not belong to conversation");
-        }
-
-        for (String email : inviteeDto.getInviteeEmails()) {
-//            List<Friendship> optionalConnectionWithUser = this.friendshipRepository.findByUsersAndStatus(
-//                    invitorEmail,
-//                    email,
-//                    List.of(FriendshipStatus.ACCEPTED));
-//            List<Friendship> optionalConnectionWithInvitor = this.friendshipRepository.findByUsersAndStatus(
-//                    email,
-//                    invitorEmail,
-//                    List.of(FriendshipStatus.ACCEPTED));
-//            if (optionalConnectionWithInvitor.isEmpty() || optionalConnectionWithUser.isEmpty()) {
-//                throw new RuntimeException("Invalid connection between invitor and User");
-//            }
-
-            User invitee = this.userService.getUserInfo(email);
-
-            invitee.getRooms().add(currentRoom);
-            this.userRepository.save(invitee);
-            users.add(invitee);
-        }
-        currentRoom.setUsers(users);
-        this.roomRepository.save(currentRoom);
-    }
-
     //user block/gỡ block private chat
     public void changeConversationStatus(Long id, RoomStatus roomStatus) {
         if (id == null || id <= 0) {
@@ -270,7 +230,11 @@ public class RoomService {
 
         //add users to group
         Room roomEntity = this.entityManager.find(Room.class, roomId);
+        List<String> members = roomEntity.getUsers().stream().map(User::getEmail).collect(Collectors.toList());
         for (String email : emails) {
+            if (members.contains(email)) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"This member is already in the room: " + email});
+            }
             User addedUser = this.userService.getUserInfo(email);
             this.messageService.saveMessage(MessageDto.builder()
                     .sender(email)
@@ -313,7 +277,8 @@ public class RoomService {
                 .content(currentEmailLogin + " has remove " + String.join(" ,", emails))
 //                .content(String.join(" ,", emails))
                 .roomId(roomId)
-                .type(MessageType.EDITED)
+                .type(MessageType.REMOVE)
+                .removedEmails(String.join("-", emails))
                 .build());
         this.roomRepository.save(roomEntity);
     }

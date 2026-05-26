@@ -33,10 +33,9 @@ public class UserController {
 
     @PatchMapping("/{userId}")
     public ResponseEntity<String> editUserInfo(
-            @PathVariable("userId") Long userId,
             @RequestBody @Valid UserDto userVM
             ){
-        this.userService.updateUserInfo(userId, userVM);
+        this.userService.updateUserInfo(userVM);
         return ResponseEntity.ok("Update succeed");
     }
 

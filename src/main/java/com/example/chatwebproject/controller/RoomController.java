@@ -32,14 +32,14 @@ public class RoomController {
         return this.respFactory.success(this.roomService.addNewRoom(request));
     }
 
-    @PostMapping("/{id}/add-user")
-    public ResponseEntity<String> addAccounts(
-            @PathVariable("id") Long conversationId,
-            @RequestBody @Valid InviteeDto inviteeDto
-    ) {
-        this.roomService.addMoreUser(inviteeDto, conversationId);
-        return ResponseEntity.ok("Add more users succeed");
-    }
+//    @PostMapping("/{id}/add-members")
+//    public ResponseEntity<String> addAccounts(
+//            @PathVariable("id") Long conversationId,
+//            @RequestBody @Valid InviteeDto inviteeDto
+//    ) {
+//        this.roomService.addMoreUser(inviteeDto, conversationId);
+//        return ResponseEntity.ok("Add more users succeed");
+//    }
 
     @PatchMapping("/{id}")
     public ResponseEntity<String> changeStatus(
@@ -69,7 +69,7 @@ public class RoomController {
         return this.respFactory.success(members);
     }
 
-    @PutMapping("/outRoom/{roomId}")
+    @PutMapping("/{roomId}/outRoom")
     public ResponseEntity<BaseResponse> outRoom(@PathVariable("roomId") Long roomId){
         this.roomService.outRoom(roomId);
         return this.respFactory.success("Success");
