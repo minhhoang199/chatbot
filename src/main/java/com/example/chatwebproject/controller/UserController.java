@@ -1,7 +1,14 @@
 package com.example.chatwebproject.controller;
 
+import com.example.chatwebproject.constant.DomainCode;
+import com.example.chatwebproject.exception.ChatApplicationException;
+import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
+import com.example.chatwebproject.model.enums.OTPType;
+import com.example.chatwebproject.model.request.ChangePasswordRequest;
+import com.example.chatwebproject.model.request.ForgotPasswordRequest;
+import com.example.chatwebproject.model.request.OTPGenerateRequest;
 import com.example.chatwebproject.model.response.BaseResponse;
 import com.example.chatwebproject.model.response.RespFactory;
 import com.example.chatwebproject.service.UserService;
@@ -9,8 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,4 +58,10 @@ public class UserController {
         return respFactory.success(this.userService.getRecentUserChat());
     }
 
+    @PutMapping("/change-password")
+    @Transactional
+    public ResponseEntity<?> changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest) {
+        this.userService.changePassword(changePasswordRequest);
+        return this.respFactory.success();
+    }
 }

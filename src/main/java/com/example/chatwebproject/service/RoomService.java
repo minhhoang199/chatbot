@@ -131,7 +131,7 @@ public class RoomService {
             newMessage.setMessageStatus(MessageStatus.ACTIVE);
             newMessage.setType(MessageType.JOIN);
             newMessage.setRoom(newRoom);
-            newMessage.setContent(currentUser.getUsername() + "have been added to the chat room");
+            newMessage.setContent(currentUser.getUsername() + " have been added to the chat room");
             messages.add(newMessage);
 
             currentUser.getRooms().add(newRoom);

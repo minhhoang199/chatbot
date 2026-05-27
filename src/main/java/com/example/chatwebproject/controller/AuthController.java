@@ -170,6 +170,4 @@ public class AuthController {
 
         return this.respFactory.success();
     }
-
-    //TODO: change password API
 }
