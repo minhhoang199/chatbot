@@ -7,6 +7,7 @@ import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.enums.UserStatus;
 import com.example.chatwebproject.model.request.ChangePasswordRequest;
+import com.example.chatwebproject.model.request.EditUserInfoRequest;
 import com.example.chatwebproject.repository.UserRepository;
 import com.example.chatwebproject.transformer.UserTransformer;
 import com.example.chatwebproject.utils.SecurityUtil;
@@ -54,15 +55,15 @@ public class UserService {
     }
 
 
-    public void updateUserInfo(UserDto userVM) {
-        var userOtp = this.userRepository.findById(userVM.getId());
+    public void updateUserInfo(EditUserInfoRequest request) {
+        var userOtp = this.userRepository.findById(request.getId());
         if (userOtp.isEmpty()) {
             throw new RuntimeException("Not found user");
         }
 
         User currentUser = userOtp.get();
 
-        String newUserName = userVM.getUsername();
+        String newUserName = request.getUsername();
         {
             if (newUserName.length() == 0) {
                 throw new RuntimeException("Invalid username");
@@ -70,13 +71,13 @@ public class UserService {
             currentUser.setUsername(newUserName);
         }
 
-        String userVMEmail = userVM.getEmail();
-
-        var checkedUserOtp = userRepository.findByEmailAndDelFlg(userVMEmail);
-        if (checkedUserOtp.isPresent()) {
-            throw new RuntimeException("Email already existed");
-        }
-        currentUser.setEmail(userVMEmail);
+//        String userVMEmail = request.getEmail();
+//
+//        var checkedUserOtp = userRepository.findByEmailAndDelFlg(userVMEmail);
+//        if (checkedUserOtp.isPresent()) {
+//            throw new RuntimeException("Email already existed");
+//        }
+//        currentUser.setEmail(userVMEmail);
         this.userRepository.save(currentUser);
     }
 

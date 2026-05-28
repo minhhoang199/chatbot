@@ -7,6 +7,7 @@ import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.enums.OTPType;
 import com.example.chatwebproject.model.request.ChangePasswordRequest;
+import com.example.chatwebproject.model.request.EditUserInfoRequest;
 import com.example.chatwebproject.model.request.ForgotPasswordRequest;
 import com.example.chatwebproject.model.request.OTPGenerateRequest;
 import com.example.chatwebproject.model.response.BaseResponse;
@@ -35,17 +36,17 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> addNewUser(@RequestBody @Valid User newUser){
+    public ResponseEntity<BaseResponse> addNewUser(@RequestBody @Valid User newUser){
         this.userService.save(newUser);
-        return ResponseEntity.ok("Add new user succeed");
+        return respFactory.success("Add new user succeed");
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<String> editUserInfo(
-            @RequestBody @Valid UserDto userVM
+    public ResponseEntity<BaseResponse> editUserInfo(
+            @RequestBody @Valid EditUserInfoRequest request
             ){
-        this.userService.updateUserInfo(userVM);
-        return ResponseEntity.ok("Update succeed");
+        this.userService.updateUserInfo(request);
+        return respFactory.success("Update succeed");
     }
 
     @GetMapping("/friends")
