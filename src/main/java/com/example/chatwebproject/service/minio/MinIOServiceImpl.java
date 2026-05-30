@@ -6,6 +6,7 @@ import com.example.chatwebproject.constant.Constants;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.model.dto.AttachedFileDto;
+import com.example.chatwebproject.model.dto.AvatarFileDto;
 import com.example.chatwebproject.model.entity.AttachedFile;
 import com.example.chatwebproject.model.response.UploadFileInfoResponse;
 import com.example.chatwebproject.repository.AttachedFileRepository;
@@ -60,7 +61,19 @@ public class MinIOServiceImpl implements MinIOService {
 
     @Transactional
     @Override
-    public UploadFileInfoResponse uploadFileMinIO(MultipartFile file, Long roomId) {
+    public UploadFileInfoResponse uploadAttachedFileMinIO(MultipartFile file, Long roomId) {
+        return this.uploadFileMinIO(file, roomId, minioProperties.getFilePathBaseRooms());
+    }
+
+    @Transactional
+    @Override
+    public UploadFileInfoResponse uploadAvatarFileMinIO(MultipartFile file, Long userId) {
+        UploadFileInfoResponse uploadFileInfoResponse = this.uploadFileMinIO(file, userId, minioProperties.getFilePathBaseAvatar());
+        uploadFileInfoResponse.setLinkFile(minioProperties.getUrl() + Constants.SLASH + minioProperties.getBucket() + Constants.SLASH + uploadFileInfoResponse.getLinkFile());
+        return uploadFileInfoResponse;
+    }
+
+    public UploadFileInfoResponse uploadFileMinIO(MultipartFile file, Long roomId, String basePath) {
         String contentType = getContentType(FilenameUtils.getExtension(file.getOriginalFilename())); //same as file.getContentType()
 
         if (StringUtils.isEmpty(contentType)) {
@@ -72,7 +85,7 @@ public class MinIOServiceImpl implements MinIOService {
         try {
             String fileId = UUID.randomUUID() + "_" + file.getOriginalFilename();
             String folder = Objects.toString(roomId, DRAFT_FILE_FOLDER);
-            String path = minioProperties.getFilePathBase() + "/" + folder + "/" + DateUtil.getCurrentDate(Constants.YYYY_MM_DD_FORMAT) + fileId;
+            String path = basePath + "/" + folder + "/" + DateUtil.getCurrentDate(Constants.YYYY_MM_DD_FORMAT) + fileId;
 
             InputStream dataFile = file.getInputStream();
             log.info("Path upload: {}", path);
@@ -148,7 +161,14 @@ public class MinIOServiceImpl implements MinIOService {
     }
 
     @Override
-    public byte[] downloadFile(AttachedFileDto fileDto) throws IOException {
+    public byte[] downloadAttachedFile(AttachedFileDto fileDto) throws IOException {
+        InputStream fileStream = getFileFromMinio(fileDto.getLinkFile());
+
+        return fileStream.readAllBytes();
+    }
+
+    @Override
+    public byte[] downloadAvatarFile(AvatarFileDto fileDto) throws IOException {
         InputStream fileStream = getFileFromMinio(fileDto.getLinkFile());
 
         return fileStream.readAllBytes();
@@ -219,7 +239,7 @@ public class MinIOServiceImpl implements MinIOService {
         String bucketName = this.getBucketName();
         String[] pathObjects = sourcePath.split("/");
         String minIOFileName = pathObjects[pathObjects.length - 1];
-        String targetPath = minioProperties.getFilePathBase() + "/" + roomId + "/" + fileType + "/" + minIOFileName;
+        String targetPath = minioProperties.getFilePathBaseRooms() + "/" + roomId + "/" + fileType + "/" + minIOFileName;
         try {
             //move from draft to roomId folder
             minioClient.copyObject(

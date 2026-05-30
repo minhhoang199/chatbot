@@ -34,6 +34,7 @@ public class UserTransformer {
         dto.setUsername(entity.getUsername());
         dto.setEmail(entity.getEmail());
         dto.setStatus(entity.getStatus());
+        dto.setLinkAvatar(entity.getLinkAvatar());
         return dto;
     }
 

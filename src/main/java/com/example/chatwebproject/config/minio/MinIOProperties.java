@@ -17,6 +17,7 @@ public class MinIOProperties {
     private String accessKey;
     private String secretKey;
     private int expiry;
-    private String filePathBase;
+    private String filePathBaseRooms;
+    private String filePathBaseAvatar;
 }
 

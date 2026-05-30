@@ -37,6 +37,9 @@ public class User extends BaseEntity implements Serializable {
     @Column(name = "email", length = 100, nullable = false)
     private String email;
 
+    @Column(name = "link_avatar", length = 500)
+    private String linkAvatar;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
     private Set<Room> rooms = new HashSet<>();

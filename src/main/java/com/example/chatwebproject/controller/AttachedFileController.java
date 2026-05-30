@@ -9,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +28,7 @@ public class AttachedFileController {
             @RequestParam("file") MultipartFile file,
             @RequestParam("roomId") Long roomId
     ) {
-        return this.respFactory.success(this.attachedFileService.saveFile(roomId, file));
+        return this.respFactory.success(this.attachedFileService.saveAttachedFile(roomId, file));
     }
 
     @PostMapping("/download")
@@ -38,7 +36,7 @@ public class AttachedFileController {
             @RequestParam("fileId") Long fileId,
             @RequestParam("roomId") Long roomId
     ) {
-        DownloadFileResponse downloadFileResponse = this.attachedFileService.download(roomId, fileId);
+        DownloadFileResponse downloadFileResponse = this.attachedFileService.downloadAttachedFile(roomId, fileId);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadFileResponse.getFileDto().getFileName() + "\"")
                 .contentType(MediaType.parseMediaType(downloadFileResponse.getFileDto().getExtension()))

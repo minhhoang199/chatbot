@@ -3,6 +3,8 @@ package com.example.chatwebproject.service;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.model.dto.AttachedFileDto;
+import com.example.chatwebproject.model.dto.AvatarFileDto;
+import com.example.chatwebproject.model.entity.AvatarFile;
 import com.example.chatwebproject.model.response.DownloadFileResponse;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.dto.RoomDto;
@@ -10,8 +12,10 @@ import com.example.chatwebproject.model.entity.AttachedFile;
 import com.example.chatwebproject.model.enums.MessageType;
 import com.example.chatwebproject.model.response.UploadFileInfoResponse;
 import com.example.chatwebproject.repository.AttachedFileRepository;
+import com.example.chatwebproject.repository.AvatarFileRepository;
 import com.example.chatwebproject.service.minio.MinIOService;
 import com.example.chatwebproject.transformer.AttachedFileTransformer;
+import com.example.chatwebproject.transformer.AvatarFileTransformer;
 import com.example.chatwebproject.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -30,12 +34,12 @@ public class AttachedFileService {
     private final SimpMessagingTemplate messagingTemplate;
 
     @Transactional
-    public AttachedFileDto saveFile(Long roomId, MultipartFile file) {
+    public AttachedFileDto saveAttachedFile(Long roomId, MultipartFile file) {
         //TODO: validate user upload file must be in the room
         //validate roomId
         RoomDto roomDto = this.roomService.findRoomById(roomId);
         //add to minio
-        UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadFileMinIO(file, roomId);
+        UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadAttachedFileMinIO(file, roomId);
         try {
             AttachedFile savedFile = AttachedFileTransformer.toEntityFromResponseInfo(uploadFileInfoResponse, roomId);
             AttachedFile entity = this.attachedFileRepository.save(savedFile);
@@ -58,14 +62,14 @@ public class AttachedFileService {
         }
     }
 
-    public DownloadFileResponse download(Long roomId, Long fileId) {
+    public DownloadFileResponse downloadAttachedFile(Long roomId, Long fileId) {
         try {
             // Get file from DB
             AttachedFile file = attachedFileRepository.findByRoomIdAndFileId(roomId, fileId).orElseThrow(
                     () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found file by id and roomId"})
             );
             AttachedFileDto fileDto = AttachedFileTransformer.toDto(file);
-            byte[] bytes = this.minIOService.downloadFile(fileDto);
+            byte[] bytes = this.minIOService.downloadAttachedFile(fileDto);
             return DownloadFileResponse.builder().fileDto(fileDto).bytes(bytes).build();
         } catch (Exception e) {
             throw new ChatApplicationException(DomainCode.DOWNLOAD_FILE_FAIL, new Object[]{e.getMessage()});

@@ -24,4 +24,6 @@ public class UserDto {
     private String email;
 
     private UserStatus status;
+
+    private String linkAvatar;
 }

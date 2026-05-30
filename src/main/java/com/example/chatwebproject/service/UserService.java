@@ -3,12 +3,19 @@ package com.example.chatwebproject.service;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
+import com.example.chatwebproject.model.dto.AvatarFileDto;
 import com.example.chatwebproject.model.dto.UserDto;
+import com.example.chatwebproject.model.entity.AvatarFile;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.enums.UserStatus;
 import com.example.chatwebproject.model.request.ChangePasswordRequest;
 import com.example.chatwebproject.model.request.EditUserInfoRequest;
+import com.example.chatwebproject.model.response.DownloadFileResponse;
+import com.example.chatwebproject.model.response.UploadFileInfoResponse;
+import com.example.chatwebproject.repository.AvatarFileRepository;
 import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.service.minio.MinIOService;
+import com.example.chatwebproject.transformer.AvatarFileTransformer;
 import com.example.chatwebproject.transformer.UserTransformer;
 import com.example.chatwebproject.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +26,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +41,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final AvatarFileRepository avatarFileRepository;
+    private final MinIOService minIOService;
+    @PersistenceContext
+    private final EntityManager entityManager;
 
     public void save(User newUser) {
         if (newUser != null) {
@@ -120,5 +135,38 @@ public class UserService {
         List<User> userList = this.userRepository.getRecentUserChat(currentEmail);
         if (CollectionUtils.isEmpty(userList)) return new ArrayList<>();
         return UserTransformer.toDtoList(userList);
+    }
+
+    @Transactional
+    public AvatarFileDto uploadAvatarUser(MultipartFile file) {
+        Long userId = SecurityUtil.getCurrentUserIdLogin();
+        UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadAvatarFileMinIO(file, userId);
+        try {
+            AvatarFile savedFile = AvatarFileTransformer.toEntityFromResponseInfo(uploadFileInfoResponse, userId);
+            AvatarFile entity = this.avatarFileRepository.save(savedFile);
+            AvatarFileDto dto = AvatarFileTransformer.toDto(entity);
+            dto.setLinkPreview(uploadFileInfoResponse.getLinkPreview());
+            User currentUser = this.entityManager.find(User.class, userId);
+            currentUser.setLinkAvatar(uploadFileInfoResponse.getLinkFile());
+            return dto;
+        } catch (Exception e) {
+            this.minIOService.deleteFile(uploadFileInfoResponse.getLinkFile());
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{e.getMessage()});
+        }
+    }
+
+    public DownloadFileResponse downloadAvatarFile(Long fileId) {
+        try {
+            Long userId = SecurityUtil.getCurrentUserIdLogin();
+            // Get file from DB
+            AvatarFile file = avatarFileRepository.findByUserIdAndFileId(userId, fileId).orElseThrow(
+                    () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found file by id and userId"})
+            );
+            AvatarFileDto fileDto = AvatarFileTransformer.toDto(file);
+            byte[] bytes = this.minIOService.downloadAvatarFile(fileDto);
+            return DownloadFileResponse.builder().avatarFileDto(fileDto).bytes(bytes).build();
+        } catch (Exception e) {
+            throw new ChatApplicationException(DomainCode.DOWNLOAD_FILE_FAIL, new Object[]{e.getMessage()});
+        }
     }
 }
