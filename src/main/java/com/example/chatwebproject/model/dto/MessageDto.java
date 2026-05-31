@@ -49,6 +49,7 @@ public class MessageDto extends BaseEntity {
     private List<EmojiDto> emoji;
     private Boolean edited = false;
     private String removedEmails;
+    private String linkAvatar;
 
     //attachedFile
     private AttachedFileDto attachedFile;

@@ -82,6 +82,7 @@ public class AuthController {
                 .email(userDetails.getEmail())
                 .role(userDetails.getAuthorities().toArray()[0].toString())
                 .id(userDetails.getId())
+                .linkAvatar(userDetails.getLinkAvatar())
                 .build());
     }
 

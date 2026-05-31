@@ -4,8 +4,10 @@ import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.dto.AvatarFileDto;
+import com.example.chatwebproject.model.dto.RoomDto;
 import com.example.chatwebproject.model.dto.UserDto;
 import com.example.chatwebproject.model.entity.AvatarFile;
+import com.example.chatwebproject.model.entity.Room;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.enums.UserStatus;
 import com.example.chatwebproject.model.request.ChangePasswordRequest;
@@ -140,9 +142,9 @@ public class UserService {
     @Transactional
     public AvatarFileDto uploadAvatarUser(MultipartFile file) {
         Long userId = SecurityUtil.getCurrentUserIdLogin();
-        UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadAvatarFileMinIO(file, userId);
+        UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadAvatarFileMinIO(file, userId.toString());
         try {
-            AvatarFile savedFile = AvatarFileTransformer.toEntityFromResponseInfo(uploadFileInfoResponse, userId);
+            AvatarFile savedFile = AvatarFileTransformer.toEntityFromResponseInfo(uploadFileInfoResponse, userId, null);
             AvatarFile entity = this.avatarFileRepository.save(savedFile);
             AvatarFileDto dto = AvatarFileTransformer.toDto(entity);
             dto.setLinkPreview(uploadFileInfoResponse.getLinkPreview());

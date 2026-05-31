@@ -7,7 +7,9 @@ import com.example.chatwebproject.constant.Constants;
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
+import com.example.chatwebproject.model.dto.AvatarFileDto;
 import com.example.chatwebproject.model.dto.UserDto;
+import com.example.chatwebproject.model.entity.AvatarFile;
 import com.example.chatwebproject.model.entity.Friendship;
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.entity.Room;
@@ -20,10 +22,14 @@ import com.example.chatwebproject.model.request.ChangeRoomStatusRequest;
 import com.example.chatwebproject.model.request.GetListRoomRequest;
 import com.example.chatwebproject.model.request.SaveRoomRequest;
 import com.example.chatwebproject.model.dto.InviteeDto;
+import com.example.chatwebproject.model.response.UploadFileInfoResponse;
+import com.example.chatwebproject.repository.AvatarFileRepository;
 import com.example.chatwebproject.repository.FriendshipRepository;
 import com.example.chatwebproject.repository.MessageRepository;
 import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.repository.UserRepository;
+import com.example.chatwebproject.service.minio.MinIOService;
+import com.example.chatwebproject.transformer.AvatarFileTransformer;
 import com.example.chatwebproject.transformer.FriendshipTransformer;
 import com.example.chatwebproject.transformer.RoomTransformer;
 import com.example.chatwebproject.transformer.UserTransformer;
@@ -36,6 +42,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -58,6 +65,8 @@ public class RoomService {
     @PersistenceContext
     private EntityManager entityManager;
     private final SimpMessagingTemplate messagingTemplate;
+    private final MinIOService minIOService;
+    private final AvatarFileRepository avatarFileRepository;
 
     @Transactional
     public RoomDto getRoomByEmail(String otherUserEmail) {
@@ -353,5 +362,33 @@ public class RoomService {
 
         log.error("RoomService :: getAll : Not found any member with roomId " + roomId);
         return new ArrayList<>();
+    }
+
+    @Transactional
+    public AvatarFileDto uploadAvatarGroup(MultipartFile file, Long roomId) {
+        //validate roomId
+        RoomDto roomDto = this.findRoomById(roomId);
+        if (!roomDto.getRoomType().equals(RoomType.GROUP_CHAT)) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"This user is not a group chat: " + roomId});
+        }
+        //check user in group chat or not
+        String email = SecurityUtil.getCurrentEmailLogin();
+        if (CollectionUtils.isEmpty(roomDto.getEmails()) || !roomDto.getEmails().contains(email)) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"This user is not in group chat: " + roomId});
+        }
+        //add to minio
+        UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadAvatarFileMinIO(file, "GROUP_" + roomId);
+        try {
+            AvatarFile savedFile = AvatarFileTransformer.toEntityFromResponseInfo(uploadFileInfoResponse, null, roomId);
+            AvatarFile entity = this.avatarFileRepository.save(savedFile);
+            AvatarFileDto dto = AvatarFileTransformer.toDto(entity);
+            dto.setLinkPreview(uploadFileInfoResponse.getLinkPreview());
+            Room room = this.entityManager.find(Room.class, roomId);
+            room.setLinkAvatar(uploadFileInfoResponse.getLinkFile());
+            return dto;
+        } catch (Exception e) {
+            this.minIOService.deleteFile(uploadFileInfoResponse.getLinkFile());
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{e.getMessage()});
+        }
     }
 }

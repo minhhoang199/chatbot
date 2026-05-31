@@ -62,18 +62,18 @@ public class MinIOServiceImpl implements MinIOService {
     @Transactional
     @Override
     public UploadFileInfoResponse uploadAttachedFileMinIO(MultipartFile file, Long roomId) {
-        return this.uploadFileMinIO(file, roomId, minioProperties.getFilePathBaseRooms());
+        return this.uploadFileMinIO(file, roomId.toString(), minioProperties.getFilePathBaseRooms());
     }
 
     @Transactional
     @Override
-    public UploadFileInfoResponse uploadAvatarFileMinIO(MultipartFile file, Long userId) {
-        UploadFileInfoResponse uploadFileInfoResponse = this.uploadFileMinIO(file, userId, minioProperties.getFilePathBaseAvatar());
+    public UploadFileInfoResponse uploadAvatarFileMinIO(MultipartFile file, String keyId) {
+        UploadFileInfoResponse uploadFileInfoResponse = this.uploadFileMinIO(file, keyId, minioProperties.getFilePathBaseAvatar());
         uploadFileInfoResponse.setLinkFile(minioProperties.getUrl() + Constants.SLASH + minioProperties.getBucket() + Constants.SLASH + uploadFileInfoResponse.getLinkFile());
         return uploadFileInfoResponse;
     }
 
-    public UploadFileInfoResponse uploadFileMinIO(MultipartFile file, Long roomId, String basePath) {
+    public UploadFileInfoResponse uploadFileMinIO(MultipartFile file, String keyId, String basePath) {
         String contentType = getContentType(FilenameUtils.getExtension(file.getOriginalFilename())); //same as file.getContentType()
 
         if (StringUtils.isEmpty(contentType)) {
@@ -84,7 +84,7 @@ public class MinIOServiceImpl implements MinIOService {
 
         try {
             String fileId = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            String folder = Objects.toString(roomId, DRAFT_FILE_FOLDER);
+            String folder = Objects.toString(keyId, DRAFT_FILE_FOLDER);
             String path = basePath + "/" + folder + "/" + DateUtil.getCurrentDate(Constants.YYYY_MM_DD_FORMAT) + fileId;
 
             InputStream dataFile = file.getInputStream();

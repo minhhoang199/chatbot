@@ -66,6 +66,9 @@ public class Room extends BaseEntity implements Serializable {
     @Column(name = "status")
     private RoomStatus status;
 
+    @Column(name = "link_avatar", length = 500)
+    private String linkAvatar;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

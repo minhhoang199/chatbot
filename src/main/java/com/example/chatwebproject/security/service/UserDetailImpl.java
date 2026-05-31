@@ -17,14 +17,16 @@ public class UserDetailImpl implements UserDetails {
     @JsonIgnore
     private final String password;
     private final String email;
+    private final String linkAvatar;
     private final GrantedAuthority authorities;
 
-    public UserDetailImpl(String username, String password, String email, GrantedAuthority authorities, Long id) {
+    public UserDetailImpl(String username, String password, String email, String linkAvatar, GrantedAuthority authorities, Long id) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.authorities = authorities;
         this.id = id;
+        this.linkAvatar = linkAvatar;
     }
 
     public static UserDetails build(User user) {
@@ -32,6 +34,7 @@ public class UserDetailImpl implements UserDetails {
                 user.getUsername(),
                 user.getPassword(),
                 user.getEmail(),
+                user.getLinkAvatar(),
                 new SimpleGrantedAuthority(ERole.of(user.getRole().getRole().getId()).name()),
                 user.getId()); // new SimpleGrantedAuthority(String)
     }
@@ -53,6 +56,10 @@ public class UserDetailImpl implements UserDetails {
 
     public String getEmail() {
         return this.email;
+    }
+
+    public String getLinkAvatar() {
+        return linkAvatar;
     }
 
     @Override

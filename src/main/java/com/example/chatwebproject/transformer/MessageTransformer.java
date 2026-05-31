@@ -22,6 +22,7 @@ public class MessageTransformer {
         messageDto.setEmoji(CommonUtils.convertStringToEmojiObject(message.getEmoji()));
         messageDto.setEdited(message.getEdited());
         messageDto.setRemovedEmails(message.getRemovedEmails());
+        messageDto.setLinkAvatar(message.getLinkAvatar());
         messageDto.setCreatedAt(message.getCreatedAt());
         messageDto.setUpdatedAt(message.getUpdatedAt());
         messageDto.setDelFlag(message.getDelFlag());

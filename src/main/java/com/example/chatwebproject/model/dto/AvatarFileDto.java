@@ -27,4 +27,6 @@ public class AvatarFileDto {
     private String extension;
 
     private Long userId;
+
+    private Long groupId;
 }

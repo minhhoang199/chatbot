@@ -13,7 +13,7 @@ import java.util.List;
 public interface MinIOService {
     UploadFileInfoResponse uploadAttachedFileMinIO(MultipartFile file, Long roomId);
 
-    UploadFileInfoResponse uploadAvatarFileMinIO(MultipartFile file, Long userId);
+    UploadFileInfoResponse uploadAvatarFileMinIO(MultipartFile file, String keyId);
 
     String genPresignLinkUpload(String path);
 

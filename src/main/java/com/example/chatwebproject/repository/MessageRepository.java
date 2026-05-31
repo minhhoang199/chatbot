@@ -21,6 +21,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m " +
             " LEFT JOIN FETCH m.attachedFile " +
             " LEFT JOIN FETCH m.replyMessage " +
+            " LEFT JOIN FETCH m.sender " +
             " WHERE m.room.id = :roomId " +
             " AND m.createdAt < :createdAt " +
             " AND m.delFlag = FALSE " +
@@ -32,6 +33,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT m FROM Message m " +
             " LEFT JOIN FETCH m.attachedFile " +
             " LEFT JOIN FETCH m.replyMessage " +
+            " LEFT JOIN FETCH m.sender " +
             " WHERE m.room.id = :roomId " +
             " AND m.createdAt >= COALESCE(:fromDate, m.createdAt) " +
             " AND m.createdAt <= COALESCE(:toDate, m.createdAt) " +

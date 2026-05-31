@@ -56,4 +56,6 @@ public class Message extends BaseEntity implements Serializable {
 
     @Column(name = "removed_emails")
     private String removedEmails;
+
+    private String linkAvatar;
 }

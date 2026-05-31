@@ -14,6 +14,7 @@ public class AvatarFileTransformer {
         fileDto.setLinkFile(entity.getLinkFile());
         fileDto.setFileName(entity.getFileName());
         fileDto.setUserId(entity.getUserId());
+        fileDto.setGroupId(entity.getGroupId());
         fileDto.setMessageId(entity.getMessage() != null ? entity.getMessage().getId() : null);
         return fileDto;
     }
@@ -25,15 +26,17 @@ public class AvatarFileTransformer {
         attachedFile.setLinkFile(dto.getLinkFile());
         attachedFile.setFileName(dto.getFileName());
         attachedFile.setUserId(dto.getUserId());
+        attachedFile.setGroupId(dto.getGroupId());
         return attachedFile;
     }
 
-    public static AvatarFile toEntityFromResponseInfo(UploadFileInfoResponse infoResponse, Long userId){
+    public static AvatarFile toEntityFromResponseInfo(UploadFileInfoResponse infoResponse, Long userId, Long groupId){
         AvatarFile attachedFile = new AvatarFile();
         attachedFile.setExtension(infoResponse.getExtension());
         attachedFile.setLinkFile(infoResponse.getLinkFile());
         attachedFile.setFileName(infoResponse.getFileName());
         attachedFile.setUserId(userId);
+        attachedFile.setGroupId(groupId);
         return attachedFile;
     }
 }

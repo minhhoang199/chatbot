@@ -14,6 +14,7 @@ import com.example.chatwebproject.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -101,5 +102,13 @@ public class RoomController {
     @DeleteMapping("/{roomId}")
     public ResponseEntity<BaseResponse> deleteRoom(@PathVariable("roomId") Long roomId){
         return this.respFactory.success(this.roomService.deleteRoom(roomId));
+    }
+
+    @PostMapping("/upload-avatar")
+    public ResponseEntity<BaseResponse> uploadAvatarGroup(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("roomId") Long roomId
+    ) {
+        return this.respFactory.success(this.roomService.uploadAvatarGroup(file, roomId));
     }
 }

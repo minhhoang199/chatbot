@@ -62,6 +62,9 @@ public class MessageService {
             for (Message message: messages
                  ) {
                 if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                    if (message.getSender() != null) {
+                        message.setLinkAvatar(message.getSender().getLinkAvatar());
+                    }
                     messageDtos.add(MessageTransformer.toDto(message));
                 }
             }
@@ -83,6 +86,9 @@ public class MessageService {
             for (Message message: messages
             ) {
                 if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                    if (message.getSender() != null) {
+                        message.setLinkAvatar(message.getSender().getLinkAvatar());
+                    }
                     messageDtos.add(MessageTransformer.toDto(message));
                 }
             }
@@ -104,6 +110,9 @@ public class MessageService {
             for (Message message: messages
             ) {
                 if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                    if (message.getSender() != null) {
+                        message.setLinkAvatar(message.getSender().getLinkAvatar());
+                    }
                     messageDtos.add(MessageTransformer.toDto(message));
                 }
             }
@@ -150,10 +159,10 @@ public class MessageService {
 
             newMsg.setType(messageDto.getType());
             newMsg.setMessageStatus(MessageStatus.ACTIVE);
-
             newMsg.setSender(sender);
             newMsg.setRoom(room);
             newMsg.setRemovedEmails(messageDto.getRemovedEmails());
+            newMsg.setLinkAvatar(sender.getLinkAvatar());
 
             //reply message
             if (messageDto.getReplyId() != null) {
