@@ -13,4 +13,5 @@ public interface RoomProjection {
     String getLastMessageContent();
     Instant getLastMessageTime();
     RoomStatus getStatus();
+    String getLinkAvatar();
 }

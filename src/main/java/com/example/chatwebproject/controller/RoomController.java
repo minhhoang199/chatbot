@@ -60,7 +60,7 @@ public class RoomController {
     public ResponseEntity<BaseResponse> getAllRoomsByUserId(@PathVariable("userId") Long userId){
         GetListRoomRequest request = new GetListRoomRequest();
         request.setUserId(userId);
-        List<RoomDto> rooms = this.roomService.getAllByUserId(request);
+        List<RoomDto> rooms = this.roomService.getAllByUserId();
         return this.respFactory.success(rooms);
     }
 

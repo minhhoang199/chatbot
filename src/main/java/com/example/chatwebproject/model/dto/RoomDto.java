@@ -33,4 +33,5 @@ public class RoomDto {
     private String admin;
     private String privateKey;
     private RoomStatus status;
+    private String linkAvatar;
 }

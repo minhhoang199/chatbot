@@ -25,6 +25,7 @@ public class RoomTransformer {
         dto.setPrivateKey(room.getPrivateKey());
         dto.setLastMessageTime(room.getLastMessageTime());
         dto.setStatus(room.getStatus());
+        dto.setLinkAvatar(room.getLinkAvatar());
         return dto;
     }
 
@@ -37,7 +38,7 @@ public class RoomTransformer {
         roomDto.setLastMessageTime(roomProjection.getLastMessageTime());
         roomDto.setStatus(roomProjection.getStatus());
         roomDto.setPrivateKey(roomProjection.getPrivateKey());
-
+        roomDto.setLinkAvatar(roomProjection.getLinkAvatar());
         return roomDto;
     }
 }

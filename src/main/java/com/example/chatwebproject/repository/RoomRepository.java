@@ -29,10 +29,14 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
                                   @Param("roomType")RoomType roomType);
 
     @Query(value = sql, nativeQuery = true)
-    List<RoomProjection> findByUserId(Long userId);
+    List<RoomProjection> findByUserId(Long userId, String email);
     final String sql = "Select r.id, r.name, r.private_key AS privateKey, r.conversation_type AS conversationType," +
             " r.last_message_content AS lastMessageContent, r.last_message_time AS lastMessageTime," +
-            " r.status AS status " +
+            " r.status AS status, " +
+            " CASE WHEN r.conversation_type = 'PRIVATE_CHAT' THEN (" +
+            "   SELECT ui.link_avatar FROM room_user ru2 JOIN user_info ui ON ru2.user_id = ui.id " +
+            "   WHERE ru2.room_id = r.id AND ui.email <> :email LIMIT 1" +
+            " ) ELSE r.link_avatar END AS linkAvatar " +
             " from ROOM r " +
             " JOIN room_user ru on r.id = ru.room_id " +
             " JOIN user_info u on ru.user_id = u.id " +

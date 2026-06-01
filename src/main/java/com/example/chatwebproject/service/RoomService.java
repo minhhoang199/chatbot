@@ -151,15 +151,16 @@ public class RoomService {
         newRoom.setLastMessageContent(newRoom.getName() + " was created");
     }
 
-    public List<RoomDto> getAllByUserId(GetListRoomRequest request) {
-        List<RoomProjection> rooms = roomRepository.findByUserId(request.getUserId());
+    public List<RoomDto> getAllByUserId() {
+        Long userId = SecurityUtil.getCurrentUserIdLogin();
+        List<RoomProjection> rooms = roomRepository.findByUserId(userId, SecurityUtil.getCurrentEmailLogin());
         if (!CollectionUtils.isEmpty(rooms)) {
             return rooms.stream()
                     .map(RoomTransformer::toDtoFromProjection)
                     .collect(Collectors.toList());
         }
 
-        log.error("RoomService :: getAll : Not found any room with userId " + request.getUserId());
+        log.error("RoomService :: getAll : Not found any room with userId " + userId);
         return null;
     }
 
