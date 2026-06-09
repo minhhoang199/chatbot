@@ -15,7 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "message")
+@Table(name = "notification")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,10 +24,10 @@ public class Notification extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "message_id", nullable = false)
+    @Column(name = "message_id")
     private Long messageId;
 
     @Column(columnDefinition = "TEXT")
@@ -36,4 +36,7 @@ public class Notification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private NotificationType type;
+
+    @Column(name = "is_read")
+    private Boolean isRead = false;
 }

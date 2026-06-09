@@ -9,8 +9,11 @@ import com.example.chatwebproject.model.entity.AttachedFile;
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.entity.Room;
 import com.example.chatwebproject.model.dto.MessageDto;
+import com.example.chatwebproject.model.dto.NotificationDto;
+import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.enums.MessageStatus;
 import com.example.chatwebproject.model.enums.MessageType;
+import com.example.chatwebproject.model.enums.NotificationType;
 import com.example.chatwebproject.model.enums.RoomStatus;
 import com.example.chatwebproject.repository.AttachedFileRepository;
 import com.example.chatwebproject.repository.RoomRepository;
@@ -51,9 +54,68 @@ public class MessageService {
     private final RoomRepository roomRepository;
     private final UserService userService;
     private final MessageEditHistoryService messageEditHistoryService;
+    private final NotificationService notificationService;
     private final SimpMessagingTemplate messagingTemplate;
     @PersistenceContext
     private final EntityManager entityManager;
+
+    /**
+     * Extract mentioned emails from message content (pattern: @email)
+     * and create MENTION notifications for each mentioned user
+     */
+    private void createMentionNotifications(String content, Long messageId, Long roomId) {
+        if (StringUtils.isBlank(content)) {
+            return;
+        }
+        // Pattern to find @email (basic email format)
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("@([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})");
+        java.util.regex.Matcher matcher = pattern.matcher(content);
+
+        while (matcher.find()) {
+            String mentionedEmail = matcher.group(1);
+            try {
+                NotificationDto notificationDto = new NotificationDto();
+                notificationDto.setMessageId(messageId);
+                notificationDto.setContent("You were mentioned in a message");
+                notificationDto.setType(NotificationType.MENTION);
+                // Set userId based on the mentioned email
+                var userOpt = userService.getUserInfo(mentionedEmail);
+                notificationDto.setUserId(userOpt.getId());
+                notificationService.createNotification(notificationDto);
+            } catch (Exception e) {
+                log.warn("Failed to create mention notification for email: " + mentionedEmail, e);
+            }
+        }
+    }
+
+    /**
+     * Create MESSAGE_ADD notifications for all room members except the sender
+     */
+    private void createMessageAddNotifications(Long messageId, Long roomId, Long senderId) {
+        try {
+            Room room = this.roomRepository.findById(roomId)
+                    .orElseThrow(() -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Room not found"}));
+
+            for (User member : room.getUsers()) {
+                // Skip the sender
+                if (member.getId().equals(senderId)) {
+                    continue;
+                }
+                try {
+                    NotificationDto notificationDto = new NotificationDto();
+                    notificationDto.setMessageId(messageId);
+                    notificationDto.setUserId(member.getId());
+                    notificationDto.setContent("New message in " + room.getName());
+                    notificationDto.setType(NotificationType.MESSAGE_ADD);
+                    this.notificationService.createNotification(notificationDto);
+                } catch (Exception e) {
+                    log.warn("Failed to create MESSAGE_ADD notification for user: " + member.getId(), e);
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to create MESSAGE_ADD notifications for room: " + roomId, e);
+        }
+    }
 
     public List<MessageDto> getLimitMessages(Long roomId, Instant before, Integer limit){
         try {
@@ -185,6 +247,10 @@ public class MessageService {
             newMsg.setDelFlag(false);
             newMsg = this.messageRepository.save(newMsg);
 
+            // Create MENTION and MESSAGE_ADD notifications
+            this.createMentionNotifications(messageDto.getContent(), newMsg.getId(), roomId);
+            this.createMessageAddNotifications(newMsg.getId(), roomId, sender.getId());
+
 
             room.setLastMessageContent(newMsg.getContent());
             room.setLastMessageTime(newMsg.getUpdatedAt());
@@ -223,6 +289,9 @@ public class MessageService {
             currentMessage.setContent(updateMessage.getContent());
             currentMessage.setEmoji(objectMapper.writeValueAsString(updateMessage.getEmoji()));
             messageRepository.save(currentMessage);
+
+            // Create MENTION notifications if edited message contains @mentions
+            this.createMentionNotifications(updateMessage.getContent(), currentMessage.getId(), currentMessage.getRoom().getId());
 
             return MessageTransformer.toDto(currentMessage);
         } catch (JsonProcessingException e) {

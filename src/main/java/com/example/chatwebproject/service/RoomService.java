@@ -17,6 +17,7 @@ import com.example.chatwebproject.model.entity.RoomProjection;
 import com.example.chatwebproject.model.entity.User;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.dto.RoomDto;
+import com.example.chatwebproject.model.dto.NotificationDto;
 import com.example.chatwebproject.model.enums.*;
 import com.example.chatwebproject.model.request.ChangeRoomStatusRequest;
 import com.example.chatwebproject.model.request.GetListRoomRequest;
@@ -61,6 +62,7 @@ public class RoomService {
     private final MessageRepository messageRepository;
     private final UserService userService;
     private final MessageService messageService;
+    private final NotificationService notificationService;
     private final ObjectMapper mapper;
     @PersistenceContext
     private EntityManager entityManager;
@@ -253,6 +255,17 @@ public class RoomService {
                     .build());
             addedUser.getRooms().add(roomEntity);
             roomEntity.getUsers().add(addedUser);
+
+            // Create GROUP_ADD notification for the added user
+            try {
+                NotificationDto notificationDto = new NotificationDto();
+                notificationDto.setUserId(addedUser.getId());
+                notificationDto.setContent("You have been added to group: " + roomEntity.getName());
+                notificationDto.setType(NotificationType.GROUP_ADD);
+                this.notificationService.createNotification(notificationDto);
+            } catch (Exception e) {
+                log.warn("Failed to create GROUP_ADD notification for user: " + email, e);
+            }
         }
         this.roomRepository.save(roomEntity);
         this.userRepository.saveAll(roomEntity.getUsers());
@@ -281,6 +294,17 @@ public class RoomService {
             User removedUser = this.userService.getUserInfo(email);
             removedUser.getRooms().remove(roomEntity);
             roomEntity.getUsers().remove(removedUser);
+
+            // Create GROUP_KICK notification for the removed user
+            try {
+                NotificationDto notificationDto = new NotificationDto();
+                notificationDto.setUserId(removedUser.getId());
+                notificationDto.setContent("You have been removed from group: " + roomEntity.getName());
+                notificationDto.setType(NotificationType.GROUP_KICK);
+                this.notificationService.createNotification(notificationDto);
+            } catch (Exception e) {
+                log.warn("Failed to create GROUP_KICK notification for user: " + email, e);
+            }
         }
         this.messageService.saveMessage(MessageDto.builder()
                 .sender(currentEmailLogin)

@@ -28,17 +28,21 @@ public class NotificationController {
     private NotificationService notificationService;
     private RespFactory respFactory;
 
-    @GetMapping("/limit")
+    @GetMapping("")
     public ResponseEntity<BaseResponse> getLimitNotificationByUserId(@RequestParam("before") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant before,
                                                                  @RequestParam("limit") Integer limit){
-        if (ObjectUtils.isEmpty(limit) || limit <= 0) limit = 50;
-        List<MessageDto> messageDtoList = this.notificationService.getLimitNotificationByUserId(before, limit);
-        return this.respFactory.success(messageDtoList);
+        List<NotificationDto> notificationDtos = this.notificationService.getLimitNotificationByUserId(before, limit);
+        return this.respFactory.success(notificationDtos);
     }
 
     @GetMapping("/unread-count")
     public ResponseEntity<BaseResponse> unreadCount() {
         return this.respFactory.success(notificationService.countByUserIdAndIsReadFalse());
+    }
+
+    @GetMapping("/messages/unread-count")
+    public ResponseEntity<BaseResponse> unreadMessagesCount(@RequestParam(value = "roomId", required = false) Long roomId) {
+        return this.respFactory.success(notificationService.countByUserIdAndIsReadFalseAndMessageAddType(roomId));
     }
 
     @PutMapping("/{id}/read")
