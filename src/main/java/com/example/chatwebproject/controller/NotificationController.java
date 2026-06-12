@@ -29,8 +29,8 @@ public class NotificationController {
     private RespFactory respFactory;
 
     @GetMapping("")
-    public ResponseEntity<BaseResponse> getLimitNotificationByUserId(@RequestParam("before") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant before,
-                                                                 @RequestParam("limit") Integer limit){
+    public ResponseEntity<BaseResponse> getLimitNotificationByUserId(@RequestParam(value = "before", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) Instant before,
+                                                                 @RequestParam(value = "limit", required = false) Integer limit){
         List<NotificationDto> notificationDtos = this.notificationService.getLimitNotificationByUserId(before, limit);
         return this.respFactory.success(notificationDtos);
     }

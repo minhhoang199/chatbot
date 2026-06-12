@@ -16,6 +16,9 @@ public class NotificationTransformer {
         dto.setType(entity.getType());
         dto.setMessageId(entity.getMessageId());
         dto.setUserId(entity.getUserId());
+        dto.setIsRead(entity.getIsRead());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
         return dto;
     }
 

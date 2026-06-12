@@ -36,7 +36,7 @@ public class NotificationService {
             before = Instant.now();
         }
         if (limit == null || limit <= 0) {
-            limit = 50;
+            limit = 20;
         }
 
         List<Notification> notifications = entityManager.createQuery(
