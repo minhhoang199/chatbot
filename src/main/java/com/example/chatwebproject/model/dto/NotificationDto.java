@@ -18,6 +18,8 @@ public class NotificationDto extends BaseEntity {
 
     private Long messageId;
 
+    private Long roomId;
+
     private String content;
 
     private NotificationType type;

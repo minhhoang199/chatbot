@@ -42,7 +42,7 @@ public class NotificationController {
 
     @GetMapping("/messages/unread-count")
     public ResponseEntity<BaseResponse> unreadMessagesCount(@RequestParam(value = "roomId", required = false) Long roomId) {
-        return this.respFactory.success(notificationService.countByUserIdAndIsReadFalseAndMessageAddType(roomId));
+        return this.respFactory.success(notificationService.getByUserIdAndIsReadFalseAndMessageAddType(roomId));
     }
 
     @PutMapping("/{id}/read")

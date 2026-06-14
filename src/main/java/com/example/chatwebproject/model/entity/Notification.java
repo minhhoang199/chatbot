@@ -30,6 +30,9 @@ public class Notification extends BaseEntity {
     @Column(name = "message_id")
     private Long messageId;
 
+    @Column(name = "room_id")
+    private Long roomId;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 

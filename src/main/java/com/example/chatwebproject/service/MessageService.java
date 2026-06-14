@@ -104,6 +104,7 @@ public class MessageService {
                 try {
                     NotificationDto notificationDto = new NotificationDto();
                     notificationDto.setMessageId(messageId);
+                    notificationDto.setRoomId(roomId);
                     notificationDto.setUserId(member.getId());
                     notificationDto.setContent("New message in " + room.getName());
                     notificationDto.setType(NotificationType.MESSAGE_ADD);

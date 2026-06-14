@@ -12,11 +12,15 @@ import com.example.chatwebproject.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -137,5 +141,49 @@ public class NotificationService {
                     .getSingleResult();
             return count != null ? count.intValue() : 0;
         }
+    }
+
+    public Map<Long, Integer> getByUserIdAndIsReadFalseAndMessageAddType(Long roomId) {
+        Long userId = SecurityUtil.getCurrentUserIdLogin();
+        if (userId == null) {
+            return null;
+        }
+
+        if (roomId != null) {
+            List<Notification> notifications = entityManager.createQuery(
+                            "SELECT n FROM Notification n " +
+                                    "WHERE n.userId = :userId AND n.isRead = false AND n.type = :type " +
+                                    "AND n.messageId IN (SELECT m.id FROM Message m WHERE m.room.id = :roomId) " +
+                                    "AND (n.delFlag IS NULL OR n.delFlag = false)",
+                            Notification.class)
+                    .setParameter("userId", userId)
+                    .setParameter("type", NotificationType.MESSAGE_ADD)
+                    .setParameter("roomId", roomId)
+                    .getResultList();
+            return !CollectionUtils.isEmpty(notifications) ? generateMessageNotificationMap(notifications) : null;
+        } else {
+            List<Notification> notifications = entityManager.createQuery(
+                            "SELECT n FROM Notification n WHERE n.userId = :userId " +
+                                    "AND n.isRead = false AND n.type = :type " +
+                                    "AND (n.delFlag IS NULL OR n.delFlag = false)",
+                            Notification.class)
+                    .setParameter("userId", userId)
+                    .setParameter("type", NotificationType.MESSAGE_ADD)
+                    .getResultList();
+            return !CollectionUtils.isEmpty(notifications) ? generateMessageNotificationMap(notifications) : null;
+        }
+    }
+
+    private Map<Long, Integer> generateMessageNotificationMap(List<Notification> notifications){
+        Map<Long, Integer> map = new HashMap<>();
+        for (Notification notification: notifications) {
+            if (notification.getRoomId() == null) continue;
+            if (map.containsKey(notification.getRoomId())) {
+                map.put(notification.getRoomId(), map.get(notification.getRoomId()) + 1);
+            } else {
+                map.put(notification.getRoomId(), 1);
+            }
+        }
+        return map;
     }
 }
