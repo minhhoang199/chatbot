@@ -49,4 +49,9 @@ public class NotificationController {
     public ResponseEntity<BaseResponse> readNotification(@PathVariable("id") Long id) {
         return this.respFactory.success(notificationService.readNotification(id));
     }
+
+    @PutMapping("/room-message/{roomId}/read")
+    public ResponseEntity<BaseResponse> readRoomMessages(@PathVariable("roomId") Long roomId) {
+        return this.respFactory.success(notificationService.readRoomMessages(roomId));
+    }
 }

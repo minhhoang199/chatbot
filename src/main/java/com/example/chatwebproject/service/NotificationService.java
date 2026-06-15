@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
@@ -103,6 +104,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setUserId(userId);
         notification.setMessageId(notificationDto.getMessageId());
+        notification.setRoomId(notificationDto.getRoomId());
         notification.setContent(notificationDto.getContent());
         notification.setType(notificationDto.getType());
         notification.setIsRead(Boolean.FALSE);
@@ -110,37 +112,6 @@ public class NotificationService {
 
         Notification savedNotification = notificationRepository.save(notification);
         return NotificationTransformer.toDto(savedNotification);
-    }
-
-    public Integer countByUserIdAndIsReadFalseAndMessageAddType(Long roomId) {
-        Long userId = SecurityUtil.getCurrentUserIdLogin();
-        if (userId == null) {
-            return 0;
-        }
-
-        if (roomId != null) {
-            Long count = entityManager.createQuery(
-                            "SELECT COUNT(n) FROM Notification n " +
-                                    "WHERE n.userId = :userId AND n.isRead = false AND n.type = :type " +
-                                    "AND n.messageId IN (SELECT m.id FROM Message m WHERE m.room.id = :roomId) " +
-                                    "AND (n.delFlag IS NULL OR n.delFlag = false)",
-                            Long.class)
-                    .setParameter("userId", userId)
-                    .setParameter("type", NotificationType.MESSAGE_ADD)
-                    .setParameter("roomId", roomId)
-                    .getSingleResult();
-            return count != null ? count.intValue() : 0;
-        } else {
-            Long count = entityManager.createQuery(
-                            "SELECT COUNT(n) FROM Notification n WHERE n.userId = :userId " +
-                                    "AND n.isRead = false AND n.type = :type " +
-                                    "AND (n.delFlag IS NULL OR n.delFlag = false)",
-                            Long.class)
-                    .setParameter("userId", userId)
-                    .setParameter("type", NotificationType.MESSAGE_ADD)
-                    .getSingleResult();
-            return count != null ? count.intValue() : 0;
-        }
     }
 
     public Map<Long, Integer> getByUserIdAndIsReadFalseAndMessageAddType(Long roomId) {
@@ -185,5 +156,27 @@ public class NotificationService {
             }
         }
         return map;
+    }
+
+    @Transactional
+    public String readRoomMessages(Long roomId) {
+        Long userId = SecurityUtil.getCurrentUserIdLogin();
+        List<Notification> notifications = entityManager.createQuery(
+                        "SELECT n FROM Notification n " +
+                                " WHERE n.userId = :userId AND n.isRead = false AND n.type = :type " +
+                                " AND n.roomId = :roomId " +
+                                " AND (n.delFlag IS NULL OR n.delFlag = false)",
+                        Notification.class)
+                .setParameter("userId", userId)
+                .setParameter("type", NotificationType.MESSAGE_ADD)
+                .setParameter("roomId", roomId)
+                .getResultList();
+
+        if (!CollectionUtils.isEmpty(notifications)) {
+            for (Notification notification: notifications) {
+                notification.setIsRead(true);
+            }
+        }
+        return "Notifications marked as read";
     }
 }
