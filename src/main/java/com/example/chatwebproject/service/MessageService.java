@@ -1,23 +1,27 @@
 package com.example.chatwebproject.service;
 
 //22/06: Update add new message saveMessage() method
+
 import com.example.chatwebproject.constant.DomainCode;
 import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
-import com.example.chatwebproject.model.dto.AttachedFileDto;
+import com.example.chatwebproject.model.dto.MessageDto;
+import com.example.chatwebproject.model.dto.NotificationDto;
 import com.example.chatwebproject.model.entity.AttachedFile;
 import com.example.chatwebproject.model.entity.Message;
 import com.example.chatwebproject.model.entity.Room;
-import com.example.chatwebproject.model.dto.MessageDto;
-import com.example.chatwebproject.model.dto.NotificationDto;
 import com.example.chatwebproject.model.entity.User;
+import com.example.chatwebproject.model.enums.Language;
 import com.example.chatwebproject.model.enums.MessageStatus;
 import com.example.chatwebproject.model.enums.MessageType;
 import com.example.chatwebproject.model.enums.NotificationType;
 import com.example.chatwebproject.model.enums.RoomStatus;
-import com.example.chatwebproject.repository.AttachedFileRepository;
-import com.example.chatwebproject.repository.RoomRepository;
+import com.example.chatwebproject.model.request.LibreTranslateRequest;
+import com.example.chatwebproject.model.response.LibreTranslateResponse;
+import com.example.chatwebproject.model.response.TranslateResponse;
+import com.example.chatwebproject.model.response.TranslationResult;
 import com.example.chatwebproject.repository.MessageRepository;
+import com.example.chatwebproject.repository.RoomRepository;
 import com.example.chatwebproject.transformer.MessageTransformer;
 import com.example.chatwebproject.utils.DateUtil;
 import com.example.chatwebproject.utils.SecurityUtil;
@@ -29,15 +33,14 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.PersistenceContext;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -58,6 +61,8 @@ public class MessageService {
     private final SimpMessagingTemplate messagingTemplate;
     @PersistenceContext
     private final EntityManager entityManager;
+    private final RestTemplate restTemplate;
+    private static final String URL = "http://localhost:5000/translate";
 
     /**
      * Extract mentioned emails from message content (pattern: @email)
@@ -318,5 +323,28 @@ public class MessageService {
         } catch (JsonProcessingException e) {
             throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Delete message failed"});
         }
+    }
+
+    public String translateMessage(Long messageId, String sourceLanguage, String targetLanguage) {
+        Message message = messageRepository.findById(messageId).orElseThrow(() -> new EntityNotFoundException("Message not found"));
+
+        String result = this.translate(message.getContent(), sourceLanguage, targetLanguage);
+
+        return result;
+    }
+
+    public String translate(String text, String sourceLanguage, String targetLanguage) {
+
+        String url = "https://api.mymemory.translated.net/get" +
+                        "?q={q}" +
+                        "&langpair={source}|{target}";
+
+        LibreTranslateResponse response = restTemplate.getForObject(url, LibreTranslateResponse.class, text, sourceLanguage, targetLanguage);
+
+        if (response == null || response.getResponseData() == null) {
+            throw new RuntimeException("Translation failed");
+        }
+
+        return response.getResponseData().getTranslatedText();
     }
 }
