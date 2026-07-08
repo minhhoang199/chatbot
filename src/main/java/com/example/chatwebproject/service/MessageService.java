@@ -52,6 +52,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class MessageService {
+    private static final String URL = "http://localhost:5000/translate";
     private final MessageRepository messageRepository;
     private final ObjectMapper objectMapper;
     private final RoomRepository roomRepository;
@@ -62,7 +63,6 @@ public class MessageService {
     @PersistenceContext
     private final EntityManager entityManager;
     private final RestTemplate restTemplate;
-    private static final String URL = "http://localhost:5000/translate";
 
     /**
      * Extract mentioned emails from message content (pattern: @email)
@@ -123,13 +123,13 @@ public class MessageService {
         }
     }
 
-    public List<MessageDto> getLimitMessages(Long roomId, Instant before, Integer limit){
+    public List<MessageDto> getLimitMessages(Long roomId, Instant before, Integer limit) {
         try {
             List<Message> messages = this.messageRepository.findAllByRoomId(roomId, before, PageRequest.of(0, limit));
             List<MessageDto> messageDtos = new ArrayList<>();
-            for (Message message: messages
-                 ) {
-                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+            for (Message message : messages
+            ) {
+                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)) {
                     if (message.getSender() != null) {
                         message.setLinkAvatar(message.getSender().getLinkAvatar());
                     }
@@ -147,13 +147,13 @@ public class MessageService {
         }
     }
 
-    public List<MessageDto> getAllMessagesFromTo(Long roomId, Instant from, Instant to){
+    public List<MessageDto> getAllMessagesFromTo(Long roomId, Instant from, Instant to) {
         try {
             List<Message> messages = this.messageRepository.findAllByRoomIdFromTo(roomId, from, to);
             List<MessageDto> messageDtos = new ArrayList<>();
-            for (Message message: messages
+            for (Message message : messages
             ) {
-                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)) {
                     if (message.getSender() != null) {
                         message.setLinkAvatar(message.getSender().getLinkAvatar());
                     }
@@ -171,13 +171,13 @@ public class MessageService {
         }
     }
 
-    public List<MessageDto> searchByContent(Long roomId, String content){
+    public List<MessageDto> searchByContent(Long roomId, String content) {
         try {
             List<Message> messages = this.messageRepository.searchByContent(roomId, content);
             List<MessageDto> messageDtos = new ArrayList<>();
-            for (Message message: messages
+            for (Message message : messages
             ) {
-                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)){
+                if (message.getMessageStatus().equals(MessageStatus.ACTIVE)) {
                     if (message.getSender() != null) {
                         message.setLinkAvatar(message.getSender().getLinkAvatar());
                     }
@@ -206,12 +206,12 @@ public class MessageService {
             //Check user already in the room or not ?
             Set<Room> setRoom = sender.getRooms().stream().filter(room -> room.getId() == roomId).collect(Collectors.toSet());
             Message newMsg = new Message();
-            if (messageDto.getType().equals(MessageType.JOIN)){
-                 if (!setRoom.isEmpty()) {
+            if (messageDto.getType().equals(MessageType.JOIN)) {
+                if (!setRoom.isEmpty()) {
                     log.error("User " + sender.getUsername() + " already in the room");
                     return null;
                 } else newMsg.setContent(messageDto.getSender() + " has joined");
-            } else if (messageDto.getType().equals(MessageType.LEAVE)){
+            } else if (messageDto.getType().equals(MessageType.LEAVE)) {
                 if (setRoom.isEmpty()) {
                     log.error("User " + sender.getUsername() + " not in the room");
                     return null;
@@ -235,7 +235,7 @@ public class MessageService {
             //reply message
             if (messageDto.getReplyId() != null) {
                 Message replyMessage = this.messageRepository.getByIdAndNotDel(messageDto.getReplyId()).orElseThrow(
-                        () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found replying message by id " + messageDto.getReplyId() })
+                        () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found replying message by id " + messageDto.getReplyId()})
                 );
                 newMsg.setReplyMessage(replyMessage);
             }
@@ -278,7 +278,7 @@ public class MessageService {
                 throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Id must not be null"});
             }
             var messageOtp = this.messageRepository.findById(updateMessage.getId());
-            if (messageOtp.isEmpty()){
+            if (messageOtp.isEmpty()) {
                 throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message by id " + updateMessage.getId()});
             }
 
@@ -306,7 +306,7 @@ public class MessageService {
     }
 
     //Delete/Deactive message
-    public MessageDto deactiveMessage(Long messageId){
+    public MessageDto deactiveMessage(Long messageId) {
         try {
             if (messageId == null) {
                 throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Invalid message Id"});
@@ -336,8 +336,8 @@ public class MessageService {
     public String translate(String text, String sourceLanguage, String targetLanguage) {
 
         String url = "https://api.mymemory.translated.net/get" +
-                        "?q={q}" +
-                        "&langpair={source}|{target}";
+                "?q={q}" +
+                "&langpair={source}|{target}";
 
         LibreTranslateResponse response = restTemplate.getForObject(url, LibreTranslateResponse.class, text, sourceLanguage, targetLanguage);
 
@@ -346,5 +346,19 @@ public class MessageService {
         }
 
         return response.getResponseData().getTranslatedText();
+    }
+
+    public MessageDto getDetail(Long messageId) {
+        Long userId = SecurityUtil.getCurrentUserIdLogin();
+        Message message = messageRepository.findById(messageId).orElseThrow(() -> new EntityNotFoundException("Message not found"));
+        List<Long> userIds = message.getRoom().getUsers().stream().map(User::getId).collect(Collectors.toList());
+        if (!userIds.contains(userId)) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"This user can not get this message"});
+        }
+        try {
+            return MessageTransformer.toDto(message);
+        } catch (JsonProcessingException e) {
+            throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{"Get messages failed: " + e});
+        }
     }
 }

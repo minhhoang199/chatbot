@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -53,5 +54,11 @@ public class NotificationController {
     @PutMapping("/room-message/{roomId}/read")
     public ResponseEntity<BaseResponse> readRoomMessages(@PathVariable("roomId") Long roomId) {
         return this.respFactory.success(notificationService.readRoomMessages(roomId));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<BaseResponse> deleteNotification(@PathVariable("id") Long id) {
+        notificationService.deleteNotification(id);
+        return this.respFactory.success();
     }
 }

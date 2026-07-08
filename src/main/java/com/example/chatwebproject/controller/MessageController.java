@@ -53,9 +53,15 @@ public class MessageController {
 
     @GetMapping("/search-by-content")
     public ResponseEntity<BaseResponse> searchByContent(@RequestParam("roomId") Long roomId,
-                                                             @RequestParam(value = "content") String content){
+                                                        @RequestParam(value = "content") String content){
         List<MessageDto> messageDtoList = this.messageService.searchByContent(roomId, content);
         return this.respFactory.success(messageDtoList);
+    }
+
+    @GetMapping("/{messageId}")
+    public ResponseEntity<BaseResponse> getDetail(@PathVariable("messageId") Long messageId){
+        MessageDto messageDto = this.messageService.getDetail(messageId);
+        return this.respFactory.success(messageDto);
     }
 
     @PutMapping("")

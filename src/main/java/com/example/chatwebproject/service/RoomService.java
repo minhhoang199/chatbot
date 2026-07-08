@@ -261,6 +261,7 @@ public class RoomService {
                 NotificationDto notificationDto = new NotificationDto();
                 notificationDto.setUserId(addedUser.getId());
                 notificationDto.setContent("You have been added to group: " + roomEntity.getName());
+                notificationDto.setRoomId(roomId);
                 notificationDto.setType(NotificationType.GROUP_ADD);
                 this.notificationService.createNotification(notificationDto);
             } catch (Exception e) {

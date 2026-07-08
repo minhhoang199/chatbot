@@ -1,6 +1,7 @@
 package com.example.chatwebproject.service;
 
 import com.example.chatwebproject.constant.DomainCode;
+import com.example.chatwebproject.exception.ChatApplicationException;
 import com.example.chatwebproject.exception.ValidationRequestException;
 import com.example.chatwebproject.model.dto.MessageDto;
 import com.example.chatwebproject.model.dto.NotificationDto;
@@ -178,5 +179,24 @@ public class NotificationService {
             }
         }
         return "Notifications marked as read";
+    }
+
+    @Transactional
+    public void deleteNotification(Long id) {
+        Long userId = SecurityUtil.getCurrentUserIdLogin();
+        Notification notification = entityManager.createQuery(
+                        "SELECT n FROM Notification n " +
+                                " WHERE n.userId = :userId " +
+                                " AND n.id = :id " +
+                                " AND (n.delFlag IS NULL OR n.delFlag = false)",
+                        Notification.class)
+                .setParameter("userId", userId)
+                .setParameter("id", id)
+                .getSingleResult();
+
+        if (notification == null) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found notification"});
+        }
+        notification.setDelFlag(true);
     }
 }
