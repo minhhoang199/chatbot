@@ -30,12 +30,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +51,18 @@ public class UserService {
     private final MinIOService minIOService;
     @PersistenceContext
     private final EntityManager entityManager;
+
+    public void validateImage(MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File is empty.");
+        }
+
+        BufferedImage image = ImageIO.read(file.getInputStream());
+
+        if (image == null) {
+            throw new IllegalArgumentException("File is not image.");
+        }
+    }
 
     public void save(User newUser) {
         if (newUser != null) {
@@ -144,6 +160,7 @@ public class UserService {
         Long userId = SecurityUtil.getCurrentUserIdLogin();
         UploadFileInfoResponse uploadFileInfoResponse = this.minIOService.uploadAvatarFileMinIO(file, userId.toString());
         try {
+            validateImage(file);
             AvatarFile savedFile = AvatarFileTransformer.toEntityFromResponseInfo(uploadFileInfoResponse, userId, null);
             AvatarFile entity = this.avatarFileRepository.save(savedFile);
             AvatarFileDto dto = AvatarFileTransformer.toDto(entity);
@@ -151,6 +168,8 @@ public class UserService {
             User currentUser = this.entityManager.find(User.class, userId);
             currentUser.setLinkAvatar(uploadFileInfoResponse.getLinkFile());
             return dto;
+        } catch (IOException e) {
+            throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{e.getMessage()});
         } catch (Exception e) {
             this.minIOService.deleteFile(uploadFileInfoResponse.getLinkFile());
             throw new ChatApplicationException(DomainCode.INTERNAL_SERVICE_ERROR, new Object[]{e.getMessage()});

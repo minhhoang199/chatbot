@@ -74,6 +74,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+
+        return request.getServletPath().equals("/ws");
+    }
+
 
     private String parseJwt(HttpServletRequest request) {
         String headerAuth = request.getHeader("Authorization");

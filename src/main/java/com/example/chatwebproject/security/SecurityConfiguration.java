@@ -57,6 +57,14 @@ public class SecurityConfiguration {
         http
                 .cors().and()
                 .csrf().disable()
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                        "script-src 'self'; " +
+                                        "object-src 'none'; " +
+                                        "frame-ancestors 'none';"
+                        ))
+                )
                 .exceptionHandling().authenticationEntryPoint(this.unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests()
