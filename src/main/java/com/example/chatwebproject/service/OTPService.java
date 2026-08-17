@@ -113,8 +113,8 @@ public class OTPService {
 
     public void reSendOTP(OTPSendRequest otpSendRequest) {
         //validate user exist
-        User user = this.userRepository.findByEmailAndDelFlgAndStatus(otpSendRequest.getEmail(), List.of(UserStatus.INACTIVE)).orElseThrow(
-                () -> new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found inactive user"}, null)
+        User user = this.userRepository.findByEmailAndDelFlgAndStatus(otpSendRequest.getEmail(), List.of(UserStatus.INACTIVE, UserStatus.ACTIVE)).orElseThrow(
+                () -> new ValidationRequestException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found valid user"}, null)
         );
         // gen and send otp
         generateAndSendOtp(OTPGenerateRequest.builder().email(otpSendRequest.getEmail()).build());

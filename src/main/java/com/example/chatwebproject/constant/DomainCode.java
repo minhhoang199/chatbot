@@ -19,7 +19,7 @@ public enum DomainCode {
     MINIO_UPLOAD_FAIL("TD-011", "Upload file to minIO fail", HttpStatus.INTERNAL_SERVER_ERROR.value()),
     MINIO_GEN_LINK_FAIL("TD-012", "Gen link file minIO fail", HttpStatus.INTERNAL_SERVER_ERROR.value()),
     FILE_NOT_ACCEPT("TD-013", "File size has less than 16MB", HttpStatus.INTERNAL_SERVER_ERROR.value()),
-    FILE_NOT_SUPPORT("TD-014", "File type not support", HttpStatus.INTERNAL_SERVER_ERROR.value()),
+    FILE_NOT_SUPPORT("TD-014", "File type not support", HttpStatus.BAD_REQUEST.value()),
     FILE_CAMUNDA_NOT_ALLOW("TD-015", "Camunda file not allow", HttpStatus.INTERNAL_SERVER_ERROR.value()),
     NOT_FOUND_DATA("TD-016", "Not found data", HttpStatus.NOT_FOUND.value()),
     CAMUNDA_INFO_PROCESS_FAIL("TD-017", "Get camunda process info fail", HttpStatus.INTERNAL_SERVER_ERROR.value()),

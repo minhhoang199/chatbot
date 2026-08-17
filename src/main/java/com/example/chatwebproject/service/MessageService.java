@@ -315,6 +315,12 @@ public class MessageService {
             Message currentMessage = this.messageRepository.findByIdAndSender(messageId, SecurityUtil.getCurrentUserIdLogin()).orElseThrow(
                     () -> new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Not found message by Id and sender"})
             );
+            Instant now = DateUtil.localDateTimeToInstant(DateUtil.getCurrentDate());
+            Instant limitTime = currentMessage.getCreatedAt().plus(10, ChronoUnit.MINUTES);
+            if (now.isAfter(limitTime)) {
+                throw new ChatApplicationException(DomainCode.INVALID_PARAMETER, new Object[]{"Message can only be deleted within 10 minutes of being sent."});
+            }
+
             currentMessage.setMessageStatus(MessageStatus.INACTIVE);
             currentMessage.setDelFlag(true);
 
